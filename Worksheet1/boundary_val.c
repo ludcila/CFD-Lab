@@ -4,12 +4,13 @@ void boundaryvalues(
 	int imax,
 	int jmax,
 	double **U,
-	double **V,
-	double U_wall
-) {
-	/* Modified by San Yu *//*assume grid from 0->imax, so U in (imax+1)*(jmax+2)*/
-	int i,j;	    /* V in (imax+2)*(jmax+1) */	    	
+	double **V
 	
+) {
+	/* Modified by San Yu *//*assume grid from 0->imax, so U in (imax+1)*(jmax+2)  */
+	int i,j;	    /* V in (imax+2)*(jmax+1) */	    	
+	double U_wall=10;   /*needs to be initialized*/
+
 	for(j=0;j<jmax+1;j++){	/*left wall*/
 		U[0][j]=0;
 		V[0][j]=-V[1][j];

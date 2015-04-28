@@ -38,5 +38,20 @@
  * - calculate_uv() Calculate the velocity at the next time step.
  */
 int main(int argn, char** args){
+	double **U,**V,**P;
+	const char *szFileName;
+	double *Re,*UI,*VI,*PI,*GX,*GY,*t_end,*xlength,*ylength,*dt,*dx,*dy,*alpha,*omg,*tau,*eps,*dt_value;
+	int *imax,*jmax,*itermax;
+/* - read the program configuration file using read_parameters()*/
+read_parameters(szFileName,Re,UI,VI,PI,GX,GY,t_end,xlength,ylength,dt,dx,dy,imax,jmax,alpha,omg,tau,itermax,eps,dt_value);        
+
+
+/* - set up the matrices (arrays) needed using the matrix() command*/
+U=matrix(0, (*imax)  , 0, (*jmax)+1);
+V=matrix(0, (*imax)+1, 0, (*jmax)  );
+P=matrix(0, (*imax)+1, 0, (*jmax)+1);
+/* - create the initial setup init_uvp(), init_flag(), output_uvp()*/
+init_uvp(*UI,*VI,*PI,*imax,*jmax, U, V, P);
+	
   return -1;
 }
