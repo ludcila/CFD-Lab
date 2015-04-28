@@ -1,7 +1,7 @@
 #include "uvp.h"
 #include <math.h>
 #include <stdlib.h>
-
+#include "helper.h"
 void calculate_dt(
 	double Re,
 	double tau,
@@ -14,7 +14,24 @@ void calculate_dt(
 	double **V
 ) {
 	/* TODO by San Yu */
-	/* test_1 modified by SanYu */
+	
+	int i,j;
+	double u_max=U[1][1],v_max=V[1][1];
+	double dt_min;	
+
+	for(i=1;i<imax;i++){				/*double for-loop for max velocity in x&y direction*/
+		for(j=1;i<jmax;j++){
+			if(U[i][j]>u_max)
+				u_max=U[i][j];
+			if(V[i][j]>v_max)
+				v_max=V[i][j];
+		
+		}
+	}
+
+	dt_min=fmin(dy/v_max,dx/u_max);
+	dt_min=fmin(Re*0.5*1/(1/(dx*dx)+1/(dy*dy)),dt_min);
+	*dt=tau*dt_min;
 }
 
 
