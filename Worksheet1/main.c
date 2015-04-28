@@ -38,20 +38,23 @@
  * - calculate_uv() Calculate the velocity at the next time step.
  */
 int main(int argn, char** args){
-	double **U,**V,**P;
-	const char *szFileName;
-	double *Re,*UI,*VI,*PI,*GX,*GY,*t_end,*xlength,*ylength,*dt,*dx,*dy,*alpha,*omg,*tau,*eps,*dt_value;
-	int *imax,*jmax,*itermax;
-/* - read the program configuration file using read_parameters()*/
-read_parameters(szFileName,Re,UI,VI,PI,GX,GY,t_end,xlength,ylength,dt,dx,dy,imax,jmax,alpha,omg,tau,itermax,eps,dt_value);        
+
+	double **U=0,**V=0,**P=0;
+	const char *szFileName=0;
+	double *Re=0,*UI=0,*VI=0,*PI=0,*GX=0,*GY=0,*t_end=0,*xlength=0,*ylength=0,*dt=0,*dx=0,*dy=0,*alpha=0,*omg=0,*tau=0,*eps=0,*dt_value=0;
+	int *imax=0,*jmax=0,*itermax=0;
+	
+	/* - read the program configuration file using read_parameters() */
+	read_parameters(szFileName,Re,UI,VI,PI,GX,GY,t_end,xlength,ylength,dt,dx,dy,imax,jmax,alpha,omg,tau,itermax,eps,dt_value);        
 
 
-/* - set up the matrices (arrays) needed using the matrix() command*/
-U=matrix(0, (*imax)  , 0, (*jmax)+1);
-V=matrix(0, (*imax)+1, 0, (*jmax)  );
-P=matrix(0, (*imax)+1, 0, (*jmax)+1);
-/* - create the initial setup init_uvp(), init_flag(), output_uvp()*/
-init_uvp(*UI,*VI,*PI,*imax,*jmax, U, V, P);
+	/* - set up the matrices (arrays) needed using the matrix() command */
+	U=matrix(0, (*imax)  , 0, (*jmax)+1);
+	V=matrix(0, (*imax)+1, 0, (*jmax)  );
+	P=matrix(0, (*imax)+1, 0, (*jmax)+1);
+	
+	/* - create the initial setup init_uvp(), init_flag(), output_uvp() */
+	init_uvp(*UI,*VI,*PI,*imax,*jmax, U, V, P);
 	
   return -1;
 }
