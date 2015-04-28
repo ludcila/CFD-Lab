@@ -2,7 +2,9 @@
 #include "visual.h"
 #include "init.h"
 #include <stdio.h>
-
+#include"uvp.h"
+#include"boundary_val.h"
+#include"sor.c"
 
 /**
  * The main operation reads the configuration file, initializes the scenario and
@@ -39,22 +41,50 @@
  */
 int main(int argn, char** args){
 
-	double **U=0,**V=0,**P=0;
+	double **U=0,**V=0,**P=0,**F=0,**G=0,**RS=0;
 	const char *szFileName=0;
 	double *Re=0,*UI=0,*VI=0,*PI=0,*GX=0,*GY=0,*t_end=0,*xlength=0,*ylength=0,*dt=0,*dx=0,*dy=0,*alpha=0,*omg=0,*tau=0,*eps=0,*dt_value=0;
-	int *imax=0,*jmax=0,*itermax=0;
+	double *res=0,t=0,n=0;
+	int *imax=0,*jmax=0,*itermax=0,it=0;
 	
 	/* - read the program configuration file using read_parameters() */
 	read_parameters(szFileName,Re,UI,VI,PI,GX,GY,t_end,xlength,ylength,dt,dx,dy,imax,jmax,alpha,omg,tau,itermax,eps,dt_value);        
 
 
 	/* - set up the matrices (arrays) needed using the matrix() command */
-	U=matrix(0, (*imax)  , 0, (*jmax)+1);
-	V=matrix(0, (*imax)+1, 0, (*jmax)  );
-	P=matrix(0, (*imax)+1, 0, (*jmax)+1);
-	
+	U =matrix(0, (*imax)  , 0, (*jmax)+1);
+	V =matrix(0, (*imax)+1, 0, (*jmax)  );
+	P =matrix(0, (*imax)+1, 0, (*jmax)+1);
+	F =matrix(0, (*imax)  , 1, (*jmax)  ); /*G,F,RS domain checks in need*/
+	G =matrix(1, (*imax)  , 0, (*jmax)  );
+	RS=matrix(0, (*imax)+1, 0, (*jmax)  );
 	/* - create the initial setup init_uvp(), init_flag(), output_uvp() */
 	init_uvp(*UI,*VI,*PI,*imax,*jmax, U, V, P);
+
+while(t<*t_end){
+	/*Select δt*/
+	calculate_dt(*Re,*tau,dt,*dx,*dy,*imax,*jmax,U,V);
+	/*Set boundary values for u and v*/
+	boundaryvalues(*imax,*jmax,U,V);
+	/*Compute F (n) and G (n)*/
+	calculate_fg(*Re,*GX,*GY,*alpha,*dt,*dx,*dy,*imax,*jmax,U,V,F,G);
+	/*Compute the right-hand side rs of the pressure equation*/
+	calculate_rs(*dt,*dx,*dy,*imax,*jmax,F,G,RS);
+	it=0;
+	/*Perform a SOR iteration*/
+	while(it<(*itermax) && *res>*eps){
+		sor(*omg,*dx,*dy,*imax,*jmax,P,RS,res);
+		it++;
+	}
+	/*Compute u (n+1) and v (n+1)*/
+	calculate_uv(*dt,*dx,*dy,*imax,*jmax,U,V,F,G,P);
+	/*Output of u, v, p values for visualization, if necessary*/
+	t=t+(*dt);
+	n++;
 	
+}
+
+/*Output of u, v, p for visualization*/
+
   return -1;
 }
