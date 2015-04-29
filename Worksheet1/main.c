@@ -52,12 +52,12 @@ int main(int argn, char** args){
 
 
 	/* - set up the matrices (arrays) needed using the matrix() command */
-	U =matrix(0, (imax)  , 0, (jmax)+1);
-	V =matrix(0, (imax)+1, 0, (jmax)  );
-	P =matrix(0, (imax)+1, 0, (jmax)+1);
-	F =matrix(0, (imax)  , 1, (jmax)  ); /*G,F,RS domain checks in need*/
-	G =matrix(1, (imax)  , 0, (jmax)  );
-	RS=matrix(0, (imax)+1, 0, (jmax)  );
+	U =matrix(0, imax  , 0, jmax+1);
+	V =matrix(0, imax+1, 0, jmax  );
+	P =matrix(0, imax+1, 0, jmax+1);
+	F =matrix(0, imax  , 0, jmax+1); /*G,F,RS domain checks in need*/
+	G =matrix(0, imax+1, 0, jmax  );
+	RS=matrix(0, imax+1, 0, jmax+1);
 	/* - create the initial setup init_uvp(), init_flag(), output_uvp() */
 	init_uvp(UI,VI,PI,imax,jmax, U, V, P);
 
