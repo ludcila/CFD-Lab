@@ -84,15 +84,15 @@ while(t < t_end){
 	
 }
 
-	free_matrix(U, 0, 0, imax+1, jmax+1);
-	free_matrix(V, 0, 0, imax+1, jmax+1);
-	free_matrix(P, 0, 0, imax+1, jmax+1);
-	free_matrix(F, 0, 0, imax+1, jmax+1);
-	free_matrix(G, 0, 0, imax+1, jmax+1);
-	free_matrix(RS, 0, 0, imax+1, jmax+1);
-
 	/*Output of u, v, p for visualization*/
 	write_vtkFile("test", n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+
+	free_matrix(U, 0, imax, 0, jmax+1);
+	free_matrix(V, 0, imax+1, 0, jmax);
+	free_matrix(P, 0, imax+1, 0, jmax+1);
+	free_matrix(F, 0, imax, 0, jmax+1);
+	free_matrix(G, 0, imax+1, 0, jmax);
+	free_matrix(RS, 0, imax+1, 0, jmax+1);
 	
   return -1;
 }
