@@ -93,8 +93,8 @@ void calculate_rs(
 	double **RS
 	) {
 	int i, j;
-	for (i = 1; i < imax; i++) {
-		for (j = 1; j < jmax; j++) {			/* TODO: check i and j ranges */
+	for (i = 1; i <= imax; i++) {
+		for (j = 1; j <= jmax; j++) {			/* TODO: check i and j ranges */
 			RS[i][j] = 1 / dt * ((F[i][j] - F[i - 1][j]) / dx + (G[i][j] - G[i][j - 1]) / dy);
 		}
 	}
