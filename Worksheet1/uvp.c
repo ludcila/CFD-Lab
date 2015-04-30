@@ -52,15 +52,19 @@ void calculate_fg(
 	) {
 	int i, j;
 	for (i = 1; i < imax; i++) {
-		for (j = 1; j < jmax; j++) {			/* TODO: check i and j ranges */
+		for (j = 1; j <= jmax; j++) {			/* TODO: check i and j ranges */
 			F[i][j] = U[i][j] + dt * (
-				+1 / Re*((U[i + 1][j] - 2 * U[i][j] + U[i - 1][j]) / (dx*dx))
+				+ 1 / Re*((U[i + 1][j] - 2 * U[i][j] + U[i - 1][j]) / (dx*dx) + (U[i][j+1] - 2 * U[i][j] + U[i][j-1]) / (dy*dy))
 				- 1 / dx * (pow((U[i][j] + U[i + 1][j]) / 2, 2) - pow((U[i - 1][j] + U[i][j]) / 2, 2))
 				- 1 / dy * ((V[i][j] + V[i + 1][j])*(U[i][j] + U[i][j + 1]) / 4 - (V[i][j - 1] + V[i + 1][j - 1])*(U[i][j - 1] + U[i][j]) / 4)
 				+ alpha / dy * (abs(V[i][j] + V[i + 1][j])*(U[i][j] + U[i][j + 1]) / 4 - abs(V[i][j - 1] + V[i + 1][j - 1])*(U[i][j - 1] + U[i][j]) / 4)
 				);
+		}
+	}
+	for (i = 1; i <= imax; i++) {
+		for (j = 1; j < jmax; j++) {
 			G[i][j] = V[i][j] + dt * (
-				+1 / Re*((V[i][j + 1] - 2 * V[i][j] + V[i][j - 1]) / (dy*dy))
+				+ 1 / Re*((V[i][j + 1] - 2 * V[i][j] + V[i][j - 1]) / (dy*dy) + (V[i+1][j] - 2 * V[i][j] + V[i - 1][j]) / (dx*dx))
 				- 1 / dy * (pow((V[i][j] + V[i][j + 1]) / 2, 2) - pow((V[i][j - 1] + V[i][j]) / 2, 2))
 				- 1 / dx * ((U[i][j] + U[i][j + 1])*(V[i][j] + V[i + 1][j]) / 4 - (U[i - 1][j] + U[i - 1][j + 1])*(V[i - 1][j] + V[i][j]) / 4)
 				- alpha / dx * (abs(U[i][j] + U[i][j + 1])*(V[i][j] + V[i + 1][j]) / 4 - abs(U[i - 1][j] + U[i - 1][j + 1])*(V[i - 1][j] + V[i][j]) / 4)
@@ -106,10 +110,15 @@ void calculate_uv(
 
 	/* TODO by Jae */
 	unsigned int i, j;
-	for (i = 1; i < imax; i++){				/*double for-loop for max velocity in x&y direction*/
-		for (j = 1; j < jmax; j++){
-			U[i][j] = F[i][j] - dt * (P[i + 1][j] - P[i][j]) / dx;
-			V[i][j] = G[i][j] - dt * (P[i + 1][j] - P[i][j]) / dy;
+	for (i = 1; i < imax-1; i++){				/*double for-loop for max velocity in x&y direction*/
+		for (j = 1; j <= jmax; j++){
+			U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
+			
+		}
+	}
+	for (i = 1; i <=imax; i++){				/*double for-loop for max velocity in x&y direction*/
+		for (j = 1; j < jmax-1; j++){
+			V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
 		}
 	}
 }
