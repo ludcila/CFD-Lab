@@ -9,7 +9,7 @@ void boundaryvalues(
 ) {
 	/* Modified by San Yu *//*assume grid from 0->imax, so U in (imax+1)*(jmax+2)  */
 	int i,j;	    /* V in (imax+2)*(jmax+1) */	    	
-	double U_wall=10;   /*needs to be initialized*/
+	double U_wall=1;   /*needs to be initialized*/
 
 	for(j=0;j<=jmax;j++){	/*left wall*/
 		U[0][j]=0;
