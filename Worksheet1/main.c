@@ -84,7 +84,8 @@ while(t < t_end){
 	
 }
 
-/*Output of u, v, p for visualization*/
-
+	/*Output of u, v, p for visualization*/
+	write_vtkFile("test", n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+	
   return -1;
 }
