@@ -61,7 +61,7 @@ int main(int argn, char** args){
 	/* - create the initial setup init_uvp(), init_flag(), output_uvp() */
 	init_uvp(UI,VI,PI,imax,jmax, U, V, P);
 
-while(t < t_end){
+while(t <= t_end){
 	/*Select δt*/
 	calculate_dt(Re,tau,&dt,dx,dy,imax,jmax,U,V);
 	/*Set boundary values for u and v*/
@@ -72,6 +72,7 @@ while(t < t_end){
 	calculate_rs(dt,dx,dy,imax,jmax,F,G,RS);
 	it=0;
 	/*Perform a SOR iteration*/
+	res = 1e6;
 	while(it < itermax && res > eps){
 		sor(omg,dx,dy,imax,jmax,P,RS,&res);
 		it++;
