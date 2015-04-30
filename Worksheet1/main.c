@@ -46,7 +46,6 @@ int main(int argn, char** args){
 	double Re,UI,VI,PI,GX,GY,t_end,xlength,ylength,dt,dx,dy,alpha,omg,tau,eps,dt_value;
 	double res=0,t=0,n=0;
 	int imax,jmax,itermax,it;
-	int i, j;
 	
 	/* - read the program configuration file using read_parameters() */
 	read_parameters(szFileName,&Re,&UI,&VI,&PI,&GX,&GY,&t_end,&xlength,&ylength,&dt,&dx,&dy,&imax,&jmax,&alpha,&omg,&tau,&itermax,&eps,&dt_value);        
@@ -74,14 +73,6 @@ while(t <= t_end){
 	it=0;
 	/*Perform a SOR iteration*/
 	res = 1e6;
-	for(i = 1; i <= imax; i++) {
-		P[i][0] = P[i][1];
-		P[i][jmax+1] = P[i][jmax];
-	}
-	for(j = 1; j <= jmax; j++) {
-		P[0][j] = P[1][j];
-		P[imax+1][j] = P[imax][j];
-	}
 	while(it < itermax && res > eps){
 		sor(omg,dx,dy,imax,jmax,P,RS,&res);
 		it++;
