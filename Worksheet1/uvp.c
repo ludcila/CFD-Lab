@@ -120,14 +120,14 @@ void calculate_uv(
 
 	/* TODO by Jae */
 	unsigned int i, j;
-	for (i = 1; i < imax-1; i++){				/*double for-loop for max velocity in x&y direction*/
+	for (i = 1; i <= imax-1; i++){				/*double for-loop for max velocity in x&y direction*/
 		for (j = 1; j <= jmax; j++){
 			U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
 			
 		}
 	}
 	for (i = 1; i <=imax; i++){				/*double for-loop for max velocity in x&y direction*/
-		for (j = 1; j < jmax-1; j++){
+		for (j = 1; j <= jmax-1; j++){
 			V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
 		}
 	}
