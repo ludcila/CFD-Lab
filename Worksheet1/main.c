@@ -41,59 +41,66 @@
  */
 int main(int argn, char** args){
 
-	double **U,**V,**P,**F,**G,**RS;
+	double **U, **V, **P, **F, **G, **RS;
 	const char *szFileName = "cavity100.dat";
-	double Re,UI,VI,PI,GX,GY,t_end,xlength,ylength,dt,dx,dy,alpha,omg,tau,eps,dt_value;
-	double res=0,t=0,n=0;
-	int imax,jmax,itermax,it;
+	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
+	double res = 0, t = 0, n = 0;
+	int imax, jmax, itermax, it;
 	
-	/* - read the program configuration file using read_parameters() */
-	read_parameters(szFileName,&Re,&UI,&VI,&PI,&GX,&GY,&t_end,&xlength,&ylength,&dt,&dx,&dy,&imax,&jmax,&alpha,&omg,&tau,&itermax,&eps,&dt_value);        
+	/* Read the program configuration file using read_parameters() */
+	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value);        
 
+	/* Set up the matrices (arrays) needed using the matrix() command */
+	U = matrix(0, imax  , 0, jmax+1);
+	V = matrix(0, imax+1, 0, jmax  );
+	P = matrix(0, imax+1, 0, jmax+1);
+	F = matrix(0, imax  , 0, jmax+1);
+	G = matrix(0, imax+1, 0, jmax  );
+	RS= matrix(0, imax+1, 0, jmax+1);
+	
+	/* Assign initial values to u, v, p */
+	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
-	/* - set up the matrices (arrays) needed using the matrix() command */
-	U =matrix(0, imax  , 0, jmax+1);
-	V =matrix(0, imax+1, 0, jmax  );
-	P =matrix(0, imax+1, 0, jmax+1);
-	F =matrix(0, imax  , 0, jmax+1); /*G,F,RS domain checks in need*/
-	G =matrix(0, imax+1, 0, jmax  );
-	RS=matrix(0, imax+1, 0, jmax+1);
-	/* - create the initial setup init_uvp(), init_flag(), output_uvp() */
-	init_uvp(UI,VI,PI,imax,jmax, U, V, P);
-
-while(t <= t_end){
-	/*Select δt*/
-	calculate_dt(Re,tau,&dt,dx,dy,imax,jmax,U,V);
-	/*Set boundary values for u and v*/
-	boundaryvalues(imax,jmax,U,V);
-	/*Compute F (n) and G (n)*/
-	calculate_fg(Re,GX,GY,alpha,dt,dx,dy,imax,jmax,U,V,F,G);
-	/*Compute the right-hand side rs of the pressure equation*/
-	calculate_rs(dt,dx,dy,imax,jmax,F,G,RS);
-	it=0;
-	/*Perform a SOR iteration*/
-	res = 1e6;
-	while(it < itermax && res > eps){
-		sor(omg,dx,dy,imax,jmax,P,RS,&res);
-		it++;
+	while(t <= t_end){
+	
+		/*Select δt*/
+		calculate_dt(Re, tau, &dt, dx, dy, imax, jmax, U, V);
+		
+		/* Set boundary values for u and v */
+		boundaryvalues(imax, jmax, U, V);
+		
+		/* Compute F(n) and G(n) */
+		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G);
+		
+		/* Compute the right-hand side rs of the pressure equation */
+		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
+		
+		/* Perform SOR iterations */
+		it=0;
+		res = 1e6;
+		while(it < itermax && res > eps){
+			sor(omg, dx, dy, imax, jmax, P, RS, &res);
+			it++;
+		}
+		
+		/* Compute u(n+1) and v(n+1) */
+		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
+		
+		t = t + dt;
+		n++;
+	
 	}
-	/*Compute u (n+1) and v (n+1)*/
-	calculate_uv(dt,dx,dy,imax,jmax,U,V,F,G,P);
-	/*Output of u, v, p values for visualization, if necessary*/
-	t=t+dt;
-	n++;
-	
-}
 
-	/*Output of u, v, p for visualization*/
-	write_vtkFile("test", n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+	/* Output of u, v, p for visualization */
+	write_vtkFile("cavity", n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 
-	free_matrix(U, 0, imax, 0, jmax+1);
-	free_matrix(V, 0, imax+1, 0, jmax);
-	free_matrix(P, 0, imax+1, 0, jmax+1);
-	free_matrix(F, 0, imax, 0, jmax+1);
-	free_matrix(G, 0, imax+1, 0, jmax);
+	free_matrix(U , 0, imax  , 0, jmax+1);
+	free_matrix(V , 0, imax+1, 0, jmax  );
+	free_matrix(P , 0, imax+1, 0, jmax+1);
+	free_matrix(F , 0, imax  , 0, jmax+1);
+	free_matrix(G , 0, imax+1, 0, jmax  );
 	free_matrix(RS, 0, imax+1, 0, jmax+1);
 	
-  return -1;
+	return -1;
+	
 }
