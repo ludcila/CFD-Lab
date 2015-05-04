@@ -5,27 +5,33 @@ void boundaryvalues(
 	int jmax,
 	double **U,
 	double **V
-	
 ) {
-	/* Modified by San Yu *//*assume grid from 0->imax, so U in (imax+1)*(jmax+2)  */
-	int i,j;	    /* V in (imax+2)*(jmax+1) */	    	
-	double U_wall=1;   /*needs to be initialized*/
 
-	for(j=0;j<=jmax;j++){	/*left wall*/
-		U[0][j]=0;
-		V[0][j]=-V[1][j];
+	int i, j;
+	double U_wall = 1.0;
+	
+	/* Left wall */
+	for(j = 0; j <= jmax; j++) {
+		U[0][j] = 0;
+		V[0][j] = -V[1][j];
 	}
-	for(j=0;j<=jmax;j++){  /*right wall*/
-		U[imax][j]=0;
-		V[imax+1][j]=-V[imax][j];
+	
+	/* Right wall */
+	for(j = 0; j <= jmax; j++) {
+		U[imax][j] = 0;
+		V[imax+1][j] = -V[imax][j];
 	}
-	for(i=0;i<=imax;i++){	/*floor*/
-		U[i][0]=-U[i][1];
-		V[i][0]=0;
+	
+	/* Floor */
+	for(i = 0; i <= imax; i++) {
+		U[i][0] = -U[i][1];
+		V[i][0] = 0;
 	}
-	for(i=0;i<=imax;i++){	/*ceiling*/
-		U[i][jmax+1]=-U[i][jmax]+2*U_wall;
-		V[i][jmax]=0;
+	
+	/* Ceiling */
+	for(i = 0; i <= imax; i++) {
+		U[i][jmax+1] = 2 * U_wall - U[i][jmax];
+		V[i][jmax] = 0;
 	}
 
 }
