@@ -19,12 +19,12 @@ void calculate_dt(
 	double u_max = U[1][1], v_max = V[1][1];
 	double dt_min;
 
-	for (i = 1; i<imax; i++){				/*double for-loop for max velocity in x&y direction*/
-		for (j = 1; j<jmax; j++){
-			if (U[i][j]>u_max)
-				u_max = U[i][j];
-			if (V[i][j]>v_max)
-				v_max = V[i][j];
+	for (i = 1; i<=imax; i++){				/*double for-loop for max velocity in x&y direction*/
+		for (j = 1; j<=jmax; j++){
+			if (fabs(U[i][j])>u_max)
+				u_max = fabs(U[i][j]);
+			if (fabs(V[i][j])>v_max)
+				v_max = fabs(V[i][j]);
 
 		}
 	}
