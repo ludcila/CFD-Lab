@@ -61,9 +61,9 @@ void calculate_fg(
 			F[i][j] = U[i][j] + dt * (
 			              + 1 / Re * ((U[i+1][j] - 2 * U[i][j] + U[i-1][j]) / (dx * dx) + (U[i][j+1] - 2 * U[i][j] + U[i][j-1]) / (dy * dy))
 			              - 1 / dx * (pow((U[i][j] + U[i+1][j]) / 2, 2) - pow((U[i-1][j] + U[i][j]) / 2, 2))
-			              - alpha / dx * (abs(U[i][j] + U[i+1][j]) * (U[i][j] - U[i+1][j]) / 4 - abs(U[i-1][j] + U[i][j]) * (U[i-1][j] - U[i][j]) / 4)
+			              - alpha / dx * (fabs(U[i][j] + U[i+1][j]) * (U[i][j] - U[i+1][j]) / 4 - fabs(U[i-1][j] + U[i][j]) * (U[i-1][j] - U[i][j]) / 4)
 			              - 1 / dy * ((V[i][j] + V[i+1][j]) * (U[i][j] + U[i][j+1]) / 4 - (V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] + U[i][j]) / 4)
-			              - alpha / dy * (abs(V[i][j] + V[i+1][j]) * (U[i][j] - U[i][j+1]) / 4 - abs(V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] - U[i][j]) / 4)
+			              - alpha / dy * (fabs(V[i][j] + V[i+1][j]) * (U[i][j] - U[i][j+1]) / 4 - fabs(V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] - U[i][j]) / 4)
 			              + GX
 			          );
 		}
@@ -74,9 +74,9 @@ void calculate_fg(
 			G[i][j] = V[i][j] + dt * (
 			              + 1 / Re * ((V[i][j+1] - 2 * V[i][j] + V[i][j-1]) / (dy * dy) + (V[i+1][j] - 2 * V[i][j] + V[i-1][j]) / (dx * dx))
 			              - 1 / dy * (pow((V[i][j] + V[i][j+1]) / 2, 2) - pow((V[i][j-1] + V[i][j]) / 2, 2))
-			              - alpha / dy * (abs(V[i][j] + V[i][j+1]) * (V[i][j] - V[i][j+1]) / 4 - abs(V[i][j-1] + V[i][j]) * (V[i][j-1] - V[i][j]) / 4)
+			              - alpha / dy * (fabs(V[i][j] + V[i][j+1]) * (V[i][j] - V[i][j+1]) / 4 - fabs(V[i][j-1] + V[i][j]) * (V[i][j-1] - V[i][j]) / 4)
 			              - 1 / dx * ((U[i][j] + U[i][j+1]) * (V[i][j] + V[i+1][j]) / 4 - (U[i-1][j] + U[i-1][j+1]) * (V[i-1][j] + V[i][j]) / 4)
-			              - alpha / dx * (abs(U[i][j] + U[i][j+1]) * (V[i][j] - V[i+1][j]) / 4 - abs(U[i-1][j] + U[i-1][j+1]) * (V[i-1][j] - V[i][j]) / 4)
+			              - alpha / dx * (fabs(U[i][j] + U[i][j+1]) * (V[i][j] - V[i+1][j]) / 4 - fabs(U[i-1][j] + U[i-1][j+1]) * (V[i-1][j] - V[i][j]) / 4)
 			              + GY
 			          );
 		}
