@@ -10,7 +10,8 @@
 #include "LBDefinitions.h"
 
 int main(int argc, char *argv[]){
-	
+	const char *szFileName = "cavity100.dat";	
+
 	double *collideField = NULL;
 	double *streamField = NULL;
 	int *flagField = NULL;
@@ -23,15 +24,15 @@ int main(int argc, char *argv[]){
 	int t;
 	int numCells;
 	
-	readParameters(
+	readParameters( szFileName,
 		&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv
-	);
+	);/*add "const char *szFileName" by sanyu, timesteps setting 1000 at first, and timestepsPerPlotting 100*/
 	
 	/* Allocate memory */
 	numCells = pow(xlength + 2, D);
 	collideField = calloc(1, Q * numCells * sizeof(double));
-	streamField = calloc(1, Q * numCells * sizeof(double));
-	flagField = calloc(1, Q * numCells * sizeof(int));
+	streamField = calloc(1, Q * numCells * sizeof(double)); 
+	flagField = calloc(1, Q * numCells * sizeof(int)); /*the dimension of flagField needs to be checked*/
 	
 	initialiseFields(collideField, streamField, flagField, xlength);
 	
