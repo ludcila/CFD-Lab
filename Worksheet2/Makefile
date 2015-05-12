@@ -9,7 +9,7 @@ CFLAGS=-Werror -pedantic -Wall
 
 # Linker flags
 # ------------
-LDFLAGS= 
+LDFLAGS=-lm
 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=lbsim
