@@ -2,10 +2,12 @@
 #define _LBDEFINITIONS_H_
 
 #include <math.h>
-#define Q 		19
-#define D 		3
-#define SQRT2 	1.41421356237309504880
-#define SQRT3	1.73205080756887729353
+#define Q 			19
+#define D 			3
+#define W_12_36		12.0/36.0
+#define W_2_36		2.0/36.0
+#define W_1_36		1.0/36.0
+#define SQRT3		1.73205080756887729353
 
 	static const int LATTICEVELOCITIES[19][3] = {
 	
@@ -36,28 +38,28 @@
 	
 	static const double LATTICEWEIGHTS[19] = {
 	
-		SQRT2,
-		SQRT2,
-		1,
-		SQRT2,
-		SQRT2,
+		W_1_36,
+		W_1_36,
+		W_2_36,
+		W_1_36,
+		W_1_36,
 		
-		SQRT2,
-		1,
-		SQRT2,
-		1,
-		0,
+		W_1_36,
+		W_2_36,
+		W_1_36,
+		W_2_36,
+		W_12_36,
 		
-		1,
-		SQRT2,
-		1,
-		SQRT2,
-		SQRT2,
+		W_2_36,
+		W_1_36,
+		W_2_36,
+		W_1_36,
+		W_1_36,
 		
-		SQRT2,
-		1,
-		SQRT2,
-		SQRT2		
+		W_1_36,
+		W_2_36,
+		W_1_36,
+		W_1_36		
 		
 	};
 	
