@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 	numCells = pow(xlength + 2, D);
 	collideField = calloc(1, Q * numCells * sizeof(double));
 	streamField = calloc(1, Q * numCells * sizeof(double)); 
-	flagField = calloc(1, Q * numCells * sizeof(int)); /*the dimension of flagField needs to be checked*/
+	flagField = calloc(1, numCells * sizeof(int)); /*the dimension of flagField needs to be checked*/
 	
 	initialiseFields(collideField, streamField, flagField, xlength);
 	
