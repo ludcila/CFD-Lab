@@ -21,7 +21,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
  
 
 	int x,y,z,i;
-	double omega[3]={1/3,1/18,1/36};
+
 /* Initialize flageField: geometry mapping for a cell: FLUID=0, NO SLIP=1 and MOVING WALL=2 */	
 	for(z=1;z<=xlength;z++){
 		for(y=1;y<=xlength;y++){
@@ -43,14 +43,14 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			for(x=1;x<=xlength;x++){
 				for(i=0;i<Q;i++){
 					if(i==9){
-						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=omega[1];
-						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=omega[1];}
+						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_12_36;
+						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_12_36;}
 					else if(i==2 ||i==6 ||i==8 ||i==10 ||i==12 ||i==16){
-						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=omega[2];
-						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=omega[2];}
+						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_2_36;
+						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_2_36;}
 					else{
-						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=omega[3];
-						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=omega[3];}
+						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_1_36;
+						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_1_36;}
 						}
 					      }
 					}
