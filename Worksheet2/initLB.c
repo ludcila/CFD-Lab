@@ -23,17 +23,17 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 	int x,y,z,i;
 
 /* Initialize flageField: geometry mapping for a cell: FLUID=0, NO SLIP=1 and MOVING WALL=2 */	
-	for(z=1;z<=xlength;z++){
-		for(y=1;y<=xlength;y++){
-			for(x=1;x<=xlength;x++){
-				if(x==1){
-					flagField[(z*xlength*xlength+y*xlength+x)]=1;}
-				else if(x==xlength){
-					flagField[(z*xlength*xlength+y*xlength+x)]=2;}
-				else if(y==1 || y==xlength){
-					flagField[(z*xlength*xlength+y*xlength+x)]=1;}
+	for(z=0;z<=xlength+1;z++){
+		for(y=0;y<=xlength+1;y++){
+			for(x=0;x<=xlength+1;x++){
+				if(x==0 || z==0 || z==xlength+1){
+					flagField[z*(xlength+1)*(xlength+1)+y*(xlength+1)+x]=1;}
+				else if(x==xlength+1){
+					flagField[z*(xlength+1)*(xlength+1)+y*(xlength+1)+x]=2;}
+				else if(y==0 || y==xlength+1){
+					flagField[z*(xlength+1)*(xlength+1)+y*(xlength+1)+x]=1;}
 				else{
-					flagField[(z*xlength*xlength+y*xlength+x)]=0;}
+					flagField[z*(xlength+1)*(xlength+1)+y*(xlength+1)+x]=0;}
 			}
 		}
 	}
@@ -43,14 +43,14 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 			for(x=1;x<=xlength;x++){
 				for(i=0;i<Q;i++){
 					if(i==9){
-						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_12_36;
-						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_12_36;}
+						collideField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_12_36;
+						streamField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_12_36;}
 					else if(i==2 ||i==6 ||i==8 ||i==10 ||i==12 ||i==16){
-						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_2_36;
-						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_2_36;}
+						collideField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_2_36;
+						streamField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_2_36;}
 					else{
-						collideField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_1_36;
-						streamField[Q*(z*xlength*xlength+y*xlength+x)+i]=W_1_36;}
+						collideField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_1_36;
+						streamField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_1_36;}
 						}
 					      }
 					}
