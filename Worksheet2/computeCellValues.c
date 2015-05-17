@@ -27,13 +27,15 @@ void computeFeq(const double * const density, const double * const velocity, dou
 
 	int i;
 	double u_dot_u = velocity[0] * velocity[0] + velocity[1] * velocity[1] + velocity[2] * velocity[2];
+	double div_C_S_2 = 1.0 / (C_S * C_S);
+	double div_C_S_4 = div_C_S_2 * div_C_S_2;
 	
 	for(i = 0; i < Q; i++) {
 		double c_dot_u = LATTICEVELOCITIES[i][0] * velocity[0] + LATTICEVELOCITIES[i][1] * velocity[1] + LATTICEVELOCITIES[i][2] * velocity[2];
-		double T1 = c_dot_u / pow(C_S, 2.0);
-		double T2 = pow(c_dot_u, 2.0) / 2.0 / pow(C_S, 4.0);
-		double T3 = u_dot_u / 2.0 / pow(C_S, 2.0);
-		feq[i] = LATTICEWEIGHTS[i] * *density * (1 + T1 + T2 - T3);
+		double T1 = c_dot_u * div_C_S_2;
+		double T2 = 0.5 * c_dot_u * c_dot_u * div_C_S_4;
+		double T3 = 0.5 * u_dot_u * div_C_S_2;
+		feq[i] = LATTICEWEIGHTS[i] * (*density) * (1 + T1 + T2 - T3);
 	}
 
 }
