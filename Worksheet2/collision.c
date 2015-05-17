@@ -20,12 +20,13 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 	double density;
 	double velocity[3];
 	double feq[Q];
+	int numGridPoints = xlength + 2;
 						
 	for(z = 1; z <= xlength; z++) {
 		for(y = 1; y <= xlength; y++) {
 			for(x = 1; x <= xlength; x++) {
 			
-				cellIdx = Q * (z * xlength * xlength + y * xlength + x);
+				cellIdx = Q * (z * numGridPoints * numGridPoints + y * numGridPoints + x);
 				currentCell = collideField + cellIdx;
 				
 				computeDensity(currentCell, &density);
