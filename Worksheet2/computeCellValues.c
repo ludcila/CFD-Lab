@@ -4,6 +4,7 @@
 void computeDensity(const double *const currentCell, double *density){
 
 	int i;
+	*density = 0;
 	
 	for(i = 0; i < Q; i++) {
 		*density += currentCell[i];
@@ -14,6 +15,9 @@ void computeDensity(const double *const currentCell, double *density){
 void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
 
 	int i;
+	velocity[0] = 0;
+	velocity[1] = 0;
+	velocity[2] = 0;
 	
 	for(i = 0; i < Q; i++) {
 		velocity[0] += currentCell[i] * LATTICEVELOCITIES[i][0];
