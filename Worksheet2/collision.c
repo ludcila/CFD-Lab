@@ -17,8 +17,8 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 	int x, y, z;
 	int cellIdx;
 	double *currentCell;
-	double density;
-	double velocity[3];
+	double density = 0;
+	double velocity[3] = {0};
 	double feq[Q];
 	int numGridPoints = xlength + 2;
 						
