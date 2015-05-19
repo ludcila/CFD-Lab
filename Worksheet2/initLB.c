@@ -21,40 +21,38 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
  
 
 	int x,y,z,i;
+	int cellIdx;
+	int numGridPoints = xlength + 2;
+	double *collideFieldCell, *streamFieldCell;
 
 /* Initialize flageField: geometry mapping for a cell: FLUID=0, NO SLIP=1 and MOVING WALL=2 */	
 	for(z=0;z<=xlength+1;z++){
 		for(y=0;y<=xlength+1;y++){
 			for(x=0;x<=xlength+1;x++){
-				if(x==0 || z==0 || z==xlength+1){
-					flagField[z*(xlength+1)*(xlength+1)+y*(xlength+1)+x]=1;}
-				else if(x==xlength+1){
-					flagField[z*(xlength+1)*(xlength+1)+y*(xlength+1)+x]=2;}
-				else if(y==0 || y==xlength+1){
-					flagField[z*(xlength+1)*(xlength+1)+y*(xlength+1)+x]=1;}
+				cellIdx = z * numGridPoints * numGridPoints + y * numGridPoints + x;
+				if(z==xlength+1){
+					flagField[cellIdx]=2;}
+				else if(x==0 || y==0 || z==0 || x==xlength+1 || y==xlength+1){
+					flagField[cellIdx]=1;}
 				else{
-					flagField[z*(xlength+1)*(xlength+1)+y*(xlength+1)+x]=0;}
+					flagField[cellIdx]=0;}
 			}
 		}
 	}
 /* Initialize matrice of collision and stream:f(x,t=0)=omega_i*/
-	for(z=1;z<=xlength;z++){
-		for(y=1;y<=xlength;y++){
-			for(x=1;x<=xlength;x++){
+	for(z=0;z<=xlength+1;z++){
+		for(y=0;y<=xlength+1;y++){
+			for(x=0;x<=xlength+1;x++){
+				cellIdx = Q * (z * numGridPoints * numGridPoints + y * numGridPoints + x);
+				collideFieldCell = collideField + cellIdx;
+				streamFieldCell = streamField + cellIdx;
 				for(i=0;i<Q;i++){
-					if(i==9){
-						collideField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_12_36;
-						streamField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_12_36;}
-					else if(i==2 ||i==6 ||i==8 ||i==10 ||i==12 ||i==16){
-						collideField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_2_36;
-						streamField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_2_36;}
-					else{
-						collideField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_1_36;
-						streamField[Q*(z*(xlength+1)*(xlength+1)+y*(xlength+1)+x)+i]=W_1_36;}
-						}
-					      }
-					}
+					collideFieldCell[i] = LATTICEWEIGHTS[i];
+					streamFieldCell[i] = LATTICEWEIGHTS[i];
 				}
+			}
+		}
+	}
 
 
 }
