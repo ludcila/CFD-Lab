@@ -1,5 +1,7 @@
 #include "computeCellValues.h"
 #include "LBDefinitions.h"
+#include <stdio.h>
+#include <math.h>
 
 void computeDensity(const double *const currentCell, double *density){
 
@@ -9,6 +11,7 @@ void computeDensity(const double *const currentCell, double *density){
 	for(i = 0; i < Q; i++) {
 		*density += currentCell[i];
 	}
+	/* printf("%f\n", *density); */
 
 }
 
@@ -24,6 +27,10 @@ void computeVelocity(const double * const currentCell, const double * const dens
 		velocity[1] += currentCell[i] * LATTICEVELOCITIES[i][1];
 		velocity[2] += currentCell[i] * LATTICEVELOCITIES[i][2];
 	}
+	velocity[0] = velocity[0] / *density;
+	velocity[1] = velocity[1] / *density;
+	velocity[2] = velocity[2] / *density;
+	/* printf("%f %f %f\n", velocity[0], velocity[1], velocity[2]); */
 
 }
 
