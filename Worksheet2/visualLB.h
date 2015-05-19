@@ -16,7 +16,7 @@ void write_vtkHeader( FILE *fp, int xlength );
 /**
 
  */
-void write_vtkPointCoordinates( FILE *fp, int xlength, double tau);
+void write_vtkPointCoordinates( FILE *fp, int numGridPoints);
 
 
 
