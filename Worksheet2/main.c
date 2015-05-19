@@ -54,27 +54,29 @@ int main(int argc, char *argv[]){
 		collideField = streamField;
 		streamField = swap;
 		clock_gettime(CLOCK_MONOTONIC, &end_t);
-		printf("t=%d Streaming\t\t(%f s)\n", t, elapsedTime(start_t, end_t));
+		printf("t=%d\tStreaming\t(%f s)\n", t, elapsedTime(start_t, end_t));
 		
 		/* Collide step */
 		clock_gettime(CLOCK_MONOTONIC, &start_t);
 		doCollision(collideField, flagField, &tau, xlength);
 		clock_gettime(CLOCK_MONOTONIC, &end_t);
-		printf("t=%d Collision\t\t(%f s)\n", t, elapsedTime(start_t, end_t));
+		printf("t=%d\tCollision\t(%f s)\n", t, elapsedTime(start_t, end_t));
 		
 		/* Set boundary values */
 		clock_gettime(CLOCK_MONOTONIC, &start_t);
 		treatBoundary(collideField, flagField, velocityWall, xlength);
 		clock_gettime(CLOCK_MONOTONIC, &end_t);
-		printf("t=%d Treat boundary\t(%f s)\n", t, elapsedTime(start_t, end_t));
+		printf("t=%d\tBoundary\t(%f s)\n", t, elapsedTime(start_t, end_t));
 
 		/* Output */
 		if(t % timestepsPerPlotting == 0) {
 			clock_gettime(CLOCK_MONOTONIC, &start_t);
 			writeVtkOutput(collideField, flagField, "output", t, xlength);
 			clock_gettime(CLOCK_MONOTONIC, &end_t);
-			printf("t=%d Output\t\t(%f s)\n", t, elapsedTime(start_t, end_t));
+			printf("t=%d\tWrite output\t(%f s)\n", t, elapsedTime(start_t, end_t));
 		}
+		
+		printf("----------------------------------------\n");
 		
 	}
 	
