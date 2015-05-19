@@ -1,11 +1,11 @@
 #--------------------------------------------
 #            domain info             
 #--------------------------------------------
-xlength		100
-tau	 	2
-velocityWall	0.005
-timesteps	5000
-timestepsPerPlotting	 100
+xlength						50
+tau							1.5
+velocityWall				0.01
+timesteps					100
+timestepsPerPlotting		1
 
 
 
