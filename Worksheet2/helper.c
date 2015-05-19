@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include "helper.h"
 
+double elapsedTime(struct timespec start_t, struct timespec end_t) {
+	return (double) end_t.tv_sec + 1e-9 * end_t.tv_nsec - start_t.tv_sec - 1e-9 * start_t.tv_nsec;
+}
+
 /* ----------------------------------------------------------------------- */
 /*                             auxiliary functions                         */
 /* ----------------------------------------------------------------------- */

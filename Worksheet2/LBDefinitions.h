@@ -9,6 +9,10 @@
 #define W_1_36		1.0/36.0
 #define SQRT3		1.73205080756887729353
 
+#define CELL_TYPE_FLUID					0
+#define CELL_TYPE_BOUNDARY_NO_SLIP		1
+#define CELL_TYPE_BOUNDARY_MOVING_WALL	2
+
 	static const int LATTICEVELOCITIES[19][3] = {
 	
 		{ 0, -1, -1},

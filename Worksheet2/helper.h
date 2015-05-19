@@ -16,6 +16,8 @@
 
 #define FREE_ARG char*
 
+double elapsedTime(struct timespec start_t, struct timespec end_t);
+
 /**
  * Maximum length of input lines
  */

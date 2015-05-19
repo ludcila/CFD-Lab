@@ -13,22 +13,30 @@ void computePostCollisionDistributions(double *currentCell, const double * const
 }
 
 void doCollision(double *collideField, int *flagField,const double * const tau,int xlength){
-
+	
+	/* Current cell, coordinates and array index */
+	double *currentCell;
 	int x, y, z;
 	int cellIdx;
-	double *currentCell;
-	double density = 0;
-	double velocity[3] = {0};
+	
+	/* Density, velocity and equilibrium distribution of the current cell */
+	double density;
+	double velocity[3];
 	double feq[Q];
+	
+	/* Total number of grid points per side */
 	int numGridPoints = xlength + 2;
-						
+	
+	/* Loop through all fluid cells */
 	for(z = 1; z <= xlength; z++) {
 		for(y = 1; y <= xlength; y++) {
 			for(x = 1; x <= xlength; x++) {
-			
+				
+				/* Determine current cell */
 				cellIdx = Q * (z * numGridPoints * numGridPoints + y * numGridPoints + x);
 				currentCell = collideField + cellIdx;
 				
+				/* Compute post-collision distribution using density, velocity and equilibrium distribution */
 				computeDensity(currentCell, &density);
 				computeVelocity(currentCell, &density, velocity);
 				computeFeq(&density, velocity, feq);
