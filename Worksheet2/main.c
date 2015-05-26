@@ -83,6 +83,14 @@ int main(int argc, char *argv[]){
 			}
 		}*/
 		/* Output */
+
+
+
+
+
+
+
+
 		if(t % timestepsPerPlotting == 0) {
 			writeVtkOutput(collideField, flagField, "output", t, xlength);
 		}
