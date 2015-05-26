@@ -5,19 +5,24 @@
 
 void computeDensity(const double *const currentCell, double *density){
 
+	/* Index for i-th direction */
 	int i;
+	
+	/* Initialize density before doing the sum */
 	*density = 0;
 	
 	for(i = 0; i < Q; i++) {
 		*density += currentCell[i];
 	}
-	/* printf("%f\n", *density); */
 
 }
 
 void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
 
+	/* Index for i-th direction */
 	int i;
+	
+	/* Initialize velocity components before doing the sum */
 	velocity[0] = 0;
 	velocity[1] = 0;
 	velocity[2] = 0;
@@ -30,17 +35,20 @@ void computeVelocity(const double * const currentCell, const double * const dens
 	velocity[0] = velocity[0] / *density;
 	velocity[1] = velocity[1] / *density;
 	velocity[2] = velocity[2] / *density;
-	/* printf("%f %f %f\n", velocity[0], velocity[1], velocity[2]); */
 
 }
 
 void computeFeq(const double * const density, const double * const velocity, double *feq){
 
+	/* Index for i-th direction */
 	int i;
+	
+	/* Precompute some constant values */
 	double u_dot_u = velocity[0] * velocity[0] + velocity[1] * velocity[1] + velocity[2] * velocity[2];
 	double div_C_S_2 = 1.0 / (C_S * C_S);
 	double div_C_S_4 = div_C_S_2 * div_C_S_2;
 	
+	/* Compute equilibrium distribution */
 	for(i = 0; i < Q; i++) {
 		double c_dot_u = LATTICEVELOCITIES[i][0] * velocity[0] + LATTICEVELOCITIES[i][1] * velocity[1] + LATTICEVELOCITIES[i][2] * velocity[2];
 		double T1 = c_dot_u * div_C_S_2;
