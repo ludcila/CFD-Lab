@@ -2,8 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "helper.h"
-
-enum B_xy {B_NULL = 0, B_N = 1, B_S = 2, B_W = 4, B_NW = 5, B_SW = 6, B_NSW = 7, B_O = 8, B_NO = 9, B_SO = 10, B_NSO = 11, B_NWO = 13, B_SWO = 14};
+#include "boundary_val.h"
 
 void calculate_dt(
 	double Re,
@@ -190,13 +189,20 @@ void calculate_uv(
 	unsigned int i, j;
 	for (i = 1; i <= imax - 1; i++) {
 		for (j = 1; j <= jmax; j++) {
-			U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
-
+			if(Flag[i][j] & 16) {
+				U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
+			} else {
+				U[i][j] = 0;
+			}
 		}
 	}
 	for (i = 1; i <= imax; i++) {
 		for (j = 1; j <= jmax - 1; j++) {
-			V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
+			if(Flag[i][j] & 16) {
+				V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
+			} else {
+				V[i][j] = 0;
+			}
 		}
 	}
 	

@@ -1,4 +1,5 @@
 #include "sor.h"
+#include "boundary_val.h"
 #include <math.h>
 
 void sor(
@@ -14,7 +15,6 @@ void sor(
 ) {
   int i,j;
   int count_num_fluid_cell = 0;
-  double P_N, P_S, P_W, P_O;
   double rloc;
   double coeff = omg/(2.0*(1.0/(dx*dx)+1.0/(dy*dy)));
 
