@@ -117,6 +117,7 @@ void boundaryvalues(
 			break;
 	}
 	
+	/* Obstacles */
 	for(i = 1; i <= imax; i++) {
 		for(j = 0; j <= jmax; j++) {
 		
@@ -160,45 +161,7 @@ void boundaryvalues(
 			
 		}
 	}
-
-	/* set obstacles*/
-	/* treat v */
-	for (i = 1; i <= imax - 1; i++) {
-		for (j = 1; j <= jmax; j++) {
-			if(Flag[i][j] && 1){/*B_N, north cell is fluid*/
-				V[i][j] = 0;
-			} else if(!(Flag[i][j] && 1)){
-				V[i][j] = -V[i-1][j];
-			}
-
-			if(Flag[i][j] && 2){/*B_S, south cell is fluid*/
-				V[i][j-1] = 0;	
-			} else if(!(Flag[i][j] && 2)){
-				V[i][j-1] = -V[i-1][j-1];
-			}
-
-		}
-	}
-	/* treat u */
-	for (i = 1; i <= imax; i++) {
-		for (j = 1; j <= jmax - 1; j++) {
-			if(Flag[i][j] && 4){/*B_W, west cell is fluid*/
-				U[i-1][j] = 0;
-			} else if(!(Flag[i][j] && 4)){
-				U[i-1][j] = -U[i-1][j+1];	
-			}
-
-			if(Flag[i][j] && 8){/*B_O, east cell is fluid*/
-				U[i][j] = 0;
-			} else if(!(Flag[i][j] && 8)){
-				U[i][j] = -U[i][j+1];
-			}
-			
-		}
-	}
-
-
-
+	
 }
 
 void movingwall(int imax, int jmax, double **U, double **V, int side){
