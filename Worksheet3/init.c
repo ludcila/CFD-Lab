@@ -22,7 +22,12 @@ int read_parameters( const char *szFileName,       /* name of the file */
                     int  *itermax,             /* max. number of iterations  */
 		                               /* for pressure per time step */
                     double *eps,               /* accuracy bound for pressure*/
-		    double *dt_value)           /* time for output */
+		    double *dt_value,           /* time for output */
+		char *problem,
+		int *wl,
+		int *wr,
+		int *wt,
+		int *wb)
 {
    READ_DOUBLE( szFileName, *xlength );
    READ_DOUBLE( szFileName, *ylength );
@@ -48,6 +53,16 @@ int read_parameters( const char *szFileName,       /* name of the file */
    READ_DOUBLE( szFileName, *GY );
    READ_DOUBLE( szFileName, *PI );
 
+/*
+1. Supplement the function read parameters such that it reads initial values for the variable
+problem and for the boundary value options wl,wr,wt and wb. (page 13, worksheet 3)
+*/
+   /*READ_STRING( szFileName, *problem);*/
+   READ_INT (szFileName, *wl);
+   READ_INT (szFileName, *wr);
+   READ_INT (szFileName, *wt);
+   READ_INT (szFileName, *wb);
+
    *dx = *xlength / (double)(*imax);
    *dy = *ylength / (double)(*jmax);
 
@@ -70,5 +85,14 @@ void init_uvp(
 	init_matrix(V, 0, imax+1, 0, jmax  , VI);
 	init_matrix(P, 0, imax+1, 0, jmax+1, PI);
 
+}
+
+void init_flag(
+	char* problem, 
+	int imax, 
+	int jmax, 
+	int **Flag
+){
+	init_matrix(P, 0, imax+1, 0, jmax+1, Flag);
 }
 
