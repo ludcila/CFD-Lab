@@ -372,19 +372,19 @@ void init_matrix( double **m, int nrl, int nrh, int ncl, int nch, double a)
        for( j = ncl; j <= nch; j++)
 	   m[i][j] = a;
 }
-
-void init_matrix_U( double **m, int nrl, int nrh, int ncl, int nch, double a)/* init_matrix_U(U, 0, imax ,  0, jmax+1, UI); called in init.c*/
+/*
+void init_matrix_U( double **m, int nrl, int nrh, int ncl, int nch, double a)
 {
    int i,j;
    for( i = nrl; i <= nrh; i++)
        for( j = ncl; j <= nch; j++){
-			if(Flag[i][j] && 4){/*B_O, west cell is fluid*/
+			if(Flag[i][j] && 4){
 				U[i-1][j] = 0;
 				U[i-1][j] = -U[i-1][j+1];	
 			} else if(!(Flag[i][j] && 4)){
 			}
 
-			if(Flag[i][j] && 8){/*B_O, east cell is fluid*/
+			if(Flag[i][j] && 8){
 				U[i][j] = 0;
 			} else if(!(Flag[i][j] && 8)){
 				U[i][j] = -U[i][j+1];
@@ -394,7 +394,8 @@ void init_matrix_U( double **m, int nrl, int nrh, int ncl, int nch, double a)/* 
 	}
 }
 
-void init_matrix_V( double **m, int nrl, int nrh, int ncl, int nch, double a)/* init_matrix_V(V, 0, imax+1, 0, jmax  , VI); called in init.c*/
+
+void init_matrix_V( double **m, int nrl, int nrh, int ncl, int nch, double a)
 {
    int i,j;
    for( i = nrl; i <= nrh; i++)
@@ -402,7 +403,7 @@ void init_matrix_V( double **m, int nrl, int nrh, int ncl, int nch, double a)/* 
 	   m[i][j] = a;
 }
 
-void init_matrix_P( double **m, int nrl, int nrh, int ncl, int nch, double a)/* init_matrix_P(P, 0, imax+1, 0, jmax+1, PI); called in init.c*/
+void init_matrix_P( double **m, int nrl, int nrh, int ncl, int nch, double a)
 {
    int i,j;
    for( i = nrl; i <= nrh; i++)
@@ -410,13 +411,14 @@ void init_matrix_P( double **m, int nrl, int nrh, int ncl, int nch, double a)/* 
 	   m[i][j] = a;
 }
 
-void init_matrix_F( double **m, int nrl, int nrh, int ncl, int nch, double a)/* init_matrix_F(P, 0, imax+1, 0, jmax+1, Flag); called in init.c*/
+void init_matrix_F( double **m, int nrl, int nrh, int ncl, int nch, double a)
 {
    int i,j;
    for( i = nrl; i <= nrh; i++)
        for( j = ncl; j <= nch; j++)
 	   m[i][j] = a;
 }
+*/
 
 /* allocates storage for a matrix */
 int **imatrix( int nrl, int nrh, int ncl, int nch )

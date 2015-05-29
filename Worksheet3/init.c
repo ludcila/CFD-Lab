@@ -80,11 +80,11 @@ void init_uvp(
   double **V,
   double **P
 ){
-
+/*
 	init_matrix_U(U, 0, imax ,  0, jmax+1, UI);
 	init_matrix_V(V, 0, imax+1, 0, jmax  , VI);
 	init_matrix_P(P, 0, imax+1, 0, jmax+1, PI);
-
+*/
 }
 
 void init_flag(
@@ -92,7 +92,7 @@ void init_flag(
 	int imax, 
 	int jmax, 
 	int **Flag
-){
-	init_matrix_F(P, 0, imax+1, 0, jmax+1, Flag);
+){/*
+	init_matrix_F(P, 0, imax+1, 0, jmax+1, Flag);*/
 }
 

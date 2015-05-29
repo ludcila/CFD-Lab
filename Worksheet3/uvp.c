@@ -50,7 +50,7 @@ void calculate_fg(
 	double **U,
 	double **V,
 	double **F,
-	double **G
+	double **G,
 	int **Flag
 ) {
 	int i, j;
@@ -72,6 +72,7 @@ void calculate_fg(
 			              - 1 / dy * ((V[i][j] + V[i+1][j]) * (U[i][j] + U[i][j+1]) / 4 - (V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] + U[i][j]) / 4)
 			              - alpha / dy * (fabs(V[i][j] + V[i+1][j]) * (U[i][j] - U[i][j+1]) / 4 - fabs(V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] - U[i][j]) / 4)
 			              + GX);
+			}
 		}
 	}
 	for (i = 1; i <= imax; i++) {
