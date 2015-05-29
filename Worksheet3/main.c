@@ -43,17 +43,42 @@ int main(int argn, char** args){
 
 	double **U, **V, **P, **F, **G, **RS;
 	int **Flag;
+<<<<<<< HEAD
 	char *problem; /*need to be initialized*/
 	const char *szFileName = "cavity100.dat";
+=======
+	char problem[60];
+	char parameters_filename[60];
+	char image_filename[60];
+>>>>>>> 9d9f6c2c55e6530d5d9e0f97b89d65938adff500
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
 	int wl, wr, wt, wb;
+<<<<<<< HEAD
 	int i,j;
 	
+=======
+	
+	/* Read name of the problem from the command line arguments */
+	if(argn > 1) {
+		strcpy(problem, args[1]);
+	} else {
+		printf("Please provide the name of the problem.\n");
+		return 1;
+	}
+	
+	strcpy(parameters_filename, problem);
+	strcat(parameters_filename, ".dat");
+	strcpy(image_filename, problem);
+	strcat(image_filename, ".pgm");
+
+	Flag = read_pgm(image_filename);
+
+>>>>>>> 9d9f6c2c55e6530d5d9e0f97b89d65938adff500
 
 	/* Read the program configuration file using read_parameters() */
-	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &wl, &wr, &wt, &wb);        
+	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &wl, &wr, &wt, &wb);        
 
 	/* Set up the matrices (arrays) needed using the matrix() command */
 	U = matrix(0, imax  , 0, jmax+1);
@@ -64,8 +89,14 @@ int main(int argn, char** args){
 	RS= matrix(0, imax+1, 0, jmax+1);
 	Flag= matrix(0, imax+1, 0, jmax+1);
 	
+<<<<<<< HEAD
+=======
+	/* Assign initial values to u, v, p */
+	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
+	
+>>>>>>> 9d9f6c2c55e6530d5d9e0f97b89d65938adff500
 	/* Initialization of flag field*/
-	init_flag(problem,imax,jmax,Flag);
+	init_flag(problem, imax, jmax, Flag);
 
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
@@ -80,7 +111,7 @@ int main(int argn, char** args){
 		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, Flag);
 		
 		/* Compute F(n) and G(n) */
-		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G);
+		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, Flag);
 		
 		/* Compute the right-hand side rs of the pressure equation */
 		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
@@ -94,7 +125,7 @@ int main(int argn, char** args){
 		}
 		
 		/* Compute u(n+1) and v(n+1) */
-		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
+		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, Flag);
 		
 		t = t + dt;
 		n++;

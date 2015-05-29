@@ -74,7 +74,7 @@ void sor(
 			}
 		}
 
-		p[i][j] = (P_N + P_S + P_W + P_O) / count_num_fluid_cell;
+		P[i][j] = (P_N + P_S + P_W + P_O) / count_num_fluid_cell;
 
 		P_N = 0;
 		P_S = 0;
