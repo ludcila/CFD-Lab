@@ -69,6 +69,14 @@ int main(int argc, char *argv[]){
 		printf("t=%d\tBoundary\t(%f s)\n", t, elapsedTime(start_t, end_t));
 
 		/* Output */
+
+
+
+
+
+
+
+
 		if(t % timestepsPerPlotting == 0) {
 			clock_gettime(CLOCK_MONOTONIC, &start_t);
 			writeVtkOutput(collideField, flagField, "output", t, xlength);

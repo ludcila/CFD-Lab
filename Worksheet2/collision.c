@@ -1,5 +1,6 @@
 #include "collision.h"
 #include "LBDefinitions.h"
+#include <stdio.h>
 
 void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){
 
@@ -42,6 +43,11 @@ void doCollision(double *collideField, int *flagField,const double * const tau,i
 				computeFeq(&density, velocity, feq);
 				computePostCollisionDistributions(currentCell, tau, feq);
 				
+/*				if(z==1 && x==10 && y==10)
+					printf("velocity is [x]%f ,[y]%f ,[z]%f",velocity[0],velocity[1],velocity[2]);
+*/
+
+
 			}
 		}
 	}
