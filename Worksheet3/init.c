@@ -93,6 +93,17 @@ void init_flag(
 	int jmax, 
 	int **Flag
 ){
-	init_matrix_F(P, 0, imax+1, 0, jmax+1, Flag);
+	const char *pgm_file = "domain_final.pgm";        
+	int **pic;
+	pic=read_pgm(pgm_file);	/*call read_pgm to this program,and check domain*/
+
+/*	for(j=0;j<22;j++){
+		for(i=0;i<22;i++){
+		printf(" %d ",pic[i][j]);
+		}
+		printf("\n");
+	}*/
+
+
 }
 
