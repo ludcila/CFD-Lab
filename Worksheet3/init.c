@@ -95,7 +95,9 @@ void init_flag(
 ){
 	const char *pgm_file = "domain_final.pgm";        
 	int **pic;
-	pic=read_pgm(pgm_file);	/*call read_pgm to this program,and check domain*/
+	int i,j;
+/*call read_pgm to this program,and check domain, and check the consistency of domain size with Flag matrix*/
+	pic=read_pgm(pgm_file);	
 
 /*	for(j=0;j<22;j++){
 		for(i=0;i<22;i++){
@@ -104,6 +106,27 @@ void init_flag(
 		printf("\n");
 	}*/
 
+
+	/*before this stage, pic setting: fluid cell is 1, obstacle is 0*/
+	for(i=1;i<=imax;i++){
+		for(j=1;j<=jmax;j++){
+			Flag[i][j]=pic[i][j]*16+pic[i+1][j]*8+pic[i-1][j]*4+pic[i][j-1]*2+pic[i][j+1]*1;
+		}
+	}
+/*	Here depending on "problem"
+	for(j=1;j<=jmax;j++){
+		Flag[0][j]=;
+	}
+	for(j=1;j<=jmax;j++){
+		Flag[imax+1][j]=;
+	}
+	for(i=0;j<=imax+1;i++){
+		Flag[i][0]=;
+	}
+	for(i=0;j<=imax+1;i++){
+		Flag[i][jmax+1]=;
+	}
+*/
 
 }
 
