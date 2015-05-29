@@ -224,6 +224,9 @@ void free_matrix( double **m, int nrl, int nrh, int ncl, int nch );
  */
 void init_matrix( double **m, int nrl, int nrh, int ncl, int nch, double a);
 
+void init_matrix_U( double **m, int nrl, int nrh, int ncl, int nch, double a);
+void init_matrix_V( double **m, int nrl, int nrh, int ncl, int nch, double a);
+void init_matrix_P( double **m, int nrl, int nrh, int ncl, int nch, double a);
 /**
  * matrix(...)        storage allocation for a matrix (nrl..nrh, ncl..nch)
  * free_matrix(...)   storage deallocation

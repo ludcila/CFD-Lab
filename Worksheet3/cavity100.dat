@@ -52,4 +52,10 @@ PI		0
 UI		0
 VI		0
 
-
+#--------------------------------------------
+# integer parameters for boundary condition (wl: left, wr:right, wt: top, wb: bottom at boundary) (1: no-slip, 2: free-slip, 3: outflow)
+#--------------------------------------------
+wl		1
+wr		1
+wt		1
+wb		1

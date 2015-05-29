@@ -37,6 +37,10 @@
  * @param eps        tolerance limit for pressure calculation
  * @param dt_value   time steps for output (after how many time steps one should
  *                   write into the output file)
+ * @param wl		left wall
+ * @param wr		right wall
+ * @param wt		top wall
+ * @param wb		bottom wall
  */
 int read_parameters( 
   const char *szFileName,
@@ -59,7 +63,12 @@ int read_parameters(
   double *tau,
   int  *itermax,
   double *eps,
-  double *dt_value
+  double *dt_value,
+  char *problem,
+  int *wl,
+  int *wr,
+  int *wt,
+  int *wb
 );
 
 /**
@@ -75,6 +84,13 @@ void init_uvp(
   double **U,
   double **V,
   double **P
+);
+
+void init_flag(
+	char* problem, 
+	int imax, 
+	int jmax, 
+	int **Flag
 );
 
 #endif

@@ -42,13 +42,16 @@
 int main(int argn, char** args){
 
 	double **U, **V, **P, **F, **G, **RS;
+	int **Flag;
+	char *problem; /*need to be initialized*/
 	const char *szFileName = "cavity100.dat";
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
-	
+	int wl, wr, wt, wb;
+
 	/* Read the program configuration file using read_parameters() */
-	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value);        
+	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &wl, &wr, &wt, &wb);        
 
 	/* Set up the matrices (arrays) needed using the matrix() command */
 	U = matrix(0, imax  , 0, jmax+1);
@@ -60,6 +63,8 @@ int main(int argn, char** args){
 	
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
+	/* Initialization of flag field*/
+	init_flag(problem,imax,jmax,Flag);
 
 	while(t <= t_end){
 	
@@ -67,7 +72,7 @@ int main(int argn, char** args){
 		calculate_dt(Re, tau, &dt, dx, dy, imax, jmax, U, V);
 		
 		/* Set boundary values for u and v */
-		boundaryvalues(imax, jmax, U, V);
+		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, Flag);
 		
 		/* Compute F(n) and G(n) */
 		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G);
