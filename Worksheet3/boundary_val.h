@@ -1,6 +1,11 @@
 #ifndef __RANDWERTE_H__
 #define __RANDWERTE_H__
 
+/* Boundary condition types */
+
+#define		BC_NO_SLIP		1
+#define		BC_FREE_SLIP	2
+#define		BC_OUTFLOW		3
 
 /**
  * The boundary values of the problem are set.
