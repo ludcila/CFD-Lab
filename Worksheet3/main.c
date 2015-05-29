@@ -59,6 +59,7 @@ int main(int argn, char** args){
 		return 1;
 	}
 	
+	/* Generate filename based on problem name */
 	strcpy(parameters_filename, problem);
 	strcat(parameters_filename, ".dat");
 
@@ -72,19 +73,17 @@ int main(int argn, char** args){
 	F = matrix(0, imax  , 0, jmax+1);
 	G = matrix(0, imax+1, 0, jmax  );
 	RS= matrix(0, imax+1, 0, jmax+1);
-	Flag= (int**)matrix(0, imax+1, 0, jmax+1);
+	Flag = imatrix(0, imax+1, 0, jmax+1);
 	
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
 	/* Initialization of flag field */
-	init_flag(problem, imax, jmax, Flag);
-
-
+	init_flag(problem, imax, jmax, Flag);	
 
 	while(t <= t_end){
 	
-		/*Select δt*/
+		/* Select δt */
 		calculate_dt(Re, tau, &dt, dx, dy, imax, jmax, U, V);
 		
 		/* Set boundary values for u and v */
