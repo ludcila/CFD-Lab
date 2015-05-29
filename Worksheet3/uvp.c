@@ -60,7 +60,7 @@ void calculate_fg(
 	}
 	for (i = 1; i <= imax - 1; i++) {
 		for (j = 1; j <= jmax; j++) {
-			if(Flag[i][j] && 4) { /*B_O, west cell is fluid*/
+			if(Flag[i][j] && 4) { /*B_W, west cell is fluid*/
 				F[i-1][j] = U[i-1][j];
 			} else if(Flag[i][j] && 8) { /*B_O, east cell is fluid*/
 				F[i][j] = U[i][j];
@@ -77,9 +77,9 @@ void calculate_fg(
 	for (i = 1; i <= imax; i++) {
 		G[i][0] = V[i][0];
 		for (j = 1; j <= jmax - 1; j++) {
-			if(Flag[i][j] && 1) { /*B_O, north cell is fluid*/
+			if(Flag[i][j] && 1) { /*B_N, north cell is fluid*/
 				G[i][j] = V[i][j];
-			} else if(Flag[i][j] && 2) { /*B_O, south cell is fluid*/
+			} else if(Flag[i][j] && 2) { /*B_S, south cell is fluid*/
 				G[i][j-1] = V[i][j-1];
 			} else {			
 

@@ -9,9 +9,12 @@ void sor(
   int    jmax,
   double **P,
   double **RS,
-  double *res
+  double *res,
+  int **Flag
 ) {
   int i,j;
+  int count_num_fluid_cell;		/* count neighboring fluid cells */
+  double P_N, P_S, P_W, P_O;
   double rloc;
   double coeff = omg/(2.0*(1.0/(dx*dx)+1.0/(dy*dy)));
 
@@ -46,5 +49,39 @@ void sor(
     P[0][j] = P[1][j];
     P[imax+1][j] = P[imax][j];
   }
+	
+  /* compute pressures of obstacle cells */
+	for(i = 1; i <= imax; i++) {
+		for(j = 1; j<=jmax; j++) {
+			if(Flag[i][j] && 1){ /* B_N, north cell is fluid */
+				P_N = P[i][j+1];
+				count_num_fluid_cell++;
+			} 
+
+			if(Flag[i][j] && 2){ /* B_S, south cell is fluid */
+				P_N = P[i][j-1];
+				count_num_fluid_cell++;
+			}
+
+			if(Flag[i][j] && 4){ /* B_W, west cell is fluid */
+				P_N = P[i-1][j];
+				count_num_fluid_cell++;
+			}
+
+			if(Flag[i][j] && 8){ /* B_O, east cell is fluid */
+				P_N = P[i+1][j];
+				count_num_fluid_cell++;
+			}
+		}
+
+		p[i][j] = (P_N + P_S + P_W + P_O) / count_num_fluid_cell;
+
+		P_N = 0;
+		P_S = 0;
+		P_W = 0;
+		P_O = 0;
+		count_num_fluid_cell = 0;
+	}
+
 }
 
