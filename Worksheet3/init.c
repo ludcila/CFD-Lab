@@ -94,11 +94,14 @@ void init_flag(
 	int **Flag
 
 ){
-	const char *pgm_file = "domain_final.pgm";        
+	char image_filename[60];
 	int **pic;
 	int i,j;
+	
 /*call read_pgm to this program,and check domain, and check the consistency of domain size with Flag matrix*/
-	pic=read_pgm(pgm_file);	
+	strcpy(image_filename, problem);
+	strcat(image_filename, ".pgm");     
+	pic=read_pgm(image_filename);	
 
 /*	for(j=0;j<22;j++){
 		for(i=0;i<22;i++){
