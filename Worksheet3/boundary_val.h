@@ -7,6 +7,8 @@
 #define		BC_FREE_SLIP	2
 #define		BC_OUTFLOW		3
 
+enum B_xy {B_NULL = 0, B_N = 1, B_S = 2, B_W = 4, B_NW = 5, B_SW = 6, B_NSW = 7, B_O = 8, B_NO = 9, B_SO = 10, B_NSO = 11, B_NWO = 13, B_SWO = 14};
+
 /**
  * The boundary values of the problem are set.
  */
