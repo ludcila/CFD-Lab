@@ -88,6 +88,9 @@ int main(int argn, char** args){
 		
 		/* Set boundary values for u and v */
 		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, Flag);
+	
+		/* Set special boundary values */
+		spec_boundary_val(problem, imax, jmax, U, V);
 		
 		/* Compute F(n) and G(n) */
 		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, Flag);
@@ -106,13 +109,19 @@ int main(int argn, char** args){
 		/* Compute u(n+1) and v(n+1) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, Flag);
 		
+		if((int)n % (int)dt_value == 0) {
+			write_vtkFile(problem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+		}
+		
 		t = t + dt;
 		n++;
+		printf("Time: %.4f\n", t);
+		if(res > eps) printf("Did not converge (res=%f, eps=%f)\n", res, eps);
 	
 	}
 
 	/* Output of u, v, p for visualization */
-	write_vtkFile("cavity", n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+	write_vtkFile(problem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 
 	free_matrix(U , 0, imax  , 0, jmax+1);
 	free_matrix(V , 0, imax+1, 0, jmax  );
