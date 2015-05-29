@@ -45,24 +45,12 @@ int main(int argn, char** args){
 	int **Flag;
 	char *problem; /*need to be initialized*/
 	const char *szFileName = "cavity100.dat";
-	const char *pgm_file = "domain_final.pgm";        
-	int **pic;
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
-
 	int wl, wr, wt, wb;
-
 	int i,j;
 	
-	pic=read_pgm(pgm_file);	/*call read_pgm to this program,and check domain*/
-	for(j=0;j<22;j++){
-		for(i=0;i<22;i++){
-			printf(" %d ",pic[i][j]);
-		}
-		printf("\n");
-	}
-
 
 	/* Read the program configuration file using read_parameters() */
 	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &wl, &wr, &wt, &wb);        
@@ -74,11 +62,14 @@ int main(int argn, char** args){
 	F = matrix(0, imax  , 0, jmax+1);
 	G = matrix(0, imax+1, 0, jmax  );
 	RS= matrix(0, imax+1, 0, jmax+1);
+	Flag= matrix(0, imax+1, 0, jmax+1);
 	
-	/* Assign initial values to u, v, p */
-	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 	/* Initialization of flag field*/
 	init_flag(problem,imax,jmax,Flag);
+
+	/* Assign initial values to u, v, p */
+	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
+
 
 	while(t <= t_end){
 	
