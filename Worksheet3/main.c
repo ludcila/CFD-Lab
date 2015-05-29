@@ -46,16 +46,11 @@ int main(int argn, char** args){
 
 	char problem[60];
 	char parameters_filename[60];
-	char image_filename[60];
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
 	int wl, wr, wt, wb;
 
-
-	
-
-	
 	/* Read name of the problem from the command line arguments */
 	if(argn > 1) {
 		strcpy(problem, args[1]);
@@ -66,10 +61,6 @@ int main(int argn, char** args){
 	
 	strcpy(parameters_filename, problem);
 	strcat(parameters_filename, ".dat");
-	strcpy(image_filename, problem);
-	strcat(image_filename, ".pgm");
-
-
 
 	/* Read the program configuration file using read_parameters() */
 	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &wl, &wr, &wt, &wb);        
@@ -86,7 +77,7 @@ int main(int argn, char** args){
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
-	/* Initialization of flag field*/
+	/* Initialization of flag field */
 	init_flag(problem, imax, jmax, Flag);
 
 
