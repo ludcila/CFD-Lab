@@ -199,7 +199,7 @@ void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **
 	
 	int j;
 	if(strcmp(problem, "flow_over_step") == 0) {
-		for(j = jmax/2; j <= jmax; j++) {
+		for(j = jmax/2+1; j <= jmax; j++) {
 			U[0][j] = 1;
 			V[0][j] = 0;
 		}
