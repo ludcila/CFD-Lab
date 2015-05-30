@@ -103,8 +103,8 @@ int main(int argn, char** args){
 		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, Flag);
 	
 		/* Set special boundary values */
-		spec_boundary_val(problem, imax, jmax, U, V);
-		
+		spec_boundary_val(problem, imax, jmax, U, V, P, Re, xlength, ylength);
+
 		/* Compute F(n) and G(n) */
 		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, Flag);
 		
@@ -136,6 +136,7 @@ int main(int argn, char** args){
 	closedir(dip);
 
 	/* Output of u, v, p for visualization */
+
 	write_vtkFile(problem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 
 	free_matrix(U , 0, imax  , 0, jmax+1);
