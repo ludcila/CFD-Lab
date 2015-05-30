@@ -78,19 +78,19 @@ void boundaryvalues(
 		case BC_NO_SLIP:
 			for(i = 0; i <= imax; i++) {
 				U[i][jmax+1] = -U[i][jmax];
-				V[imax][0] = 0;
+				V[i][jmax] = 0;
 			}
 			break;
 		case BC_FREE_SLIP:
 			for(i = 0; i <= imax; i++) {
 				U[i][jmax+1] = U[i][jmax];
-				V[imax][0] = 0;
+				V[i][jmax] = 0;
 			}
 			break;
 		case BC_OUTFLOW:
 			for(i = 0; i <= imax; i++) {
 				U[i][jmax+1] = U[i][jmax];
-				V[imax][0] = V[imax][1];
+				V[i][jmax] = V[i][jmax-1];
 			}
 			break;
 	}
@@ -118,8 +118,8 @@ void boundaryvalues(
 	}
 	
 	/* Obstacles */
-	for(i = 1; i <= imax; i++) {
-		for(j = 0; j <= jmax; j++) {
+	for(i = 1; i < imax; i++) {
+		for(j = 1; j < jmax; j++) {
 		
 			switch(Flag[i][j]) {
 				case B_N:
@@ -149,6 +149,7 @@ void boundaryvalues(
 					break;
 				case B_SW:
 					U[i-1][j] = 0;
+					V[i][j-1] = 0;
 					U[i][j] = -U[i][j-1];
 					V[i][j] = -V[i-1][j];
 					break;
@@ -211,7 +212,7 @@ void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **
 			V[0][j] = 0;
 		}
 		V[0][j+1] = 0;
-	} else if(strcmp(problem, "the_Karman_vortex_street") == 0) {
+	} else if(strcmp(problem, "karman_vortex_street") == 0) {
 		for(j = 0; j <= jmax; j++) {
 			U[0][j] = 1;
 			V[0][j] = 0;
