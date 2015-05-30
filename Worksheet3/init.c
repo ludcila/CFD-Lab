@@ -92,7 +92,6 @@ void init_flag(
 	int imax, 
 	int jmax, 
 	int **Flag
-
 ){
 	char image_filename[60];
 	int **pic;
@@ -119,16 +118,16 @@ void init_flag(
 	}
 /*	Here depending on "problem"
 	for(j=1;j<=jmax;j++){
-		Flag[0][j]=;
+		Flag[0][j]=pic[0][j]*16+pic[0+1][j]*8+pic[0][j-1]*2+pic[0][j+1]*1;
 	}
 	for(j=1;j<=jmax;j++){
-		Flag[imax+1][j]=;
+		Flag[imax+1][j]=pic[imax+1][j]*16+pic[imax+1-1][j]*4+pic[imax+1][j-1]*2+pic[imax+1][j+1]*1;
 	}
 	for(i=0;j<=imax+1;i++){
-		Flag[i][0]=;
+		Flag[i][0]=pic[i][0]*16+pic[i+1][0]*8+pic[i-1][0]*4+pic[i][0+1]*1;
 	}
 	for(i=0;j<=imax+1;i++){
-		Flag[i][jmax+1]=;
+		Flag[i][jmax+1]=pic[i][jmax+1]*16+pic[i+1][jmax+1]*8+pic[i-1][jmax+1]*4+pic[i][jmax+1-1]*2;
 	}
 */
 
