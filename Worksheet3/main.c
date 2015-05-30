@@ -5,6 +5,8 @@
 #include"uvp.h"
 #include"boundary_val.h"
 #include"sor.c"
+#include <sys/stat.h>
+#include <dirent.h>
 
 /**
  * The main operation reads the configuration file, initializes the scenario and
@@ -43,13 +45,16 @@ int main(int argn, char** args){
 
 	double **U, **V, **P, **F, **G, **RS;
 	int **Flag;
-
 	char problem[60];
 	char parameters_filename[60];
+	char output_dic[60];
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
 	int wl, wr, wt, wb;
+	int folder_check;
+	DIR *dip;
+
 
 	/* Read name of the problem from the command line arguments */
 	if(argn > 1) {
@@ -58,7 +63,14 @@ int main(int argn, char** args){
 		printf("Please provide the name of the problem.\n");
 		return 1;
 	}
-	
+	/*create folders based on cases*/
+	strcpy(output_dic, problem);
+	strcat(output_dic, "/");
+	strcat(output_dic,problem);
+	folder_check=mkdir(problem,0777);
+	dip=opendir(problem);
+	printf("folder created %d \n",folder_check);
+
 	/* Generate filename based on problem name */
 	strcpy(parameters_filename, problem);
 	strcat(parameters_filename, ".dat");
@@ -81,6 +93,7 @@ int main(int argn, char** args){
 	/* Initialization of flag field */
 	init_flag(problem, imax, jmax, Flag);	
 
+	
 	while(t <= t_end){
 	
 		/* Select δt */
@@ -110,7 +123,7 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, Flag);
 		
 		if((int)n % (int)dt_value == 0) {
-			write_vtkFile(problem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+			write_vtkFile(output_dic, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 		}
 		
 		t = t + dt;
@@ -119,6 +132,8 @@ int main(int argn, char** args){
 		if(res > eps) printf("Did not converge (res=%f, eps=%f)\n", res, eps);
 	
 	}
+	/*close the folder*/
+	closedir(dip);
 
 	/* Output of u, v, p for visualization */
 	write_vtkFile(problem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
