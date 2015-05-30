@@ -131,61 +131,6 @@ void calculate_uv(
 	double **P,
 	int **Flag
 ) {
-/*
-	// treat v
-	for (i = 1; i <= imax - 1; i++) {
-		for (j = 1; j <= jmax; j++) {
-			if(Flag[i][j] && 1){//B_O, north cell is fluid
-				V[i][j] = 0;
-			} else if(!(Flag[i][j] && 1)){
-				V[i][j] = -V[i-1][j];
-			}
-
-			if(Flag[i][j] && 2){//B_O, south cell is fluid
-				V[i][j-1] = 0;	
-			} else if(!(Flag[i][j] && 2)){
-				V[i][j-1] = -V[i-1][j-1];
-			}
-
-			if(Flag[i][j] && 4){//B_O, west cell is fluid
-				V[i][j] = -V[i+1][j];
-
-			} else if(!(Flag[i][j] && 4)){
-			}
-
-			if(Flag[i][j] && 8){//B_O, east cell is fluid
-				V[i][j] = -V[i+1][j];
-			} else if(!(Flag[i][j] && 8)){
-			}
-			
-		}
-	}
-	// treat u
-	for (i = 1; i <= imax; i++) {
-		for (j = 1; j <= jmax - 1; j++) {
-			if(Flag[i][j] && 1){//B_O, north cell is fluid
-			} else if(!(Flag[i][j] && 1)){
-			}
-				
-			if(Flag[i][j] && 2){//B_O, south cell is fluid
-			} else if(!(Flag[i][j] && 2)){
-			}
-
-			if(Flag[i][j] && 4){//B_O, west cell is fluid
-				U[i-1][j] = 0;
-				U[i-1][j] = -U[i-1][j+1];	
-			} else if(!(Flag[i][j] && 4)){
-			}
-
-			if(Flag[i][j] && 8){//B_O, east cell is fluid
-				U[i][j] = 0;
-			} else if(!(Flag[i][j] && 8)){
-				U[i][j] = -U[i][j+1];
-			}
-			
-		}
-	}
-*/
 	unsigned int i, j;
 	for (i = 1; i <= imax - 1; i++) {
 		for (j = 1; j <= jmax; j++) {
