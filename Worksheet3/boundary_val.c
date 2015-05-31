@@ -205,13 +205,6 @@ void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **
 			V[0][j] = 0;
 		}
 		V[0][jmax+1] = 0;
-	} else if(strcmp(problem, "plane_shear_flow") == 0) {
-		for(j = 0; j <= jmax; j++) {
-			/*(dp)/(dx)* y(y-h);*/
-			U[0][j] = -0.5 * Re * (P[0][j] + P[0][j+1] / 2) / (xlength/ imax) * j*(j - (ylength/jmax)); 
-			V[0][j] = 0;
-		}
-		V[0][j+1] = 0;
 	} else if(strcmp(problem, "karman_vortex_street") == 0) {
 		for(j = 0; j <= jmax; j++) {
 			U[0][j] = 1;

@@ -43,13 +43,18 @@ void sor(
   *res = rloc;
 
 
-  /* set boundary values */
+  /* set boundary values for horizontal walls */
   for(i = 1; i <= imax; i++) {
     P[i][0] = P[i][1];
     P[i][jmax+1] = P[i][jmax];
   }
+  /* set boundary values for vertical walls */
   for(j = 1; j <= jmax; j++) {
-    P[0][j] = P[1][j];
+  	if(Flag[0][j] & 64) { /* check for bit that indicates that there is Dirichlet BC for pressure on left boundary */
+    	P[0][j] = P[1][j] + 4; /* to be improved later */
+  	} else {
+    	P[0][j] = P[1][j];
+  	}
     P[imax+1][j] = P[imax][j];
   }
 	

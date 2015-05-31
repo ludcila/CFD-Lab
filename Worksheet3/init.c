@@ -1,5 +1,6 @@
 #include "helper.h"
 #include "init.h"
+#include <string.h>
 
 int read_parameters( const char *szFileName,       /* name of the file */
                     double *Re,                /* reynolds number   */
@@ -116,6 +117,13 @@ void init_flag(
 			Flag[i][j]=pic[i][j]*16+pic[i+1][j]*8+pic[i-1][j]*4+pic[i][j-1]*2+pic[i][j+1]*1;
 		}
 	}
+	
+	if(strcmp(problem, "plane_shear_flow") == 0) {
+		for(j = 1; j <= jmax; j++) {
+			Flag[0][j] = Flag[0][j] | 64;
+		}
+	}
+	
 /*	Here depending on "problem"
 	for(j=1;j<=jmax;j++){
 		Flag[0][j]=pic[0][j]*16+pic[0+1][j]*8+pic[0][j-1]*2+pic[0][j+1]*1;
