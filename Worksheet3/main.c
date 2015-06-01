@@ -115,7 +115,7 @@ int main(int argn, char** args){
 		it=0;
 		res = 1e6;
 		while(it < itermax && res > eps){
-			sor(omg, dx, dy, imax, jmax, P, RS, &res, Flag);
+			sor(omg, dx, dy, dp, imax, jmax, P, RS, &res, Flag);
 			it++;
 		}
 		
