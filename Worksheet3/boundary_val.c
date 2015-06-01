@@ -200,24 +200,10 @@ void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **
 	
 	int j;
 	if(dp == 0){
-		if(strcmp(problem, "flow_over_step") == 0) {
-			for(j = jmax/2 + 1; j <= jmax; j++) {
-				U[0][j] = 1;
-				V[0][j] = 0;
-			}
-			V[0][jmax+1] = 0;
-		}else if(strcmp(problem, "karman_vortex_street") == 0) {
-				for(j = 0; j <= jmax; j++) {
-					U[0][j] = 1;
-					V[0][j] = 0;
-				}
-				V[0][j+1] = 0;
-		} else if(strcmp(problem, "karman_vortex_street") == 0) {
-			for(j = 0; j <= jmax; j++) {
-				U[0][j] = 1;
-				V[0][j] = 0;
-			}
-			V[0][j+1] = 0;
+		for(j = 0; j <= jmax; j++) {
+			U[0][j] = 1;
+			V[0][j] = 0;
 		}
+		V[0][j+1] = 0;
 	}
 }
