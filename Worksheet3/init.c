@@ -121,14 +121,13 @@ void init_flag(
 		}
 	}
 	
-	if(strcmp(problem, "plane_shear_flow") == 0) {
-		if(dp != 0){
-			for(j = 1; j <= jmax; j++) {
-				Flag[0][j] = Flag[0][j] | 64;
-			}
+
+	if(dp != 0){
+		for(j = 1; j <= jmax; j++) {
+			Flag[0][j] = Flag[0][j] | 64;
 		}
 	}
-	
+
 /*	Here depending on "problem"
 	for(j=1;j<=jmax;j++){
 		Flag[0][j]=pic[0][j]*16+pic[0+1][j]*8+pic[0][j-1]*2+pic[0][j+1]*1;
