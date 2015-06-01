@@ -91,7 +91,7 @@ int main(int argn, char** args){
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
 	/* Initialization of flag field */
-	init_flag(problem, imax, jmax, Flag);	
+	init_flag(problem, imax, jmax, Flag, dp);	
 
 	
 	while(t <= t_end){
@@ -103,7 +103,7 @@ int main(int argn, char** args){
 		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, Flag);
 	
 		/* Set special boundary values */
-		spec_boundary_val(problem, imax, jmax, U, V, P, Re, xlength, ylength);
+		spec_boundary_val(problem, imax, jmax, U, V, P, Re, xlength, ylength, dp);
 
 		/* Compute F(n) and G(n) */
 		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, Flag);

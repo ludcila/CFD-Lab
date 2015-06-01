@@ -91,7 +91,8 @@ void init_flag(
 	char* problem, 
 	int imax, 
 	int jmax, 
-	int **Flag
+	int **Flag,
+	double dp
 );
 
 #endif

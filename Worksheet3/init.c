@@ -24,12 +24,12 @@ int read_parameters( const char *szFileName,       /* name of the file */
 		                               /* for pressure per time step */
                     double *eps,               /* accuracy bound for pressure*/
 		    double *dt_value,           /* time for output */
-		char *problem,
-		double *dp,
-		int *wl,
-		int *wr,
-		int *wt,
-		int *wb)
+		    char *problem,
+		    double *dp,
+	            int *wl,
+		    int *wr,
+		    int *wt,
+		    int *wb)
 {
    READ_DOUBLE( szFileName, *xlength );
    READ_DOUBLE( szFileName, *ylength );
@@ -94,7 +94,8 @@ void init_flag(
 	char* problem, 
 	int imax, 
 	int jmax, 
-	int **Flag
+	int **Flag,
+	double dp
 ){
 	char image_filename[60];
 	int **pic;
@@ -116,13 +117,15 @@ void init_flag(
 	/*before this stage, pic setting: fluid cell is 1, obstacle is 0*/
 	for(i=1;i<=imax;i++){
 		for(j=1;j<=jmax;j++){
-			Flag[i][j]=pic[i][j]*16+pic[i+1][j]*8+pic[i-1][j]*4+pic[i][j-1]*2+pic[i][j+1]*1;
+			Flag[i][j] = pic[i][j] * 16 + pic[i+1][j] * 8 + pic[i-1][j] * 4 + pic[i][j-1] * 2 + pic[i][j+1] * 1;
 		}
 	}
 	
 	if(strcmp(problem, "plane_shear_flow") == 0) {
-		for(j = 1; j <= jmax; j++) {
-			Flag[0][j] = Flag[0][j] | 64;
+		if(dp != 0){
+			for(j = 1; j <= jmax; j++) {
+				Flag[0][j] = Flag[0][j] | 64;
+			}
 		}
 	}
 	
