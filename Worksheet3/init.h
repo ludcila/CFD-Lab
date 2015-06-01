@@ -65,6 +65,7 @@ int read_parameters(
   double *eps,
   double *dt_value,
   char *problem,
+  double *dp,
   int *wl,
   int *wr,
   int *wt,
