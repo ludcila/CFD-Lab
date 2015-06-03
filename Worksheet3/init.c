@@ -1,6 +1,7 @@
 #include "helper.h"
 #include "init.h"
 #include <string.h>
+#include "boundary_val.h"
 
 int read_parameters( const char *szFileName,       /* name of the file */
                     double *Re,                /* reynolds number   */
@@ -101,7 +102,7 @@ void init_flag(
 	/* Picture values: 1 for fluid, 0 for obstacle */
 	for(i = 1; i <= imax; i++){
 		for(j = 1; j <= jmax; j++){
-			Flag[i][j] = pic[i][j] * 16 + pic[i+1][j] * 8 + pic[i-1][j] * 4 + pic[i][j-1] * 2 + pic[i][j+1] * 1;
+			Flag[i][j] = max(pic[i+1][j] * B_O + pic[i-1][j] * B_W + pic[i][j-1] * B_S + pic[i][j+1] * B_N, pic[i][j] * C_F);
 		}
 	}
 	
