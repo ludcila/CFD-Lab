@@ -2,19 +2,6 @@
 #include <string.h>
 #include <stdio.h>
 
-/* flags
-* C_F: fluid cell
-* C_B: obstacle cell
-* B_xy: boundary cell
-*/
-
-
-/*
-* wl, wr, wt, wb 
-* 1 = noslip
-* 2 = feeslip
-* 3 = outflow
-*/
 void boundaryvalues(
 	int imax,
 	int jmax,
@@ -29,7 +16,7 @@ void boundaryvalues(
 
 	int i, j;	
 	
-	/* Left wall */
+	/* Left boundary */
 	switch(wl) {
 		case BC_NO_SLIP:
 			for(j = 0; j <= jmax; j++) {
@@ -51,7 +38,7 @@ void boundaryvalues(
 			break;
 	}
 
-	/* Right wall */
+	/* Right boundary */
 	switch(wr) {
 		case BC_NO_SLIP:
 			for(j = 0; j <= jmax; j++) {
@@ -73,7 +60,7 @@ void boundaryvalues(
 			break;
 	}
 	
-	/* Top wall */
+	/* Top boundary */
 	switch(wt) {
 		case BC_NO_SLIP:
 			for(i = 0; i <= imax; i++) {
@@ -95,7 +82,7 @@ void boundaryvalues(
 			break;
 	}
 
-	/* Bottom wall */
+	/* Bottom boundary */
 	switch(wb) {
 		case BC_NO_SLIP:
 			for(i = 0; i <= imax; i++) {
@@ -165,41 +152,12 @@ void boundaryvalues(
 	
 }
 
-void movingwall(int imax, int jmax, double **U, double **V, int side){
-
-	int i, j;
-	double U_wall = 1.0;
-	if (side == 0){
-		/* Left wall */
-		for(j = 0; j <= jmax; j++) {
-			U[0][j] = 0;
-			V[0][j] = 2 * U_wall - V[1][j];
-		}
-	} else if (side == 1){
-		/* Right wall */
-		for(j = 0; j <= jmax; j++) {
-			U[imax][j] = 0;
-			V[imax+1][j] = 2 * U_wall - V[imax][j];
-		}
-	} else if (side == 2){
-		/* Top */
-		for(i = 0; i <= imax; i++) {
-			U[i][jmax+1] = 2 * U_wall - U[i][jmax];
-			V[i][jmax] = 0;
-		}
-	} else if (side == 3){
-		/* Bottom */
-		for(i = 0; i <= imax; i++) {
-			U[i][0] = 2 * U_wall - U[i][1];
-			V[i][0] = 0;
-		}
-	}
-}
-
 void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **V, double **P, double Re, double xlength, double ylength, double dp){
 	
 	int j;
-	if(dp == 0){
+	
+	/* Take care of inflow velocities */
+	if(dp == 0) {
 		if(strcmp(problem, "flow_over_step") == 0) {
 			for(j = jmax/2 + 1; j <= jmax; j++) {
 				U[0][j] = 1;
@@ -217,4 +175,6 @@ void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **
 			}
 		}
 	}
+	/* Pressure boundary conditions are currently taken care of in the SOR */
+	
 }

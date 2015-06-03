@@ -81,8 +81,7 @@ void calculate_fg(
 				G[i][j] = V[i][j];
 			} else if((Flag[i][j] & B_S) == B_S && !(Flag[i][j] & 16)) { /*B_S, south cell is fluid*/
 				G[i][j-1] = V[i][j-1];
-			} else if(Flag[i][j] & 16) {			
-
+			} else if(Flag[i][j] & 16) {
 				G[i][j] = V[i][j] + dt * (
 					      + 1 / Re * ((V[i][j+1] - 2 * V[i][j] + V[i][j-1]) / (dy * dy) + (V[i+1][j] - 2 * V[i][j] + V[i-1][j]) / (dx * dx))
 					      - 1 / dy * (pow((V[i][j] + V[i][j+1]) / 2, 2) - pow((V[i][j-1] + V[i][j]) / 2, 2))

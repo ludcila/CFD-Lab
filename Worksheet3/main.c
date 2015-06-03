@@ -47,16 +47,14 @@ int main(int argn, char** args){
 	int **Flag;
 	char problem[60];
 	char parameters_filename[60];
-	char output_dic[60];
+	char output_dirname[60];
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value, dp;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
 	int wl, wr, wt, wb;
-	int folder_check;
-	char old_outputfile_path[128];
+	char old_output_filename[128];
 	struct dirent *old_outputfile;
-	DIR *dip;
-
+	DIR *output_dir;
 
 	/* Read name of the problem from the command line arguments */
 	if(argn > 1) {
@@ -65,21 +63,21 @@ int main(int argn, char** args){
 		printf("Please provide the name of the problem.\n");
 		return 1;
 	}
-	/*create folders based on cases*/
-	strcpy(output_dic, problem);
-	strcat(output_dic, "/");
-	strcat(output_dic,problem);
-	folder_check=mkdir(problem,0777);
-	dip=opendir(problem);
-	printf("folder created %d \n",folder_check);
+	
+	/* Create folder with the name of the problem */
+	strcpy(output_dirname, problem);
+	strcat(output_dirname, "/");
+	strcat(output_dirname, problem);
+	mkdir(problem, 0777);
+	output_dir = opendir(problem);
+	
 	/* Delete existing files in output folder*/
-	while((old_outputfile = readdir(dip))) {
-		sprintf(old_outputfile_path, "%s/%s", problem, old_outputfile->d_name);
-		printf("%s\n", output_dic);
-		remove(old_outputfile_path);
+	while((old_outputfile = readdir(output_dir))) {
+		sprintf(old_output_filename, "%s/%s", problem, old_outputfile->d_name);
+		remove(old_output_filename);
 	}
 
-	/* Generate filename based on problem name */
+	/* Generate input filename based on problem name */
 	strcpy(parameters_filename, problem);
 	strcat(parameters_filename, ".dat");
 
@@ -98,6 +96,8 @@ int main(int argn, char** args){
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 	
+	/* Initialize lower part of the domain with UI = 0 for the flow_over_step problem */
+	/* (this code might be moved to somewhere else later) */
 	if(strcmp(problem, "flow_over_step") == 0) {
 		init_matrix(U, 0, imax ,  0, jmax/2, 0);
 	}
@@ -124,7 +124,7 @@ int main(int argn, char** args){
 		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
 		
 		/* Perform SOR iterations */
-		it=0;
+		it = 0;
 		res = 1e6;
 		while(it < itermax && res > eps){
 			sor(omg, dx, dy, dp, imax, jmax, P, RS, &res, Flag);
@@ -134,19 +134,28 @@ int main(int argn, char** args){
 		/* Compute u(n+1) and v(n+1) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, Flag);
 		
-		if((int)n % (int)dt_value == 0) {
-			write_vtkFile(output_dic, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
-		}
-		
 		t = t + dt;
 		n++;
-		printf("Time: %.4f\n", t);
-		if(res > eps) printf("Did not converge (res=%f, eps=%f)\n", res, eps);
+		
+		/* Generate snapshot for current timestep */
+		if((int)n % (int)dt_value == 0) {
+			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+		}
+		
+		/* Print out simulation time and whether the SOR converged */
+		printf("Time: %.4f", t);
+		if(res > eps) printf("\tDid not converge (res=%f, eps=%f)\n", res, eps);
+		else printf("\n");
 	
 	}
-	/*close the folder*/
-	closedir(dip);
-
+	
+	/* Close the output folder */
+	closedir(output_dir);
+	
+	/* Tell user where to find the output */
+	printf("Please find the output in the folder \"%s\".\n", problem);
+	
+	/* Free allocated memory */
 	free_matrix(U , 0, imax  , 0, jmax+1);
 	free_matrix(V , 0, imax+1, 0, jmax  );
 	free_matrix(P , 0, imax+1, 0, jmax+1);

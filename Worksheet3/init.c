@@ -56,11 +56,6 @@ int read_parameters( const char *szFileName,       /* name of the file */
    READ_DOUBLE( szFileName, *GY );
    READ_DOUBLE( szFileName, *PI );
 
-/*
-1. Supplement the function read parameters such that it reads initial values for the variable
-problem and for the boundary value options wl,wr,wt and wb. (page 13, worksheet 3)
-*/
-   /*READ_STRING( szFileName, *problem);*/
    READ_INT (szFileName, *wl);
    READ_INT (szFileName, *wr);
    READ_INT (szFileName, *wt);
@@ -99,48 +94,24 @@ void init_flag(
 	int **pic;
 	int i,j;
 	
-/*call read_pgm to this program,and check domain, and check the consistency of domain size with Flag matrix*/
 	strcpy(image_filename, problem);
 	strcat(image_filename, ".pgm");     
-	pic=read_pgm(image_filename);	
+	pic = read_pgm(image_filename);	
 
-/*	for(j=0;j<22;j++){
-		for(i=0;i<22;i++){
-		printf(" %d ",pic[i][j]);
-		}
-		printf("\n");
-	}*/
-
-
-	/*before this stage, pic setting: fluid cell is 1, obstacle is 0*/
-	for(i=1;i<=imax;i++){
-		for(j=1;j<=jmax;j++){
+	/* Picture values: 1 for fluid, 0 for obstacle */
+	for(i = 1; i <= imax; i++){
+		for(j = 1; j <= jmax; j++){
 			Flag[i][j] = pic[i][j] * 16 + pic[i+1][j] * 8 + pic[i-1][j] * 4 + pic[i][j-1] * 2 + pic[i][j+1] * 1;
 		}
 	}
 	
-
-	if(dp != 0){
+	/* Pressure boundary conditions are currently implemented in such a way 
+		that we don't need extra flags for them (might be implemented later) */
+	/* if(dp != 0){
 		for(j = 1; j <= jmax; j++) {
 			Flag[0][j] = Flag[0][j] | 64;
 		}
-	}
-
-/*	Here depending on "problem"
-	for(j=1;j<=jmax;j++){
-		Flag[0][j]=pic[0][j]*16+pic[0+1][j]*8+pic[0][j-1]*2+pic[0][j+1]*1;
-	}
-	for(j=1;j<=jmax;j++){
-		Flag[imax+1][j]=pic[imax+1][j]*16+pic[imax+1-1][j]*4+pic[imax+1][j-1]*2+pic[imax+1][j+1]*1;
-	}
-	for(i=0;j<=imax+1;i++){
-		Flag[i][0]=pic[i][0]*16+pic[i+1][0]*8+pic[i-1][0]*4+pic[i][0+1]*1;
-	}
-	for(i=0;j<=imax+1;i++){
-		Flag[i][jmax+1]=pic[i][jmax+1]*16+pic[i+1][jmax+1]*8+pic[i-1][jmax+1]*4+pic[i][jmax+1-1]*2;
-	}
-*/
-
+	} */
 
 }
 
