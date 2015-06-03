@@ -61,7 +61,7 @@ int main(int argn, char** args){
 	if(argn > 1) {
 		strcpy(problem, args[1]);
 	} else {
-		printf("Please provide the name of the problem.\n");
+		printf("*** Please provide the name of the problem\n*** e.g. Run ./sim problem_name if there is a problem_name.dat file.\n");
 		return 1;
 	}
 	
