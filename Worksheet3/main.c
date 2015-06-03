@@ -53,6 +53,8 @@ int main(int argn, char** args){
 	int imax, jmax, itermax, it;
 	int wl, wr, wt, wb;
 	int folder_check;
+	char old_outputfile_path[128];
+	struct dirent *old_outputfile;
 	DIR *dip;
 
 
@@ -70,6 +72,12 @@ int main(int argn, char** args){
 	folder_check=mkdir(problem,0777);
 	dip=opendir(problem);
 	printf("folder created %d \n",folder_check);
+	/* Delete existing files in output folder*/
+	while((old_outputfile = readdir(dip))) {
+		sprintf(old_outputfile_path, "%s/%s", problem, old_outputfile->d_name);
+		printf("%s\n", output_dic);
+		remove(old_outputfile_path);
+	}
 
 	/* Generate filename based on problem name */
 	strcpy(parameters_filename, problem);
@@ -89,6 +97,10 @@ int main(int argn, char** args){
 	
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
+	
+	if(strcmp(problem, "flow_over_step") == 0) {
+		init_matrix(U, 0, imax ,  0, jmax/2, 0);
+	}
 
 	/* Initialization of flag field */
 	init_flag(problem, imax, jmax, Flag, dp);	
@@ -134,10 +146,6 @@ int main(int argn, char** args){
 	}
 	/*close the folder*/
 	closedir(dip);
-
-	/* Output of u, v, p for visualization */
-
-	write_vtkFile(problem, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 
 	free_matrix(U , 0, imax  , 0, jmax+1);
 	free_matrix(V , 0, imax+1, 0, jmax  );
