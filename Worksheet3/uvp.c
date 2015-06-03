@@ -20,18 +20,20 @@ void calculate_dt(
 	double u_max = U[1][1], v_max = V[1][1];
 	double dt_min;
 
-	for (i = 1; i <= imax; i++) {				/*double for-loop for max velocity in x&y direction*/
-		for (j = 1; j <= jmax; j++) {
-			if (fabs(U[i][j]) > u_max)
-				u_max = fabs(U[i][j]);
-			if (fabs(V[i][j]) > v_max)
-				v_max = fabs(V[i][j]);
+	if(tau > 0) {
+		for (i = 1; i <= imax; i++) {
+			for (j = 1; j <= jmax; j++) {
+				if (fabs(U[i][j]) > u_max)
+					u_max = fabs(U[i][j]);
+				if (fabs(V[i][j]) > v_max)
+					v_max = fabs(V[i][j]);
+			}
 		}
-	}
 
-	dt_min = fmin(dy / v_max, dx / u_max);
-	dt_min = fmin(Re * 0.5 * 1 / (1 / (dx * dx) + 1 / (dy * dy)), dt_min);
-	*dt = tau * dt_min;
+		dt_min = fmin(dy / v_max, dx / u_max);
+		dt_min = fmin(Re * 0.5 * 1 / (1 / (dx * dx) + 1 / (dy * dy)), dt_min);
+		*dt = tau * dt_min;
+	}
 	
 }
 
