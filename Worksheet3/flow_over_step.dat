@@ -33,6 +33,9 @@ GX			0.0
 GY			0.0
 Re			100
 dp			0
+# Sample values to use when applying pressure difference:
+# Re		10
+# dp		1
 
 # ---------------------------------
 # Initial values
