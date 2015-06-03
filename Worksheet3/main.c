@@ -64,7 +64,14 @@ int main(int argn, char** args){
 		printf("*** Please provide the name of the problem\n*** e.g. Run ./sim problem_name if there is a problem_name.dat file.\n");
 		return 1;
 	}
-	
+
+	/* Generate input filename based on problem name */
+	strcpy(parameters_filename, problem);
+	strcat(parameters_filename, ".dat");
+
+	/* Read the program configuration file using read_parameters() */
+	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb, &timestepsPerPlotting);
+
 	/* Create folder with the name of the problem */
 	strcpy(output_dirname, problem);
 	strcat(output_dirname, "/");
@@ -77,13 +84,6 @@ int main(int argn, char** args){
 		sprintf(old_output_filename, "%s/%s", problem, old_outputfile->d_name);
 		remove(old_output_filename);
 	}
-
-	/* Generate input filename based on problem name */
-	strcpy(parameters_filename, problem);
-	strcat(parameters_filename, ".dat");
-
-	/* Read the program configuration file using read_parameters() */
-	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb, &timestepsPerPlotting);
 
 	/* Set up the matrices (arrays) needed using the matrix() command */
 	U = matrix(0, imax  , 0, jmax+1);
