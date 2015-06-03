@@ -22,8 +22,10 @@ void sor(
   /* SOR iteration */
   for(i = 1; i <= imax; i++) {
     for(j = 1; j<=jmax; j++) {
-      P[i][j] = (1.0-omg)*P[i][j]
-              + coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
+    	if(Flag[i][j] & 16) {
+		  P[i][j] = (1.0-omg)*P[i][j]
+		          + coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
+      	}
     }
   }
 
@@ -44,23 +46,24 @@ void sor(
   *res = rloc;
 
 
-  /* set boundary values for horizontal walls */
-  for(i = 1; i <= imax; i++) {
-    P[i][0] = P[i][1];
-    P[i][jmax+1] = P[i][jmax];
-  }
-/* set boundary values for vertical walls */
-if(dp !=0){
-  for(j = 1; j <= jmax; j++) {
-    	P[0][j] = dp; 
-	P[imax+1][j] = 0;
-  	} 
-}else{
-  for(j = 1; j <= jmax; j++) {
-    	P[0][j] = P[1][j];
-	P[imax+1][j] = P[imax][j];
-  	} 
-}
+	/* set boundary values for horizontal walls */
+	for(i = 1; i <= imax; i++) {
+		P[i][0] = P[i][1];
+		P[i][jmax+1] = P[i][jmax];
+	}
+	/* set boundary values for vertical walls */
+	if(dp != 0){
+		for(j = 0; j <= jmax; j++) {
+			P[0][j] = 2*dp - P[1][j]; 
+			P[imax+1][j] = -P[imax][j];
+		} 
+	} else{
+		for(j = 1; j <= jmax; j++) {
+			P[0][j] = P[1][j];
+			P[imax+1][j] = P[imax][j];
+		} 
+	}
+	
   /* compute pressures of obstacle cells */
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j<=jmax; j++) {
