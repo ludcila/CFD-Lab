@@ -52,6 +52,7 @@ int main(int argn, char** args){
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
 	int wl, wr, wt, wb;
+	int timestepsPerPlotting;
 	char old_output_filename[128];
 	struct dirent *old_outputfile;
 	DIR *output_dir;
@@ -82,7 +83,7 @@ int main(int argn, char** args){
 	strcat(parameters_filename, ".dat");
 
 	/* Read the program configuration file using read_parameters() */
-	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb);        
+	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb, &timestepsPerPlotting);
 
 	/* Set up the matrices (arrays) needed using the matrix() command */
 	U = matrix(0, imax  , 0, jmax+1);
@@ -138,7 +139,7 @@ int main(int argn, char** args){
 		n++;
 		
 		/* Generate snapshot for current timestep */
-		if((int)n % (int)dt_value == 0) {
+		if((int) n % timestepsPerPlotting == 0) {
 			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 		}
 		

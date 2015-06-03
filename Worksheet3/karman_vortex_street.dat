@@ -17,7 +17,7 @@ tau			0.5
 dt_value	2.0
 
 # ---------------------------------
-# SOR parameters
+# Stability & SOR parameters
 # ---------------------------------
 
 eps			0.001
@@ -50,4 +50,10 @@ wl			1
 wr			3
 wt			1
 wb			1
+
+# ---------------------------------
+# Output options
+# ---------------------------------
+
+timestepsPerPlotting	2
 

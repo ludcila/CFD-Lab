@@ -30,7 +30,8 @@ int read_parameters( const char *szFileName,       /* name of the file */
 	            int *wl,
 		    int *wr,
 		    int *wt,
-		    int *wb)
+		    int *wb,
+		    int *timestepsPerPlotting)
 {
    READ_DOUBLE( szFileName, *xlength );
    READ_DOUBLE( szFileName, *ylength );
@@ -61,6 +62,8 @@ int read_parameters( const char *szFileName,       /* name of the file */
    READ_INT (szFileName, *wr);
    READ_INT (szFileName, *wt);
    READ_INT (szFileName, *wb);
+   
+   READ_INT (szFileName, *timestepsPerPlotting);
 
    *dx = *xlength / (double)(*imax);
    *dy = *ylength / (double)(*jmax);
