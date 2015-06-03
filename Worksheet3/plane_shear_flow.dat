@@ -32,6 +32,8 @@ itermax		500
 GX			0.0
 GY			0.0
 Re			10
+# Set dp to 0 to use velocity at inflow,
+# or non-zero value to apply pressure difference
 dp			4.0
 
 # ---------------------------------
