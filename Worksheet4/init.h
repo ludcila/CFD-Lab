@@ -70,7 +70,9 @@ int read_parameters(
   int *wr,
   int *wt,
   int *wb,
-  int *timestepsPerPlotting
+  int *timestepsPerPlotting,
+  int *iproc,
+  int *jproc
 );
 
 /**

@@ -56,6 +56,8 @@ int main(int argn, char** args){
 	char old_output_filename[128];
 	struct dirent *old_outputfile;
 	DIR *output_dir;
+	/* Variables for parallel program */
+	int iproc, jproc;
 
 	/* Read name of the problem from the command line arguments */
 	if(argn > 1) {
@@ -70,7 +72,7 @@ int main(int argn, char** args){
 	strcat(parameters_filename, ".dat");
 
 	/* Read the program configuration file using read_parameters() */
-	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb, &timestepsPerPlotting);
+	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb, &timestepsPerPlotting, &iproc, &jproc);
 
 	/* Create folder with the name of the problem */
 	strcpy(output_dirname, problem);
