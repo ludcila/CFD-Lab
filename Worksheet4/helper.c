@@ -372,53 +372,6 @@ void init_matrix( double **m, int nrl, int nrh, int ncl, int nch, double a)
        for( j = ncl; j <= nch; j++)
 	   m[i][j] = a;
 }
-/*
-void init_matrix_U( double **m, int nrl, int nrh, int ncl, int nch, double a)
-{
-   int i,j;
-   for( i = nrl; i <= nrh; i++)
-       for( j = ncl; j <= nch; j++){
-			if(Flag[i][j] && 4){
-				U[i-1][j] = 0;
-				U[i-1][j] = -U[i-1][j+1];	
-			} else if(!(Flag[i][j] && 4)){
-			}
-
-			if(Flag[i][j] && 8){
-				U[i][j] = 0;
-			} else if(!(Flag[i][j] && 8)){
-				U[i][j] = -U[i][j+1];
-			}
-			
-	   m[i][j] = a;
-	}
-}
-
-
-void init_matrix_V( double **m, int nrl, int nrh, int ncl, int nch, double a)
-{
-   int i,j;
-   for( i = nrl; i <= nrh; i++)
-       for( j = ncl; j <= nch; j++)
-	   m[i][j] = a;
-}
-
-void init_matrix_P( double **m, int nrl, int nrh, int ncl, int nch, double a)
-{
-   int i,j;
-   for( i = nrl; i <= nrh; i++)
-       for( j = ncl; j <= nch; j++)
-	   m[i][j] = a;
-}
-
-void init_matrix_F( double **m, int nrl, int nrh, int ncl, int nch, double a)
-{
-   int i,j;
-   for( i = nrl; i <= nrh; i++)
-       for( j = ncl; j <= nch; j++)
-	   m[i][j] = a;
-}
-*/
 
 /* allocates storage for a matrix */
 int **imatrix( int nrl, int nrh, int ncl, int nch )

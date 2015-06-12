@@ -59,7 +59,7 @@ int main(int argn, char** args){
 	DIR *output_dir;
 	/* Variables for parallel program */
 	int iproc, jproc, myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i, omg_j, num_proc;
-
+	
 	MPI_Init(&argn, &args);
 	MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
 
@@ -95,13 +95,13 @@ int main(int argn, char** args){
 	init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
 
 	/* Set up the matrices (arrays) needed using the matrix() command */
-	U = matrix(0, imax  , 0, jmax+1);
-	V = matrix(0, imax+1, 0, jmax  );
-	P = matrix(0, imax+1, 0, jmax+1);
-	F = matrix(0, imax  , 0, jmax+1);
-	G = matrix(0, imax+1, 0, jmax  );
-	RS= matrix(0, imax+1, 0, jmax+1);
-	Flag = imatrix(0, imax+1, 0, jmax+1);
+	U = matrix(il-2, ir+1, jb-1, jt+1);
+	V = matrix(il-1, ir+1, jb-2, jt+1);
+	P = matrix(il-1, ir+1, jb-1, jt+1);
+	F = matrix(il-2, ir+1, jb-1, jt+1);
+	G = matrix(il-1, ir+1, jb-2, jt+1);
+	RS= matrix(il, ir, jb, jt);
+	Flag = imatrix(il-1, il+1, jb-1, jt+1);
 	
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
