@@ -7,6 +7,7 @@
 #include"sor.c"
 #include <sys/stat.h>
 #include <dirent.h>
+#include "parallel.h"
 
 /**
  * The main operation reads the configuration file, initializes the scenario and
@@ -57,7 +58,10 @@ int main(int argn, char** args){
 	struct dirent *old_outputfile;
 	DIR *output_dir;
 	/* Variables for parallel program */
-	int iproc, jproc;
+	int iproc, jproc, myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i, omg_j, num_proc;
+
+	MPI_Init(&argn, &args);
+	MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
 
 	/* Read name of the problem from the command line arguments */
 	if(argn > 1) {
@@ -80,12 +84,15 @@ int main(int argn, char** args){
 	strcat(output_dirname, problem);
 	mkdir(problem, 0777);
 	output_dir = opendir(problem);
-	
+
 	/* Delete existing files in output folder*/
 	while((old_outputfile = readdir(output_dir))) {
 		sprintf(old_output_filename, "%s/%s", problem, old_outputfile->d_name);
 		remove(old_output_filename);
 	}
+	
+	/* Determine subdomain and neighbours for each process */
+	init_parallel(iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, &omg_i, &omg_j, num_proc);
 
 	/* Set up the matrices (arrays) needed using the matrix() command */
 	U = matrix(0, imax  , 0, jmax+1);
