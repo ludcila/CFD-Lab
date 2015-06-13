@@ -50,9 +50,9 @@ void init_parallel(
 	*rank_t = get_location_rank(*omg_i, *omg_j + 1, iproc, jproc);
 	
 	/* Get subdomain indices for this process */
-	*il = *omg_i * subdomain_width;
+	*il = *omg_i * subdomain_width + 1;
 	*ir = *il + subdomain_width - 1;
-	*jb = *omg_j * subdomain_height;
+	*jb = *omg_j * subdomain_height + 1;
 	*jt = *jb + subdomain_height - 1;
 	if(*rank_r == MPI_PROC_NULL) {
 		*ir = *ir + extra_width;

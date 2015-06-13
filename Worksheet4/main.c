@@ -101,56 +101,56 @@ int main(int argn, char** args){
 	F = matrix(il-2, ir+1, jb-1, jt+1);
 	G = matrix(il-1, ir+1, jb-2, jt+1);
 	RS= matrix(il, ir, jb, jt);
-	Flag = imatrix(il-1, il+1, jb-1, jt+1);
+	Flag = imatrix(il-1, ir+1, jb-1, jt+1);
 	
 	/* Assign initial values to u, v, p */
-	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
+	init_uvp(UI, VI, PI, il, ir, jb, jt, U, V, P);
 	
 	/* Initialize lower part of the domain with UI = 0 for the flow_over_step problem */
-	/* (this code might be moved to somewhere else later) */
+	/* (this code might be moved to somewhere else later)
 	if(strcmp(problem, "flow_over_step") == 0) {
 		init_matrix(U, 0, imax ,  0, jmax/2, 0);
-	}
+	} */
 
 	/* Initialization of flag field */
-	init_flag(problem, imax, jmax, Flag, dp);	
+	init_flag(problem, il, ir, jb, jt, Flag, dp);
 
 	
 	while(t <= t_end){
 	
 		/* Select δt */
-		calculate_dt(Re, tau, &dt, dx, dy, imax, jmax, U, V);
+		calculate_dt(Re, tau, &dt, dx, dy, il, ir, jb, jt, U, V);
 		
 		/* Set boundary values for u and v */
-		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, Flag);
+		boundaryvalues(il, ir, jb, jt, imax, jmax, U, V, wl, wr, wt, wb, Flag);
 	
 		/* Set special boundary values */
-		spec_boundary_val(problem, imax, jmax, U, V, P, Re, xlength, ylength, dp);
+		spec_boundary_val(problem, il, ir, jb, jt, imax, jmax, U, V, P, Re, xlength, ylength, dp);
 
 		/* Compute F(n) and G(n) */
-		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, Flag);
+		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V, F, G, Flag);
 		
 		/* Compute the right-hand side rs of the pressure equation */
-		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
+		calculate_rs(dt, dx, dy, il, ir, jb, jt, imax, jmax, F, G, RS);
 		
 		/* Perform SOR iterations */
 		it = 0;
 		res = 1e6;
 		while(it < itermax && res > eps){
-			sor(omg, dx, dy, dp, imax, jmax, P, RS, &res, Flag);
+			sor(omg, dx, dy, dp, il, ir, jb, jt, imax, jmax, P, RS, &res, Flag);
 			it++;
 		}
 		
 		/* Compute u(n+1) and v(n+1) */
-		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, Flag);
+		calculate_uv(dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V, F, G, P, Flag);
 		
 		t = t + dt;
 		n++;
 		
-		/* Generate snapshot for current timestep */
+		/* Generate snapshot for current timestep
 		if((int) n % timestepsPerPlotting == 0) {
 			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
-		}
+		} */
 		
 		/* Print out simulation time and whether the SOR converged */
 		printf("Time: %.4f", t);
@@ -166,13 +166,16 @@ int main(int argn, char** args){
 	printf("Please find the output in the folder \"%s\".\n", problem);
 	
 	/* Free allocated memory */
-	free_matrix(U , 0, imax  , 0, jmax+1);
-	free_matrix(V , 0, imax+1, 0, jmax  );
-	free_matrix(P , 0, imax+1, 0, jmax+1);
-	free_matrix(F , 0, imax  , 0, jmax+1);
-	free_matrix(G , 0, imax+1, 0, jmax  );
-	free_matrix(RS, 0, imax+1, 0, jmax+1);
+	free_matrix(U, il-2, ir+1, jb-1, jt+1);
+	free_matrix(V, il-1, ir+1, jb-2, jt+1);
+	free_matrix(P, il-1, ir+1, jb-1, jt+1);
+	free_matrix(F, il-2, ir+1, jb-1, jt+1);
+	free_matrix(G, il-1, ir+1, jb-2, jt+1);
+	free_matrix(RS, il, ir, jb, jt);
+	free_imatrix(Flag, il-1, ir+1, jb-1, jt+1);
 	
-	return -1;
+	MPI_Finalize();
+	
+	return 0;
 	
 }

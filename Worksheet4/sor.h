@@ -13,6 +13,8 @@ void sor(
   double dx,
   double dy,
   double dp,
+  int il, int ir,
+  int jb, int jt,
   int    imax,
   int    jmax,
   double **P,

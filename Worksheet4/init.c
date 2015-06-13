@@ -1,6 +1,7 @@
 #include "helper.h"
 #include "init.h"
 #include <string.h>
+#include <mpi.h>
 #include "boundary_val.h"
 
 int read_parameters( const char *szFileName,       /* name of the file */
@@ -81,21 +82,21 @@ void init_uvp(
   double UI,
   double VI,
   double PI,
-  int imax,
-  int jmax,
+  int il, int ir,
+  int jb, int jt,
   double **U,
   double **V,
   double **P
 ){
-	init_matrix(U, 0, imax ,  0, jmax+1, UI);
-	init_matrix(V, 0, imax+1, 0, jmax  , VI);
-	init_matrix(P, 0, imax+1, 0, jmax+1, PI);
+	init_matrix(U, il-2, ir+1 ,  jb-1, jt+1, UI);
+	init_matrix(V, il-1, ir+1, jb-2, jt+1, VI);
+	init_matrix(P, il-1, ir+1, jb-1, jt+1, PI);
 }
 
 void init_flag(
 	char* problem, 
-	int imax, 
-	int jmax, 
+	int il, int ir,
+	int jb, int jt,
 	int **Flag,
 	double dp
 ){
@@ -108,8 +109,8 @@ void init_flag(
 	pic = read_pgm(image_filename);	
 
 	/* Picture values: 1 for fluid, 0 for obstacle */
-	for(i = 1; i <= imax; i++){
-		for(j = 1; j <= jmax; j++){
+	for(i = il; i < ir; i++){
+		for(j = jb; j < jt; j++){
 			Flag[i][j] = max(pic[i+1][j] * B_O + pic[i-1][j] * B_W + pic[i][j-1] * B_S + pic[i][j+1] * B_N, pic[i][j] * C_F);
 		}
 	}

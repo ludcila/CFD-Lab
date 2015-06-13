@@ -25,6 +25,8 @@ enum C_type {
  * The boundary values of the problem are set.
  */
 void boundaryvalues(
+  int il, int ir,
+  int jb, int jt,
   int imax,
   int jmax,
   double **U,
@@ -36,10 +38,6 @@ void boundaryvalues(
   int **Flag
 );
 
-void noslip(int imax, int jmax, double **U, double **V, int side);
-void freeslip(int imax, int jmax, double **U, double **V, int side);
-void outflow(int imax, int jmax, double **U, double **V, int side);
-void movingwall(int imax, int jmax, double **U, double **V, int side);
-void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **V, double **P, double Re, double xlength, double ylength, double dp);
+void spec_boundary_val (char *problem, int il, int ir, int jb, int jt, int imax, int jmax, double **U, double **V, double **P, double Re, double xlength, double ylength, double dp);
 
 #endif

@@ -10,19 +10,19 @@ void calculate_dt(
 	double *dt,
 	double dx,
 	double dy,
-	int imax,
-	int jmax,
+	int il, int ir,
+	int jb, int jt,
 	double **U,
 	double **V
 ) {
 
 	int i, j;
-	double u_max = U[1][1], v_max = V[1][1];
+	double u_max = 0, v_max = 0;
 	double dt_min;
 
 	if(tau > 0) {
-		for (i = 1; i <= imax; i++) {
-			for (j = 1; j <= jmax; j++) {
+		for (i = il; i <= ir; i++) {
+			for (j = jb; j <= jt; j++) {
 				if (fabs(U[i][j]) > u_max)
 					u_max = fabs(U[i][j]);
 				if (fabs(V[i][j]) > v_max)
@@ -46,6 +46,8 @@ void calculate_fg(
 	double dt,
 	double dx,
 	double dy,
+	int il, int ir,
+	int jb, int jt,
 	int imax,
 	int jmax,
 	double **U,
@@ -55,12 +57,36 @@ void calculate_fg(
 	int **Flag
 ) {
 	int i, j;
-	for(j = 1; j <= jmax; j++) {
-		F[0][j] = U[0][j];
-		F[imax][j] = U[imax][j];
+	
+	/* Apply BC (If left boundary of subdomain is boundary of global domain) */
+	if(il == 0) {
+		for(j = jb; j <= jt; j++) {
+			F[0][j] = U[0][j];
+		}
 	}
-	for (i = 1; i <= imax - 1; i++) {
-		for (j = 1; j <= jmax; j++) {
+	/* Apply BC (If right boundary of subdomain is boundary of global domain) */
+	if(ir == imax) {
+		for(j = jb; j <= jt; j++) {
+			F[imax][j] = U[imax][j];
+		}
+	}
+	
+	/* Apply BC (If bottom boundary of subdomain is boundary of global domain) */
+	if(jb == 0) {
+		for(i = il; i <= ir; j++) {
+			G[i][0] = V[i][0];
+		}
+	}
+	/* Apply BC (If top boundary of subdomain is boundary of global domain) */
+	if(jt == jmax) {
+		for(i = il; i <= ir; j++) {
+			G[i][jmax] = V[i][jmax];
+		}
+	}
+	
+	
+	for (i = il; i <= ir - 1; i++) {
+		for (j = jb; j <= jt; j++) {
 			if(Flag[i][j] & B_W) {			/* B_W, west cell is fluid */
 				F[i-1][j] = U[i-1][j];
 			} else if(Flag[i][j] & B_O) {	/* B_O, east cell is fluid */
@@ -76,9 +102,8 @@ void calculate_fg(
 			}
 		}
 	}
-	for (i = 1; i <= imax; i++) {
-		G[i][0] = V[i][0];
-		for (j = 1; j <= jmax - 1; j++) {
+	for (i = il; i <= ir - 1; i++) {
+		for (j = jb; j <= jt; j++) {
 			if(Flag[i][j] & B_N) {			/* B_N, north cell is fluid */
 				G[i][j] = V[i][j];
 			} else if(Flag[i][j] & B_S) {	/* B_S, south cell is fluid */
@@ -93,8 +118,8 @@ void calculate_fg(
 					      + GY);
 			}
 		}
-		G[i][jmax] = V[i][jmax];
 	}
+	
 }
 
 
@@ -102,6 +127,8 @@ void calculate_rs(
 	double dt,
 	double dx,
 	double dy,
+	int il, int ir,
+	int jb, int jt,
 	int imax,
 	int jmax,
 	double **F,
@@ -110,8 +137,8 @@ void calculate_rs(
 ) {
 
 	int i, j;
-	for (i = 1; i <= imax; i++) {
-		for (j = 1; j <= jmax; j++) {
+	for (i = il; i <= ir; i++) {
+		for (j = jb; j <= jt; j++) {
 			RS[i][j] = 1 / dt * ((F[i][j] - F[i-1][j]) / dx + (G[i][j] - G[i][j-1]) / dy);
 		}
 	}
@@ -123,6 +150,8 @@ void calculate_uv(
 	double dt,
 	double dx,
 	double dy,
+	int il, int ir,
+	int jb, int jt,
 	int imax,
 	int jmax,
 	double **U,
@@ -133,8 +162,8 @@ void calculate_uv(
 	int **Flag
 ) {
 	unsigned int i, j;
-	for (i = 1; i <= imax - 1; i++) {
-		for (j = 1; j <= jmax; j++) {
+	for (i = il; i <= ir - 1; i++) {
+		for (j = jb; j <= jt; j++) {
 			if(Flag[i][j] == C_F) {
 				U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
 			} else {
@@ -142,8 +171,8 @@ void calculate_uv(
 			}
 		}
 	}
-	for (i = 1; i <= imax; i++) {
-		for (j = 1; j <= jmax - 1; j++) {
+	for (i = il; i <= ir; i++) {
+		for (j = jb; j <= jt - 1; j++) {
 			if(Flag[i][j] == C_F) {
 				V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
 			} else {

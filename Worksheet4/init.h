@@ -83,8 +83,8 @@ void init_uvp(
   double UI,
   double VI,
   double PI,
-  int imax,
-  int jmax,
+  int il, int ir,
+  int jb, int jt,
   double **U,
   double **V,
   double **P
@@ -92,8 +92,8 @@ void init_uvp(
 
 void init_flag(
 	char* problem, 
-	int imax, 
-	int jmax, 
+	int il, int ir,
+	int jb, int jt,
 	int **Flag,
 	double dp
 );
