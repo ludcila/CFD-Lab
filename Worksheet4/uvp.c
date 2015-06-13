@@ -100,7 +100,6 @@ void calculate_fg(
 			              - alpha / dy * (fabs(V[i][j] + V[i+1][j]) * (U[i][j] - U[i][j+1]) / 4 - fabs(V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] - U[i][j]) / 4)
 			              + GX);
 			}
-			              if(F[i][j] != 0) printf("************** got it\n");
 		}
 	}
 	for (i = il; i <= ir - 1; i++) {

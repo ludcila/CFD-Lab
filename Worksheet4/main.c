@@ -141,12 +141,31 @@ int main(int argn, char** args){
 		it = 0;
 		res = 1e6;
 		while(it < itermax && res > eps){
-			sor(omg, dx, dy, dp, il, ir, jb, jt, imax, jmax, P, RS, &res, Flag);
+			sor(omg, dx, dy, dp, il, ir, jb, jt, imax, jmax, rank_l, rank_r, rank_b, rank_t, P, RS, &res, Flag);
 			it++;
 		}
+		printf("(%d) it=%d res=%f\n", myrank, it, res);
 		
 		/* Compute u(n+1) and v(n+1) */
 		calculate_uv(dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V, F, G, P, Flag);
+		
+		/* Exchange velocity strips */
+		
+		/* Send to right neighbour and receive from left neighbor */
+		exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT);
+		exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT);
+	
+		/* Send to left neighbour and receive from right neighbor */
+		exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT);
+		exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT);
+
+		/* Send to upper neighbour and receive from lower neighbor */
+		exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP);
+		exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP);
+	
+		/* Send to lower neighbour and receive from upper neighbor */
+		exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN);
+		exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN);
 		
 		t = t + dt;
 		n++;
@@ -157,9 +176,11 @@ int main(int argn, char** args){
 		}
 		
 		/* Print out simulation time and whether the SOR converged */
-		printf("(%d) Time: %.4f", myrank, t);
-		if(res > eps) printf("\tDid not converge (res=%f, eps=%f)\n", res, eps);
-		else printf("\n");
+		if(myrank == 0) {
+			printf("Time: %.4f", t);
+			if(res > eps) printf("\tDid not converge (res=%f, eps=%f)\n", res, eps);
+			else printf("\n");
+		}
 		
 		MPI_Barrier(MPI_COMM_WORLD);
 	
@@ -185,3 +206,4 @@ int main(int argn, char** args){
 	return 0;
 	
 }
+

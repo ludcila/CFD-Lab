@@ -1,6 +1,8 @@
 #include "sor.h"
 #include "boundary_val.h"
 #include <math.h>
+#include <mpi.h>
+#include "parallel.h"
 
 void sor(
   double omg,
@@ -11,6 +13,8 @@ void sor(
   int jb, int jt,
   int    imax,
   int    jmax,
+  int rank_l, int rank_r, 
+  int rank_b, int rank_t,
   double **P,
   double **RS,
   double *res,
@@ -31,7 +35,22 @@ void sor(
 			}
 		}
 	}
+	
+	/* Exchange boundary strips */
 
+	/* Send to right neighbour and receive from left neighbor */
+	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT);
+	
+	/* Send to left neighbour and receive from right neighbor */
+	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT);
+
+	/* Send to upper neighbour and receive from lower neighbor */
+	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP);
+	
+	/* Send to lower neighbour and receive from upper neighbor */
+	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN);
+	
+	
 	/* Compute the residual */
 	rloc = 0;
 	for(i = il; i <= ir; i++) {
@@ -44,11 +63,11 @@ void sor(
 		}
 	}
 	rloc = rloc / count_num_fluid_cell;
-	rloc = sqrt(rloc);
+	MPI_Reduce(&rloc, res, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	MPI_Bcast(res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	
 	/* Set residual */
-	*res = rloc;
-
+	*res = sqrt(*res);
 	
 	/* BC for lower wall */
 	if(jb == 0) {

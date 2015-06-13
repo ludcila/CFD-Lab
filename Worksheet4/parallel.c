@@ -108,3 +108,94 @@ void Programm_Stop(char *txt)
    MPI_Finalize();
    exit(1);
 }
+
+void copy_to_strip(double **matrix, double *strip, int il, int ir, int jb, int jt) {
+	int i, j;
+	int k = 0;
+	for(i = il; i <= ir; i++) {
+		for(j = jb; j <= jt; j++) {
+			strip[k++] = matrix[i][j];
+		}
+	}
+}
+
+void copy_from_strip(double **matrix, double *strip, int il, int ir, int jb, int jt) {
+	int i, j;
+	int k = 0;
+	for(i = il; i <= ir; i++) {
+		for(j = jb; j <= jt; j++) {
+			matrix[i][j] = strip[k++];
+		}
+	}
+}
+
+void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t, int direction) {
+
+	int num_elem;
+	double *strip;
+	int send_to, receive_from;
+	int send_i_low, send_i_high, send_j_low, send_j_high;
+	int receive_i_low, receive_i_high, receive_j_low, receive_j_high;
+	
+	switch(direction) {
+		case LEFT_TO_RIGHT:
+			num_elem = jt - jb + 1;
+			send_to = rank_r;
+			receive_from = rank_l;
+			send_i_low = ir;
+			send_i_high = ir;
+			receive_i_low = il-1;
+			receive_i_high = il-1;
+			send_j_low = jb;
+			send_j_high = jt;
+			receive_j_low = jb;
+			receive_j_high = jt;
+			break;
+		case RIGHT_TO_LEFT:
+			num_elem = jt - jb + 1;
+			send_to = rank_l;
+			receive_from = rank_r;
+			send_i_low = il;
+			send_i_high = il;
+			receive_i_low = ir+1;
+			receive_i_high = ir+1;
+			send_j_low = jb;
+			send_j_high = jt;
+			receive_j_low = jb;
+			receive_j_high = jt;
+			break;
+		case DOWN_TO_UP:
+			num_elem = ir - il + 1;
+			send_to = rank_t;
+			receive_from = rank_b;
+			send_i_low = il;
+			send_i_high = ir;
+			receive_i_low = il;
+			receive_i_high = ir;
+			send_j_low = jt;
+			send_j_high = jt;
+			receive_j_low = jb-1;
+			receive_j_high = jb-1;
+			break;
+		case UP_TO_DOWN:
+			num_elem = ir - il + 1;
+			send_to = rank_b;
+			receive_from = rank_t;
+			send_i_low = il;
+			send_i_high = ir;
+			receive_i_low = il;
+			receive_i_high = ir;
+			send_j_low = jb;
+			send_j_high = jb;
+			receive_j_low = jt+1;
+			receive_j_high = jt+1;
+			break;
+	}
+	strip = malloc(num_elem * sizeof(double));
+	copy_to_strip(matrix, strip, send_i_low, send_i_high, send_j_low, send_j_high);
+	MPI_Send(strip, num_elem, MPI_DOUBLE, send_to, 0, MPI_COMM_WORLD);
+	MPI_Recv(strip, num_elem, MPI_DOUBLE, receive_from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	copy_from_strip(matrix, strip, receive_i_low, receive_i_high, receive_j_low, receive_j_high);	
+	free(strip);
+	
+}
