@@ -169,19 +169,25 @@ void spec_boundary_val (char *problem, int il, int ir, int jb, int jt, int imax,
 	/* Take care of inflow velocities */
 	if(dp == 0) {
 		if(strcmp(problem, "flow_over_step") == 0) {
-			for(j = jmax/2 + 1; j <= jt; j++) {
-				U[0][j] = 1;
-				V[0][j] = 0;
+			if(il == 0) {
+				for(j = jmax/2 + 1; j <= jt; j++) {
+					U[0][j] = 1;
+					V[0][j] = 0;
+				}
 			}
 		} else if(strcmp(problem, "karman_vortex_street") == 0) {
-			for(j = jb; j <= jt; j++) {
-				U[0][j] = 1;
-				V[0][j] = 0;
+			if(il == 0) {
+				for(j = jb; j <= jt; j++) {
+					U[0][j] = 1;
+					V[0][j] = 0;
+				}
 			}
 		} else if(strcmp(problem, "plane_shear_flow") == 0) {
-			for(j = jb; j <= jt; j++) {
-				U[0][j] = 1;
-				V[0][j] = 0;
+			if(il == 0) {
+				for(j = jb; j <= jt; j++) {
+					U[0][j] = 1;
+					V[0][j] = 0;
+				}
 			}
 		} else if(strcmp(problem, "driven_cavity") == 0) {
 			if(jt == jmax) {
