@@ -59,6 +59,7 @@ int main(int argn, char** args){
 	DIR *output_dir;
 	/* Variables for parallel program */
 	int iproc, jproc, myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i, omg_j, num_proc;
+	double min_dt;
 	
 	MPI_Init(&argn, &args);
 	MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
@@ -120,6 +121,9 @@ int main(int argn, char** args){
 	
 		/* Select δt */
 		calculate_dt(Re, tau, &dt, dx, dy, il, ir, jb, jt, U, V);
+		MPI_Reduce(&dt, &min_dt, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+		MPI_Bcast(&min_dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		dt = min_dt;
 		
 		/* Set boundary values for u and v */
 		boundaryvalues(il, ir, jb, jt, imax, jmax, U, V, wl, wr, wt, wb, Flag);
@@ -153,9 +157,11 @@ int main(int argn, char** args){
 		} */
 		
 		/* Print out simulation time and whether the SOR converged */
-		printf("Time: %.4f", t);
+		printf("(%d) Time: %.4f", myrank, t);
 		if(res > eps) printf("\tDid not converge (res=%f, eps=%f)\n", res, eps);
 		else printf("\n");
+		
+		MPI_Barrier(MPI_COMM_WORLD);
 	
 	}
 	
