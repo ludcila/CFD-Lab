@@ -144,7 +144,6 @@ int main(int argn, char** args){
 			sor(omg, dx, dy, dp, il, ir, jb, jt, imax, jmax, rank_l, rank_r, rank_b, rank_t, P, RS, &res, Flag);
 			it++;
 		}
-		printf("(%d) it=%d res=%f\n", myrank, it, res);
 		
 		/* Compute u(n+1) and v(n+1) */
 		calculate_uv(dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V, F, G, P, Flag);

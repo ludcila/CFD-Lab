@@ -136,6 +136,8 @@ void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int r
 	int send_to, receive_from;
 	int send_i_low, send_i_high, send_j_low, send_j_high;
 	int receive_i_low, receive_i_high, receive_j_low, receive_j_high;
+	MPI_Status status;
+	int count_received;
 	
 	switch(direction) {
 		case LEFT_TO_RIGHT:
@@ -194,8 +196,10 @@ void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int r
 	strip = malloc(num_elem * sizeof(double));
 	copy_to_strip(matrix, strip, send_i_low, send_i_high, send_j_low, send_j_high);
 	MPI_Send(strip, num_elem, MPI_DOUBLE, send_to, 0, MPI_COMM_WORLD);
-	MPI_Recv(strip, num_elem, MPI_DOUBLE, receive_from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-	copy_from_strip(matrix, strip, receive_i_low, receive_i_high, receive_j_low, receive_j_high);	
+	MPI_Recv(strip, num_elem, MPI_DOUBLE, receive_from, 0, MPI_COMM_WORLD, &status);
+	MPI_Get_count(&status, MPI_DOUBLE, &count_received);
+	if(count_received > 0)
+		copy_from_strip(matrix, strip, receive_i_low, receive_i_high, receive_j_low, receive_j_high);	
 	free(strip);
 	
 }
