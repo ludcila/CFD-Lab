@@ -70,7 +70,7 @@ void sor(
 	*res = sqrt(*res);
 	
 	/* BC for lower wall */
-	if(jb == 0) {
+	if(jb == 1) {
 		for(i = il; i <= ir; i++) {
 			P[i][0] = P[i][1];
 		}
@@ -86,7 +86,7 @@ void sor(
 	/* Set values for vertical boundaries (Dirichlet BC if dp != 0, Neumann BC otherwise) 
 		If dp != 0, we assign it to the left boundary and set the right boundary to 0 */
 	if(dp != 0){
-		if(il == 0) {
+		if(il == 1) {
 			for(j = jb; j <= jt; j++) {
 				P[0][j] = 2 * dp - P[1][j]; 
 			} 
@@ -97,7 +97,7 @@ void sor(
 			} 
 		}
 	} else{
-		if(il == 0) {
+		if(il == 1) {
 			for(j = jb; j <= jt; j++) {
 				P[0][j] = P[1][j];
 			}

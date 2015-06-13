@@ -102,8 +102,8 @@ void calculate_fg(
 			}
 		}
 	}
-	for (i = il; i <= ir - 1; i++) {
-		for (j = jb; j <= jt; j++) {
+	for (i = il; i <= ir; i++) {
+		for (j = jb; j <= jt - 1; j++) {
 			if(Flag[i][j] & B_N) {			/* B_N, north cell is fluid */
 				G[i][j] = V[i][j];
 			} else if(Flag[i][j] & B_S) {	/* B_S, south cell is fluid */
@@ -162,7 +162,14 @@ void calculate_uv(
 	int **Flag
 ) {
 	unsigned int i, j;
-	for (i = il; i <= ir - 1; i++) {
+	int last_idx;
+	
+	if(ir == imax) {
+		last_idx = ir - 1;
+	} else {
+		last_idx = ir;
+	}
+	for (i = il; i <= last_idx; i++) {
 		for (j = jb; j <= jt; j++) {
 			if(Flag[i][j] == C_F) {
 				U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
@@ -171,8 +178,14 @@ void calculate_uv(
 			}
 		}
 	}
+	
+	if(jt == jmax) {
+		last_idx = jt - 1;
+	} else {
+		last_idx = jt;
+	}
 	for (i = il; i <= ir; i++) {
-		for (j = jb; j <= jt - 1; j++) {
+		for (j = jb; j <= last_idx; j++) {
 			if(Flag[i][j] == C_F) {
 				V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
 			} else {
