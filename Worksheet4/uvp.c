@@ -59,7 +59,7 @@ void calculate_fg(
 	int i, j;
 	
 	/* Apply BC (If left boundary of subdomain is boundary of global domain) */
-	if(il == 0) {
+	if(il == 1) {
 		for(j = jb; j <= jt; j++) {
 			F[0][j] = U[0][j];
 		}
@@ -72,7 +72,7 @@ void calculate_fg(
 	}
 	
 	/* Apply BC (If bottom boundary of subdomain is boundary of global domain) */
-	if(jb == 0) {
+	if(jb == 1) {
 		for(i = il; i <= ir; i++) {
 			G[i][0] = V[i][0];
 		}
@@ -100,6 +100,7 @@ void calculate_fg(
 			              - alpha / dy * (fabs(V[i][j] + V[i+1][j]) * (U[i][j] - U[i][j+1]) / 4 - fabs(V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] - U[i][j]) / 4)
 			              + GX);
 			}
+			              if(F[i][j] != 0) printf("************** got it\n");
 		}
 	}
 	for (i = il; i <= ir - 1; i++) {

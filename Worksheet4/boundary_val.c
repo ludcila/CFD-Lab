@@ -19,7 +19,7 @@ void boundaryvalues(
 	int i, j;	
 	
 	/* Left boundary */
-	if(il == 0) {
+	if(il == 1) {
 		switch(wl) {
 			case BC_NO_SLIP:
 				for(j = jb; j <= jt; j++) {
@@ -91,7 +91,7 @@ void boundaryvalues(
 	}
 
 	/* Bottom boundary */
-	if(jb == 0) {
+	if(jb == 1) {
 		switch(wb) {
 			case BC_NO_SLIP:
 				for(i = il; i <= ir; i++) {
@@ -169,21 +169,21 @@ void spec_boundary_val (char *problem, int il, int ir, int jb, int jt, int imax,
 	/* Take care of inflow velocities */
 	if(dp == 0) {
 		if(strcmp(problem, "flow_over_step") == 0) {
-			if(il == 0) {
+			if(il == 1) {
 				for(j = jmax/2 + 1; j <= jt; j++) {
 					U[0][j] = 1;
 					V[0][j] = 0;
 				}
 			}
 		} else if(strcmp(problem, "karman_vortex_street") == 0) {
-			if(il == 0) {
+			if(il == 1) {
 				for(j = jb; j <= jt; j++) {
 					U[0][j] = 1;
 					V[0][j] = 0;
 				}
 			}
 		} else if(strcmp(problem, "plane_shear_flow") == 0) {
-			if(il == 0) {
+			if(il == 1) {
 				for(j = jb; j <= jt; j++) {
 					U[0][j] = 1;
 					V[0][j] = 0;
