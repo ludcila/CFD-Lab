@@ -151,10 +151,10 @@ int main(int argn, char** args){
 		t = t + dt;
 		n++;
 		
-		/* Generate snapshot for current timestep
+		/* Generate snapshot for current timestep */
 		if((int) n % timestepsPerPlotting == 0) {
-			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
-		} */
+			write_vtkFile(output_dirname, myrank, n, xlength, ylength, il, ir, jb, jt, imax, jmax, dx, dy, U, V, P);
+		}
 		
 		/* Print out simulation time and whether the SOR converged */
 		printf("(%d) Time: %.4f", myrank, t);

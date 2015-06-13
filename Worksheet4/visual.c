@@ -4,9 +4,12 @@
 
 
 void write_vtkFile(const char *szProblem,
+		 int    rank,
 		 int    timeStepNumber,
 		 double xlength,
                  double ylength,
+                 int il, int ir,
+                 int jb, int jt,
                  int    imax,
                  int    jmax,
 		 double dx,
@@ -18,7 +21,7 @@ void write_vtkFile(const char *szProblem,
   int i,j;
   char szFileName[80];
   FILE *fp=NULL;
-  sprintf( szFileName, "%s.%i.vtk", szProblem, timeStepNumber );
+  sprintf( szFileName, "%s_%i.%i.vtk", szProblem, rank, timeStepNumber );
   fp = fopen( szFileName, "w");
   if( fp == NULL )		       
   {
@@ -27,26 +30,26 @@ void write_vtkFile(const char *szProblem,
     ERROR( szBuff );
     return;
   }
+  
+  write_vtkHeader( fp, ir-il+1, jt-jb+1, dx, dy);
+  write_vtkPointCoordinates(fp, il, ir, jb, jt, dx, dy);
 
-  write_vtkHeader( fp, imax, jmax, dx, dy);
-  write_vtkPointCoordinates(fp, imax, jmax, dx, dy);
-
-  fprintf(fp,"POINT_DATA %i \n", (imax+1)*(jmax+1) );
+  fprintf(fp,"POINT_DATA %i \n", (ir-il+2)*(jt-jb+2) );
 	
   fprintf(fp,"\n");
   fprintf(fp, "VECTORS velocity float\n");
-  for(j = 0; j < jmax+1; j++) {
-    for(i = 0; i < imax+1; i++) {
+  for(j = jb-1; j <= jt; j++) {
+    for(i = il-1; i <= ir; i++) {
       fprintf(fp, "%f %f 0\n", (U[i][j] + U[i][j+1]) * 0.5, (V[i][j] + V[i+1][j]) * 0.5 );
     }
   }
 
   fprintf(fp,"\n");
-  fprintf(fp,"CELL_DATA %i \n", ((imax)*(jmax)) );
+  fprintf(fp,"CELL_DATA %i \n", ((ir-il+1)*(jt-jb+1)) );
   fprintf(fp, "SCALARS pressure float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
-  for(j = 1; j < jmax+1; j++) {
-    for(i = 1; i < imax+1; i++) {
+  for(j = jb; j <= jt; j++) {
+    for(i = il; i <= ir; i++) {
       fprintf(fp, "%f\n", P[i][j] );
     }
   }
@@ -81,7 +84,7 @@ void write_vtkHeader( FILE *fp, int imax, int jmax,
 }
 
 
-void write_vtkPointCoordinates( FILE *fp, int imax, int jmax, 
+void write_vtkPointCoordinates( FILE *fp, int il, int ir, int jb, int jt, 
                       double dx, double dy) {
   double originX = 0.0;  
   double originY = 0.0;
@@ -89,8 +92,8 @@ void write_vtkPointCoordinates( FILE *fp, int imax, int jmax,
   int i = 0;
   int j = 0;
 
-  for(j = 0; j < jmax+1; j++) {
-    for(i = 0; i < imax+1; i++) {
+  for(j = jb-1; j <= jt; j++) {
+    for(i = il-1; i <= ir; i++) {
       fprintf(fp, "%f %f 0\n", originX+(i*dx), originY+(j*dy) );
     }
   }

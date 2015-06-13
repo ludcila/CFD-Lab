@@ -22,9 +22,12 @@
  * @author Tobias Neckel
  */
 void write_vtkFile(const char *szProblem,
+		  int    rank,
 		  int    timeStepNumber,
 		  double xlength,
                   double ylength,
+                 int il, int ir,
+                 int jb, int jt,
                   int    imax,
                   int    jmax,
 		  double dx,
@@ -58,7 +61,7 @@ void write_vtkHeader( FILE *fp, int imax, int jmax,
  * 
  * @author Tobias Neckel
  */
-void write_vtkPointCoordinates( FILE *fp, int imax, int jmax, 
+void write_vtkPointCoordinates( FILE *fp, int il, int ir, int jb, int jt, 
                                 double dx, double dy);
 
 #endif
