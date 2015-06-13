@@ -73,13 +73,13 @@ void calculate_fg(
 	
 	/* Apply BC (If bottom boundary of subdomain is boundary of global domain) */
 	if(jb == 0) {
-		for(i = il; i <= ir; j++) {
+		for(i = il; i <= ir; i++) {
 			G[i][0] = V[i][0];
 		}
 	}
 	/* Apply BC (If top boundary of subdomain is boundary of global domain) */
 	if(jt == jmax) {
-		for(i = il; i <= ir; j++) {
+		for(i = il; i <= ir; i++) {
 			G[i][jmax] = V[i][jmax];
 		}
 	}
