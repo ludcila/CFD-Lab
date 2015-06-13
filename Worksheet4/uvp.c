@@ -92,7 +92,7 @@ void calculate_fg(
 			} else if(Flag[i][j] & B_O) {	/* B_O, east cell is fluid */
 				F[i][j] = U[i][j];
 			} else if(Flag[i][j] == C_F) {
-			F[i][j] = U[i][j] + dt * (
+				F[i][j] = U[i][j] + dt * (
 			              + 1 / Re * ((U[i+1][j] - 2 * U[i][j] + U[i-1][j]) / (dx * dx) + (U[i][j+1] - 2 * U[i][j] + U[i][j-1]) / (dy * dy))
 			              - 1 / dx * (pow((U[i][j] + U[i+1][j]) / 2, 2) - pow((U[i-1][j] + U[i][j]) / 2, 2))
 			              - alpha / dx * (fabs(U[i][j] + U[i+1][j]) * (U[i][j] - U[i+1][j]) / 4 - fabs(U[i-1][j] + U[i][j]) * (U[i-1][j] - U[i][j]) / 4)
