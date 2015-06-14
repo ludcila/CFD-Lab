@@ -123,6 +123,17 @@ int main(int argn, char** args){
 		calculate_dt(Re, tau, &dt, dx, dy, il, ir, jb, jt, U, V);
 		MPI_Reduce(&dt, &min_dt, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
 		MPI_Bcast(&min_dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		/*
+		* MPI_Allreduce(&dt, &min_dt, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+		***************************************************************************************
+		* alternative way
+		***************************************************************************************
+		* MPI_Reduce( void* send_data, void* recv_data, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm communicator)
+		* MPI_Allreduce( void* send_data, void* recv_data, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm communicator)
+		***************************************************************************************
+		*/
+
+
 		dt = min_dt;
 		
 		/* Set boundary values for u and v */
