@@ -115,8 +115,8 @@ void boundaryvalues(
 	}
 	
 	/* Obstacles */
-	for(i = il; i < ir; i++) {
-		for(j = jb; j < jt; j++) {
+	for(i = il; i <= ir; i++) {
+		for(j = jb; j <= jt; j++) {
 		
 			switch(Flag[i][j]) {
 				case B_N:

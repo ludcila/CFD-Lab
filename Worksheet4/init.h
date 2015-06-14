@@ -92,6 +92,8 @@ void init_uvp(
 
 void init_flag(
 	char* problem, 
+	int imax,
+	int jmax,
 	int il, int ir,
 	int jb, int jt,
 	int **Flag,

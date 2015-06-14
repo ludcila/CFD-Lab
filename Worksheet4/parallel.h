@@ -7,6 +7,10 @@
 #define		UP_TO_DOWN		3
 #define		DOWN_TO_UP		4
 
+#define		VAR_P			1
+#define		VAR_U			2
+#define		VAR_V			3
+
 int get_location_rank(int omg_i, int omg_j, int iproc, int jproc);
 
 void init_parallel(
@@ -51,4 +55,8 @@ void Programm_Stop(char *txt);
 
 void copy_to_strip(double **matrix, double *strip, int il, int ir, int jb, int jt);
 void copy_from_strip(double **matrix, double *strip, int il, int ir, int jb, int jt);
-void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t, int direction);
+void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t, int direction, int variable);
+
+void pressure_com(double **P, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t);
+void uv_com(double **U, double **V, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t);
+	

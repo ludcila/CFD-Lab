@@ -37,18 +37,8 @@ void sor(
 	}
 	
 	/* Exchange boundary strips */
+	pressure_com(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t);
 
-	/* Send to right neighbour and receive from left neighbor */
-	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT);
-	
-	/* Send to left neighbour and receive from right neighbor */
-	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT);
-
-	/* Send to upper neighbour and receive from lower neighbor */
-	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP);
-	
-	/* Send to lower neighbour and receive from upper neighbor */
-	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN);
 	
 	
 	/* Compute the residual */

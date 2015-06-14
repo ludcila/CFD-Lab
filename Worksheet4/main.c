@@ -114,7 +114,7 @@ int main(int argn, char** args){
 	} */
 
 	/* Initialization of flag field */
-	init_flag(problem, il, ir, jb, jt, Flag, dp);
+	init_flag(problem, imax, jmax, il, ir, jb, jt, Flag, dp);
 
 	
 	while(t <= t_end){
@@ -160,22 +160,7 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V, F, G, P, Flag);
 		
 		/* Exchange velocity strips */
-		
-		/* Send to right neighbour and receive from left neighbor */
-		exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT);
-		exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT);
-	
-		/* Send to left neighbour and receive from right neighbor */
-		exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT);
-		exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT);
-
-		/* Send to upper neighbour and receive from lower neighbor */
-		exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP);
-		exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP);
-	
-		/* Send to lower neighbour and receive from upper neighbor */
-		exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN);
-		exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN);
+		uv_com(U, V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t);
 		
 		t = t + dt;
 		n++;

@@ -95,6 +95,8 @@ void init_uvp(
 
 void init_flag(
 	char* problem, 
+	int imax,
+	int jmax,
 	int il, int ir,
 	int jb, int jt,
 	int **Flag,
@@ -109,8 +111,8 @@ void init_flag(
 	pic = read_pgm(image_filename);	
 
 	/* Picture values: 1 for fluid, 0 for obstacle */
-	for(i = il; i <= ir; i++){
-		for(j = jb; j <= jt; j++){
+	for(i = max(il-1, 1); i <= min(ir+1, imax); i++){
+		for(j =  max(jb-1, 1); j <= min(jt+1, jmax); j++){
 			Flag[i][j] = max(pic[i+1][j] * B_O + pic[i-1][j] * B_W + pic[i][j-1] * B_S + pic[i][j+1] * B_N, pic[i][j] * C_F);
 		}
 	}
