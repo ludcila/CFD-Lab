@@ -193,7 +193,7 @@ void spec_boundary_val (char *problem, int il, int ir, int jb, int jt, int imax,
 			if(jt == jmax) {
 				for(i = il-1; i <= ir+1; i++) {
 					U[i][jmax + 1] = 2 - U[i][jmax];
-					V[0][jmax] = 0;
+					V[i][jmax] = 0;
 				}
 			}
 		} 
