@@ -60,6 +60,7 @@ int main(int argn, char** args){
 	/* Variables for parallel program */
 	int iproc, jproc, myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i, omg_j, num_proc;
 	double min_dt;
+	double *bufSend, *bufRecv;
 	
 	MPI_Init(&argn, &args);
 	MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
@@ -107,6 +108,10 @@ int main(int argn, char** args){
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, il, ir, jb, jt, U, V, P);
 	
+	/* Allocate memory for buffers */
+	bufSend = malloc(max(ir-il+3, jt-jb+3) * sizeof(double));
+	bufRecv = malloc(max(ir-il+3, jt-jb+3) * sizeof(double));
+	
 	/* Initialize lower part of the domain with UI = 0 for the flow_over_step problem */
 	/* (this code might be moved to somewhere else later)
 	if(strcmp(problem, "flow_over_step") == 0) {
@@ -152,7 +157,7 @@ int main(int argn, char** args){
 		it = 0;
 		res = 1e6;
 		while(it < itermax && res > eps){
-			sor(omg, dx, dy, dp, il, ir, jb, jt, imax, jmax, rank_l, rank_r, rank_b, rank_t, P, RS, &res, Flag);
+			sor(omg, dx, dy, dp, il, ir, jb, jt, imax, jmax, rank_l, rank_r, rank_b, rank_t, P, RS, &res, Flag, bufSend, bufRecv);
 			it++;
 		}
 		
@@ -160,7 +165,7 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, il, ir, jb, jt, imax, jmax, U, V, F, G, P, Flag);
 		
 		/* Exchange velocity strips */
-		uv_com(U, V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t);
+		uv_com(U, V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv);
 		
 		t = t + dt;
 		n++;
@@ -195,6 +200,8 @@ int main(int argn, char** args){
 	free_matrix(G, il-1, ir+1, jb-2, jt+1);
 	free_matrix(RS, il, ir, jb, jt);
 	free_imatrix(Flag, il-1, ir+1, jb-1, jt+1);
+	free(bufSend);
+	free(bufRecv);
 	
 	MPI_Finalize();
 	

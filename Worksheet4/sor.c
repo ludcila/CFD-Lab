@@ -5,20 +5,22 @@
 #include "parallel.h"
 
 void sor(
-  double omg,
-  double dx,
-  double dy,
-  double dp,
-  int il, int ir,
-  int jb, int jt,
-  int    imax,
-  int    jmax,
-  int rank_l, int rank_r, 
-  int rank_b, int rank_t,
-  double **P,
-  double **RS,
-  double *res,
-  int **Flag
+	double omg,
+	double dx,
+	double dy,
+	double dp,
+	int il, int ir,
+	int jb, int jt,
+	int    imax,
+	int    jmax,
+	int rank_l, int rank_r, 
+	int rank_b, int rank_t,
+	double **P,
+	double **RS,
+	double *res,
+	int **Flag,
+	double *bufSend,
+	double *bufRecv
 ) {
 
   int i,j;
@@ -37,7 +39,7 @@ void sor(
 	}
 	
 	/* Exchange boundary strips */
-	pressure_com(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t);
+	pressure_com(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv);
 
 	
 	

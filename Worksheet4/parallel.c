@@ -109,30 +109,39 @@ void Programm_Stop(char *txt)
    exit(1);
 }
 
-void copy_to_strip(double **matrix, double *strip, int il, int ir, int jb, int jt) {
+void copy_to_buffer(double **matrix, double *buffer, int il, int ir, int jb, int jt) {
 	int i, j;
 	int k = 0;
 	for(i = il; i <= ir; i++) {
 		for(j = jb; j <= jt; j++) {
-			strip[k++] = matrix[i][j];
+			buffer[k++] = matrix[i][j];
 		}
 	}
 }
 
-void copy_from_strip(double **matrix, double *strip, int il, int ir, int jb, int jt) {
+void copy_from_buffer(double **matrix, double *buffer, int il, int ir, int jb, int jt) {
 	int i, j;
 	int k = 0;
 	for(i = il; i <= ir; i++) {
 		for(j = jb; j <= jt; j++) {
-			matrix[i][j] = strip[k++];
+			matrix[i][j] = buffer[k++];
 		}
 	}
 }
 
-void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t, int direction, int variable) {
+void exchange(
+	double **matrix,
+	int il, int ir,
+	int jb, int jt,
+	int rank_l, int rank_r,
+	int rank_b, int rank_t,
+	int direction,
+	int variable,
+	double *bufSend,
+	double *bufRecv
+) {
 
 	int num_elem;
-	double *strip;
 	int send_to, receive_from;
 	int send_i_low, send_i_high, send_j_low, send_j_high;
 	int receive_i_low, receive_i_high, receive_j_low, receive_j_high;
@@ -141,13 +150,13 @@ void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int r
 	
 	switch(direction) {
 		case LEFT_TO_RIGHT:
-			num_elem = jt - jb + 1;
+			num_elem = jt - jb + 3;
 			send_to = rank_r;
 			receive_from = rank_l;
-			send_j_low = jb;
-			send_j_high = jt;
-			receive_j_low = jb;
-			receive_j_high = jt;
+			send_j_low = jb-1;
+			send_j_high = jt+1;
+			receive_j_low = jb-1;
+			receive_j_high = jt+1;
 			switch(variable) {
 				case VAR_P:
 				case VAR_V:
@@ -165,26 +174,26 @@ void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int r
 			}
 			break;
 		case RIGHT_TO_LEFT:
-			num_elem = jt - jb + 1;
+			num_elem = jt - jb + 3;
 			send_to = rank_l;
 			receive_from = rank_r;
-			send_j_low = jb;
-			send_j_high = jt;
-			receive_j_low = jb;
-			receive_j_high = jt;
+			send_j_low = jb-1;
+			send_j_high = jt+1;
+			receive_j_low = jb-1;
+			receive_j_high = jt+1;
 			send_i_low = il;
 			send_i_high = il;
 			receive_i_low = ir+1;
 			receive_i_high = ir+1;
 			break;
 		case DOWN_TO_UP:
-			num_elem = ir - il + 1;
+			num_elem = ir - il + 3;
 			send_to = rank_t;
 			receive_from = rank_b;
-			send_i_low = il;
-			send_i_high = ir;
-			receive_i_low = il;
-			receive_i_high = ir;
+			send_i_low = il-1;
+			send_i_high = ir+1;
+			receive_i_low = il-1;
+			receive_i_high = ir+1;
 			switch(variable) {
 				case VAR_P:
 				case VAR_U:
@@ -202,49 +211,64 @@ void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int r
 			}
 			break;
 		case UP_TO_DOWN:
-			num_elem = ir - il + 1;
+			num_elem = ir - il + 3;
 			send_to = rank_b;
 			receive_from = rank_t;
-			send_i_low = il;
-			send_i_high = ir;
-			receive_i_low = il;
-			receive_i_high = ir;
+			send_i_low = il-1;
+			send_i_high = ir+1;
+			receive_i_low = il-1;
+			receive_i_high = ir+1;
 			send_j_low = jb;
 			send_j_high = jb;
 			receive_j_low = jt+1;
 			receive_j_high = jt+1;
 			break;
 	}
-	strip = malloc(num_elem * sizeof(double));
-	copy_to_strip(matrix, strip, send_i_low, send_i_high, send_j_low, send_j_high);
-	MPI_Send(strip, num_elem, MPI_DOUBLE, send_to, 0, MPI_COMM_WORLD);
-	MPI_Recv(strip, num_elem, MPI_DOUBLE, receive_from, 0, MPI_COMM_WORLD, &status);
+	copy_to_buffer(matrix, bufSend, send_i_low, send_i_high, send_j_low, send_j_high);
+	MPI_Send(bufSend, num_elem, MPI_DOUBLE, send_to, 0, MPI_COMM_WORLD);
+	MPI_Recv(bufRecv, num_elem, MPI_DOUBLE, receive_from, 0, MPI_COMM_WORLD, &status);
 	MPI_Get_count(&status, MPI_DOUBLE, &count_received);
 	if(count_received > 0)
-		copy_from_strip(matrix, strip, receive_i_low, receive_i_high, receive_j_low, receive_j_high);	
-	free(strip);
+		copy_from_buffer(matrix, bufRecv, receive_i_low, receive_i_high, receive_j_low, receive_j_high);	
 	
 }
 
-void pressure_com(double **P, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t) {
-	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT, VAR_P);
-	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT, VAR_P);
-	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP, VAR_P);
-	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN, VAR_P);
+void pressure_com(
+	double **P, 
+	int il, int ir, 
+	int jb, int jt, 
+	int rank_l, int rank_r, 
+	int rank_b, int rank_t,
+	double *bufSend,
+	double *bufRecv
+) {
+	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT, VAR_P, bufSend, bufRecv);
+	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT, VAR_P, bufSend, bufRecv);
+	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP, VAR_P, bufSend, bufRecv);
+	exchange(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN, VAR_P, bufSend, bufRecv);
 }
 
-void uv_com(double **U, double **V, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t) {
+void uv_com(
+	double **U, 
+	double **V, 
+	int il, int ir, 
+	int jb, int jt, 
+	int rank_l, int rank_r,
+	int rank_b, int rank_t,
+	double *bufSend,
+	double *bufRecv
+) {
 	
-	exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT, VAR_U);
-	exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT, VAR_V);
+	exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT, VAR_U, bufSend, bufRecv);
+	exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, LEFT_TO_RIGHT, VAR_V, bufSend, bufRecv);
 
-	exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT, VAR_U);
-	exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT, VAR_V);
+	exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT, VAR_U, bufSend, bufRecv);
+	exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, RIGHT_TO_LEFT, VAR_V, bufSend, bufRecv);
 
-	exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP, VAR_U);
-	exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP, VAR_V);
+	exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP, VAR_U, bufSend, bufRecv);
+	exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, DOWN_TO_UP, VAR_V, bufSend, bufRecv);
 
-	exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN, VAR_U);
-	exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN, VAR_V);
+	exchange(U, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN, VAR_U, bufSend, bufRecv);
+	exchange(V, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, UP_TO_DOWN, VAR_V, bufSend, bufRecv);
 	
 }

@@ -50,13 +50,47 @@ void Programm_Sync(char *txt);
 void Programm_Stop(char *txt);
 /* all processes will produce a text output, be synchronized and finished */
 
+void copy_to_buffer(
+	double **matrix, 
+	double *buffer, 
+	int il, int ir, 
+	int jb, int jt
+);
 
+void copy_from_buffer(
+	double **matrix,
+	double *buffer,
+	int il, int ir,
+	int jb, int jt
+);
 
+void exchange(
+	double **matrix,
+	int il, int ir,
+	int jb, int jt,
+	int rank_l, int rank_r,
+	int rank_b, int rank_t,
+	int direction,
+	int variable,
+	double *bufSend, double *bufRecv
+);
 
-void copy_to_strip(double **matrix, double *strip, int il, int ir, int jb, int jt);
-void copy_from_strip(double **matrix, double *strip, int il, int ir, int jb, int jt);
-void exchange(double **matrix, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t, int direction, int variable);
+void pressure_com(
+	double **P, 
+	int il, int ir, 
+	int jb, int jt, 
+	int rank_l, int rank_r, 
+	int rank_b, int rank_t,
+	double *bufSend, double *bufRecv
+);
 
-void pressure_com(double **P, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t);
-void uv_com(double **U, double **V, int il, int ir, int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t);
+void uv_com(
+	double **U, 
+	double **V, 
+	int il, int ir, 
+	int jb, int jt, 
+	int rank_l, int rank_r,
+	int rank_b, int rank_t,
+	double *bufSend, double *bufRecv
+);
 	
