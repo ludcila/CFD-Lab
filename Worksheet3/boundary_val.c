@@ -154,7 +154,7 @@ void boundaryvalues(
 
 void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **V, double **P, double Re, double xlength, double ylength, double dp){
 	
-	int j;
+	int i, j;
 	
 	/* Take care of inflow velocities */
 	if(dp == 0) {
@@ -173,7 +173,12 @@ void spec_boundary_val (char *problem, int imax, int jmax, double **U, double **
 				U[0][j] = 1;
 				V[0][j] = 0;
 			}
-		}
+		} else if(strcmp(problem, "driven_cavity") == 0) {
+			for(i = 0; i <= imax; i++) {
+				U[i][jmax + 1] = 2 - U[i][jmax];
+				V[i][jmax] = 0;
+			}
+		} 
 	}
 	/* Pressure boundary conditions are currently taken care of in the SOR */
 	

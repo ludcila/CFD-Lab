@@ -56,6 +56,8 @@ int main(int argn, char** args){
 	char old_output_filename[128];
 	struct dirent *old_outputfile;
 	DIR *output_dir;
+	struct timespec previousTime, currentTime;
+	double totalTime = 0;
 
 	/* Read name of the problem from the command line arguments */
 	if(argn > 1) {
@@ -106,6 +108,7 @@ int main(int argn, char** args){
 	/* Initialization of flag field */
 	init_flag(problem, imax, jmax, Flag, dp);	
 
+	clock_gettime(CLOCK_MONOTONIC, &currentTime);
 	
 	while(t <= t_end){
 	
@@ -143,10 +146,18 @@ int main(int argn, char** args){
 			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 		}
 		
-		/* Print out simulation time and whether the SOR converged */
+		/* Print out simulation time */
 		printf("Time: %.4f", t);
-		if(res > eps) printf("\tDid not converge (res=%f, eps=%f)\n", res, eps);
-		else printf("\n");
+		
+		/* Print out runtime */
+		previousTime = currentTime;
+		clock_gettime(CLOCK_MONOTONIC, &currentTime);
+		totalTime += (double)currentTime.tv_sec + 1e-9 * currentTime.tv_nsec - (double)previousTime.tv_sec - 1e-9 * previousTime.tv_nsec;
+		printf("\tRuntime: %.3f s (avg runtime/step: %.3f s)", totalTime, totalTime/n);
+		
+		/* Print out whether the SOR converged */
+		if(res > eps) printf("\t*** Did not converge (res=%f, eps=%f)", res, eps);
+		printf("\n");
 	
 	}
 	
