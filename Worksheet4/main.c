@@ -39,7 +39,8 @@ int main(int argn, char** args){
 	if(argn > 1) {
 		strcpy(problem, args[1]);
 	} else {
-		printf("*** Please provide the name of the problem\n*** e.g. Run ./sim problem_name if there is a problem_name.dat file.\n");
+		printf("\n=== ERROR: Please provide the name of the problem\n=== e.g. Run ./sim problem_name if there is a problem_name.dat file.\n\n");
+		MPI_Finalize();
 		return 1;
 	}
 
@@ -54,7 +55,6 @@ int main(int argn, char** args){
 	/* Check if the number of processes is correct */
 	if(iproc * jproc != num_proc) {
 		printf("\n=== ERROR: Number of processes is incorrect (iproc=%d, jproc=%d, -np=%d) ===\n\n", iproc, jproc, num_proc);
-		MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Finalize();
 		return 1;
 	}
