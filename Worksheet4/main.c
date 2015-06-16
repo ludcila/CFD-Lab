@@ -50,6 +50,14 @@ int main(int argn, char** args){
 	/* Read the program configuration file using read_parameters() */
 	read_parameters(parameters_filename, pgm, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb, &timestepsPerPlotting, &iproc, &jproc);
 	printf("%s\n", pgm);
+	
+	/* Check if the number of processes is correct */
+	if(iproc * jproc != num_proc) {
+		printf("\n=== ERROR: Number of processes is incorrect (iproc=%d, jproc=%d, -np=%d) ===\n\n", iproc, jproc, num_proc);
+		MPI_Barrier(MPI_COMM_WORLD);
+		MPI_Finalize();
+		return 1;
+	}
 
 	/* Create folder with the name of the problem */
 	strcpy(output_dirname, problem);
