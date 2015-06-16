@@ -6,6 +6,7 @@ imax		300
 jmax		300
 xlength		10
 ylength		10
+pgm			-
 
 # ---------------------------------
 # Timestepping

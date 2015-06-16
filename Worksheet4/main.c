@@ -15,6 +15,7 @@ int main(int argn, char** args){
 	int **Flag;
 	char problem[60];
 	char parameters_filename[60];
+	char pgm[60];
 	char output_dirname[60];
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value, dp;
 	double res = 0, t = 0, n = 0;
@@ -47,7 +48,8 @@ int main(int argn, char** args){
 	strcat(parameters_filename, ".dat");
 
 	/* Read the program configuration file using read_parameters() */
-	read_parameters(parameters_filename, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb, &timestepsPerPlotting, &iproc, &jproc);
+	read_parameters(parameters_filename, pgm, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value, problem, &dp, &wl, &wr, &wt, &wb, &timestepsPerPlotting, &iproc, &jproc);
+	printf("%s\n", pgm);
 
 	/* Create folder with the name of the problem */
 	strcpy(output_dirname, problem);
@@ -88,7 +90,7 @@ int main(int argn, char** args){
 	}
 
 	/* Initialization of flag field */
-	init_flag(problem, imax, jmax, il, ir, jb, jt, Flag, dp);
+	init_flag(pgm, imax, jmax, il, ir, jb, jt, Flag, dp);
 	
 	if(myrank == 0) {
 		clock_gettime(CLOCK_MONOTONIC, &currentTime);
@@ -155,7 +157,9 @@ int main(int argn, char** args){
 	closedir(output_dir);
 	
 	/* Tell user where to find the output */
-	printf("Please find the output in the folder \"%s\".\n", problem);
+	if(myrank == 0) {
+		printf("Please find the output in the folder \"%s\".\n", problem);
+	}
 	
 	/* Free allocated memory */
 	free_matrix(U, il-2, ir+1, jb-1, jt+1);
@@ -168,6 +172,7 @@ int main(int argn, char** args){
 	free(bufSend);
 	free(bufRecv);
 	
+	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Finalize();
 	
 	return 0;

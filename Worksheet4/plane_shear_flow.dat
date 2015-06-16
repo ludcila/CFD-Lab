@@ -6,6 +6,7 @@ imax		100
 jmax		20
 xlength		10
 ylength		2
+pgm			-
 
 # ---------------------------------
 # Timestepping
@@ -59,3 +60,9 @@ wb			1
 
 timestepsPerPlotting	5
 
+# ---------------------------------
+# Parallelization options
+# ---------------------------------
+
+iproc		2
+jproc		1

@@ -44,6 +44,7 @@
  */
 int read_parameters( 
   const char *szFileName,
+  char* pgm,      /* name of pgm file */
   double *Re,
   double *UI,
   double *VI,
@@ -91,7 +92,7 @@ void init_uvp(
 );
 
 void init_flag(
-	char* problem, 
+	char* pgm, 
 	int imax,
 	int jmax,
 	int il, int ir,

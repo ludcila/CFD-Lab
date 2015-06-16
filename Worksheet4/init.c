@@ -5,6 +5,7 @@
 #include "boundary_val.h"
 
 int read_parameters( const char *szFileName,       /* name of the file */
+					char* pgm,      /* name of pgm file */
                     double *Re,                /* reynolds number   */
                     double *UI,                /* velocity x-direction */
                     double *VI,                /* velocity y-direction */
@@ -36,6 +37,9 @@ int read_parameters( const char *szFileName,       /* name of the file */
 		    int *iproc,
 		    int *jproc)
 {
+
+   READ_STRING( szFileName, pgm );
+
    READ_DOUBLE( szFileName, *xlength );
    READ_DOUBLE( szFileName, *ylength );
 
@@ -94,7 +98,7 @@ void init_uvp(
 }
 
 void init_flag(
-	char* problem, 
+	char* pgm, 
 	int imax,
 	int jmax,
 	int il, int ir,
@@ -102,19 +106,24 @@ void init_flag(
 	int **Flag,
 	double dp
 ){
-	char image_filename[60];
 	int **pic;
 	int i,j;
 	
-	strcpy(image_filename, problem);
-	strcat(image_filename, ".pgm");     
-	pic = read_pgm(image_filename);	
+	if(strcmp(pgm, "-") == 0) {
+	
+		init_imatrix(Flag, il-1, ir+1, jb-1, jt+1, C_F);
+		
+	} else {
+	
+		pic = read_pgm(pgm);	
 
-	/* Picture values: 1 for fluid, 0 for obstacle */
-	for(i = max(il-1, 1); i <= min(ir+1, imax); i++){
-		for(j =  max(jb-1, 1); j <= min(jt+1, jmax); j++){
-			Flag[i][j] = max(pic[i+1][j] * B_O + pic[i-1][j] * B_W + pic[i][j-1] * B_S + pic[i][j+1] * B_N, pic[i][j] * C_F);
+		/* Picture values: 1 for fluid, 0 for obstacle */
+		for(i = max(il-1, 1); i <= min(ir+1, imax); i++){
+			for(j =  max(jb-1, 1); j <= min(jt+1, jmax); j++){
+				Flag[i][j] = max(pic[i+1][j] * B_O + pic[i-1][j] * B_W + pic[i][j-1] * B_S + pic[i][j+1] * B_N, pic[i][j] * C_F);
+			}
 		}
+		
 	}
 	
 	/* Pressure boundary conditions are currently implemented in such a way 

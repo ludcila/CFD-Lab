@@ -6,6 +6,7 @@ imax		100
 jmax		20
 xlength		10
 ylength		2
+pgm			flow_over_step.pgm
 
 # ---------------------------------
 # Timestepping
@@ -62,3 +63,9 @@ wb			1
 
 timestepsPerPlotting	10
 
+# ---------------------------------
+# Parallelization options
+# ---------------------------------
+
+iproc		1
+jproc		2

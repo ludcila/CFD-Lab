@@ -6,6 +6,7 @@ imax		100
 jmax		20
 xlength		10
 ylength		2
+pgm			karman_vortex_street.pgm
 
 # ---------------------------------
 # Timestepping
@@ -46,7 +47,7 @@ PI			0.0
 # Boundary types
 # ---------------------------------
 
-wl			1
+wl			3
 wr			3
 wt			1
 wb			1
@@ -57,3 +58,9 @@ wb			1
 
 timestepsPerPlotting	2
 
+# ---------------------------------
+# Parallelization options
+# ---------------------------------
+
+iproc		2
+jproc		1

@@ -61,7 +61,9 @@ void init_parallel(
 		*jt = *jt + extra_height;
 	}
 	
-	printf("myrank=%d location=(%d, %d) L=%d R=%d B=%d T=%d subdomain=[%d, %d]x[%d, %d]\n ", *myrank, *omg_i, *omg_j, *rank_l, *rank_r, *rank_b, *rank_t, *il, *ir, *jb, *jt);
+	MPI_Barrier(MPI_COMM_WORLD);
+	printf("myrank=%d location=(%d, %d) L=%d R=%d B=%d T=%d subdomain=[%d, %d]x[%d, %d]\n", *myrank, *omg_i, *omg_j, *rank_l, *rank_r, *rank_b, *rank_t, *il, *ir, *jb, *jt);
+	MPI_Barrier(MPI_COMM_WORLD);
 
 }
 
