@@ -61,6 +61,8 @@ int main(int argn, char** args){
 	int iproc, jproc, myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i, omg_j, num_proc;
 	double min_dt;
 	double *bufSend, *bufRecv;
+	double totalTime = 0;
+	struct timespec previousTime, currentTime;
 	
 	MPI_Init(&argn, &args);
 	MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
@@ -120,6 +122,10 @@ int main(int argn, char** args){
 
 	/* Initialization of flag field */
 	init_flag(problem, imax, jmax, il, ir, jb, jt, Flag, dp);
+	
+	if(myrank == 0) {
+		clock_gettime(CLOCK_MONOTONIC, &currentTime);
+	}
 
 	
 	while(t <= t_end){
@@ -177,13 +183,19 @@ int main(int argn, char** args){
 		
 		/* Print out simulation time and whether the SOR converged */
 		if(myrank == 0) {
+			/* Print simulation time */
 			printf("Time: %.4f", t);
-			if(res > eps) printf("\tDid not converge (res=%f, eps=%f)\n", res, eps);
-			else printf("\n");
+			/* Print runtime */
+			previousTime = currentTime;
+			clock_gettime(CLOCK_MONOTONIC, &currentTime);
+			totalTime += (double)currentTime.tv_sec + 1e-9 * currentTime.tv_nsec - (double)previousTime.tv_sec - 1e-9 * previousTime.tv_nsec;
+			printf("\tRuntime: %.3f s (avg runtime/step: %.3f s)", totalTime, totalTime/n);
+			if(res > eps) printf("\tDid not converge (res=%f, eps=%f)", res, eps);
+			printf("\n");
 		}
 		
-		MPI_Barrier(MPI_COMM_WORLD);
-	
+		
+
 	}
 	
 	/* Close the output folder */
