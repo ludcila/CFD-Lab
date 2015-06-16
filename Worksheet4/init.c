@@ -88,7 +88,7 @@ void init_uvp(
   double **V,
   double **P
 ){
-	init_matrix(U, il-2, ir+1 ,  jb-1, jt+1, UI);
+	init_matrix(U, il-2, ir+1, jb-1, jt+1, UI);
 	init_matrix(V, il-1, ir+1, jb-2, jt+1, VI);
 	init_matrix(P, il-1, ir+1, jb-1, jt+1, PI);
 }

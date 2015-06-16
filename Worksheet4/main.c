@@ -9,39 +9,6 @@
 #include <dirent.h>
 #include "parallel.h"
 
-/**
- * The main operation reads the configuration file, initializes the scenario and
- * contains the main loop. So here are the individual steps of the algorithm:
- *
- * - read the program configuration file using read_parameters()
- * - set up the matrices (arrays) needed using the matrix() command
- * - create the initial setup init_uvp(), init_flag(), output_uvp()
- * - perform the main loop
- * - trailer: destroy memory allocated and do some statistics
- *
- * The layout of the grid is decribed by the first figure below, the enumeration
- * of the whole grid is given by the second figure. All the unknowns corresond
- * to a two dimensional degree of freedom layout, so they are not stored in
- * arrays, but in a matrix.
- *
- * @image html grid.jpg
- *
- * @image html whole-grid.jpg
- *
- * Within the main loop the following big steps are done (for some of the 
- * operations a definition is defined already within uvp.h):
- *
- * - calculate_dt() Determine the maximal time step size.
- * - boundaryvalues() Set the boundary values for the next time step.
- * - calculate_fg() Determine the values of F and G (diffusion and confection).
- *   This is the right hand side of the pressure equation and used later on for
- *   the time step transition.
- * - calculate_rs()
- * - Iterate the pressure poisson equation until the residual becomes smaller
- *   than eps or the maximal number of iterations is performed. Within the
- *   iteration loop the operation sor() is used.
- * - calculate_uv() Calculate the velocity at the next time step.
- */
 int main(int argn, char** args){
 
 	double **U, **V, **P, **F, **G, **RS;
@@ -115,10 +82,10 @@ int main(int argn, char** args){
 	bufRecv = malloc(max(ir-il+3, jt-jb+3) * sizeof(double));
 	
 	/* Initialize lower part of the domain with UI = 0 for the flow_over_step problem */
-	/* (this code might be moved to somewhere else later)
+	/* (this code might be moved to somewhere else later) */
 	if(strcmp(problem, "flow_over_step") == 0) {
-		init_matrix(U, 0, imax ,  0, jmax/2, 0);
-	} */
+		init_matrix(U, il, ir, jb, min(jmax/2, jt), 0);
+	}
 
 	/* Initialization of flag field */
 	init_flag(problem, imax, jmax, il, ir, jb, jt, Flag, dp);
@@ -127,23 +94,11 @@ int main(int argn, char** args){
 		clock_gettime(CLOCK_MONOTONIC, &currentTime);
 	}
 
-	
 	while(t <= t_end){
 	
 		/* Select δt */
 		calculate_dt(Re, tau, &dt, dx, dy, il, ir, jb, jt, U, V);
-		MPI_Reduce(&dt, &min_dt, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-		MPI_Bcast(&min_dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		/*
-		* MPI_Allreduce(&dt, &min_dt, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
-		***************************************************************************************
-		* alternative way
-		***************************************************************************************
-		* MPI_Reduce( void* send_data, void* recv_data, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm communicator)
-		* MPI_Allreduce( void* send_data, void* recv_data, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm communicator)
-		***************************************************************************************
-		*/
-
+		MPI_Allreduce(&dt, &min_dt, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
 
 		dt = min_dt;
 		
@@ -193,8 +148,6 @@ int main(int argn, char** args){
 			if(res > eps) printf("\tDid not converge (res=%f, eps=%f)", res, eps);
 			printf("\n");
 		}
-		
-		
 
 	}
 	

@@ -19,35 +19,32 @@ void boundaryvalues(
 
 	int i, j;
 	
-	/* Extended indices (e.g. compute U from il-1 to ir+1, unless il=1 or ir=imax) */
-	int il_ext = max(1, il-1);
-	int ir_ext = min(imax, ir+1);
-	int jb_ext = max(1, jb-1);
-	int jt_ext = min(jmax, jt+1);
-	
 	/* Left boundary */
 	if(il == 1) {
 		switch(wl) {
 			case BC_NO_SLIP:
+				V[0][jb-1] = -V[1][jb-1];
 				for(j = jb; j <= jt; j++) {
 					U[0][j] = 0;
 					V[0][j] = -V[1][j];
 				}
-				/* Extended range for V */
-				V[0][jb_ext] = -V[1][jb_ext];
-				V[0][jt_ext] = -V[1][jt_ext];
+				V[0][jt+1] = -V[1][jt+1];
 				break;
 			case BC_FREE_SLIP:
+				V[0][jb-1] = V[1][jb-1];
 				for(j = jb; j <= jt; j++) {
 					U[0][j] = 0;
 					V[0][j] = V[1][j];
 				}
+				V[0][jt+1] = V[1][jt+1];
 				break;
 			case BC_OUTFLOW:
+				V[0][jb-1] = V[1][jb-1];
 				for(j = jb; j <= jt; j++) {
 					U[0][j] = U[1][j];
 					V[0][j] = V[1][j];
 				}
+				V[0][jt+1] = V[1][jt+1];
 				break;
 		}
 	}
@@ -56,25 +53,28 @@ void boundaryvalues(
 	if(ir == imax) {
 		switch(wr) {
 			case BC_NO_SLIP:
+				V[imax+1][jb-1] = -V[imax][jb-1];
 				for(j = jb; j <= jt; j++) {
 					U[imax][j] = 0;
 					V[imax+1][j] = -V[imax][j];
 				}
-				/* Extended range for V */
-				V[imax+1][jb_ext] = -V[imax][jb_ext];
-				V[imax+1][jt_ext] = -V[imax][jt_ext];
+				V[imax+1][jt+1] = -V[imax][jt+1];
 				break;
 			case BC_FREE_SLIP:
+				V[imax+1][jb-1] = V[imax][jb-1];
 				for(j = jb; j <= jt; j++) {
 					U[imax][j] = 0;
 					V[imax+1][j] = V[imax][j];
 				}
+				V[imax+1][jt+1] = V[imax][jt+1];
 				break;
 			case BC_OUTFLOW:
+				V[imax+1][jb-1] = V[imax][jb-1];
 				for(j = jb; j <= jt; j++) {
 					U[imax][j] = U[imax-1][j];
 					V[imax+1][j] = V[imax][j];
 				}
+				V[imax+1][jt+1] = V[imax][jt+1];
 				break;
 		}
 	}
@@ -83,25 +83,28 @@ void boundaryvalues(
 	if(jt == jmax) {
 		switch(wt) {
 			case BC_NO_SLIP:
+				U[il-1][jmax+1] = -U[il-1][jmax];
 				for(i = il; i <= ir; i++) {
 					U[i][jmax+1] = -U[i][jmax];
 					V[i][jmax] = 0;
 				}
-				/* Extended range for U */
-				U[il_ext][jmax+1] = -U[il_ext][jmax];
-				U[ir_ext][jmax+1] = -U[ir_ext][jmax];
+				U[ir+1][jmax+1] = -U[ir+1][jmax];
 				break;
 			case BC_FREE_SLIP:
+				U[il-1][jmax+1] = U[il-1][jmax];
 				for(i = il; i <= ir; i++) {
 					U[i][jmax+1] = U[i][jmax];
 					V[i][jmax] = 0;
 				}
+				U[ir+1][jmax+1] = U[ir+1][jmax];
 				break;
 			case BC_OUTFLOW:
+				U[il-1][jmax+1] = U[il-1][jmax];
 				for(i = il; i <= ir; i++) {
 					U[i][jmax+1] = U[i][jmax];
 					V[i][jmax] = V[i][jmax-1];
 				}
+				U[ir+1][jmax+1] = U[ir+1][jmax];
 				break;
 		}
 	}
@@ -110,32 +113,35 @@ void boundaryvalues(
 	if(jb == 1) {
 		switch(wb) {
 			case BC_NO_SLIP:
+				U[il-1][0] = -U[il-1][1];
 				for(i = il; i <= ir; i++) {
 					U[i][0] = -U[i][1];
 					V[i][0] = 0;
 				}
-				/* Extended range for U */
-				U[il_ext][0] = -U[il_ext][1];
-				U[ir_ext][0] = -U[ir_ext][1];
+				U[ir+1][0] = -U[ir+1][1];
 				break;
 			case BC_FREE_SLIP:
+				U[il-1][0] = U[il-1][1];
 				for(i = il; i <= ir; i++) {
 					U[i][0] = U[i][1];
 					V[i][0] = 0;
 				}
+				U[ir+1][0] = U[ir+1][1];
 				break;
 			case BC_OUTFLOW:
+				U[il-1][0] = U[il-1][1];
 				for(i = il; i <= ir; i++) {
 					U[i][0] = U[i][1];
 					V[i][0] = V[i][1];
 				}
+				U[ir+1][0] = U[ir+1][1];
 				break;
 		}
 	}
 	
 	/* Obstacles */
-	for(i = il_ext; i <= ir_ext; i++) {
-		for(j = jb_ext; j <= jt_ext; j++) {
+	for(i = il; i <= ir; i++) {
+		for(j = jb; j <= jt; j++) {
 		
 			switch(Flag[i][j]) {
 				case B_N:

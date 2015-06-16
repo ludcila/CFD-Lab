@@ -28,39 +28,6 @@ void sor(
   double rloc;
   double coeff = omg/(2.0*(1.0/(dx*dx)+1.0/(dy*dy)));
 
-	/* SOR iteration */
-	for(i = il; i <= ir; i++) {
-		for(j = jb; j <= jt; j++) {
-			if(Flag[i][j] == C_F) {
-				P[i][j] = (1.0-omg)*P[i][j]
-						+ coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
-			}
-		}
-	}
-	
-	/* Exchange boundary strips */
-	pressure_com(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv);
-
-	
-	
-	/* Compute the residual */
-	rloc = 0;
-	for(i = il; i <= ir; i++) {
-		for(j = jb; j <= jt; j++) {
-			if(Flag[i][j] == C_F) {
-				rloc += ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j])*
-						( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j]);
-				count_num_fluid_cell++;
-			}
-		}
-	}
-	rloc = rloc / count_num_fluid_cell;
-	MPI_Reduce(&rloc, res, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	MPI_Bcast(res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	
-	/* Set residual */
-	*res = sqrt(*res);
-	
 	/* BC for lower wall */
 	if(jb == 1) {
 		for(i = il; i <= ir; i++) {
@@ -102,8 +69,8 @@ void sor(
 	}
 	
 	/* Set pressures of obstacle cells */
-	for(i = il; i <= ir; i++) {
-		for(j = jb; j <= jt; j++) {
+	for(i = il-1; i <= ir+1; i++) {
+		for(j = jb-1; j <= jt+1; j++) {
 			switch(Flag[i][j]) {
 				case B_N:
 					P[i][j] = P[i][j+1];
@@ -132,6 +99,36 @@ void sor(
 			}
 		}
 	}
+
+	/* SOR iteration */
+	for(i = il; i <= ir; i++) {
+		for(j = jb; j <= jt; j++) {
+			if(Flag[i][j] == C_F) {
+				P[i][j] = (1.0-omg)*P[i][j]
+						+ coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
+			}
+		}
+	}
+	
+	/* Exchange boundary strips */
+	pressure_com(P, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, bufSend, bufRecv);
+
+	/* Compute the residual */
+	rloc = 0;
+	for(i = il; i <= ir; i++) {
+		for(j = jb; j <= jt; j++) {
+			if(Flag[i][j] == C_F) {
+				rloc += ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j])*
+						( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j]);
+				count_num_fluid_cell++;
+			}
+		}
+	}
+	rloc = rloc / count_num_fluid_cell;
+	MPI_Allreduce(&rloc, res, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	
+	/* Set residual */
+	*res = sqrt(*res);
 
 }
 
