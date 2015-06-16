@@ -1,4 +1,5 @@
 #include "boundary_val.h"
+#include "helper.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -16,7 +17,13 @@ void boundaryvalues(
 	int **Flag
 ) {
 
-	int i, j;	
+	int i, j;
+	
+	/* Extended indices (e.g. compute U from il-1 to ir+1, unless il=1 or ir=imax) */
+	int il_ext = max(1, il-1);
+	int ir_ext = min(imax, ir+1);
+	int jb_ext = max(1, jb-1);
+	int jt_ext = min(jmax, jt+1);
 	
 	/* Left boundary */
 	if(il == 1) {
@@ -26,6 +33,9 @@ void boundaryvalues(
 					U[0][j] = 0;
 					V[0][j] = -V[1][j];
 				}
+				/* Extended range for V */
+				V[0][jb_ext] = -V[1][jb_ext];
+				V[0][jt_ext] = -V[1][jt_ext];
 				break;
 			case BC_FREE_SLIP:
 				for(j = jb; j <= jt; j++) {
@@ -50,6 +60,9 @@ void boundaryvalues(
 					U[imax][j] = 0;
 					V[imax+1][j] = -V[imax][j];
 				}
+				/* Extended range for V */
+				V[imax+1][jb_ext] = -V[imax][jb_ext];
+				V[imax+1][jt_ext] = -V[imax][jt_ext];
 				break;
 			case BC_FREE_SLIP:
 				for(j = jb; j <= jt; j++) {
@@ -74,6 +87,9 @@ void boundaryvalues(
 					U[i][jmax+1] = -U[i][jmax];
 					V[i][jmax] = 0;
 				}
+				/* Extended range for U */
+				U[il_ext][jmax+1] = -U[il_ext][jmax];
+				U[ir_ext][jmax+1] = -U[ir_ext][jmax];
 				break;
 			case BC_FREE_SLIP:
 				for(i = il; i <= ir; i++) {
@@ -98,6 +114,9 @@ void boundaryvalues(
 					U[i][0] = -U[i][1];
 					V[i][0] = 0;
 				}
+				/* Extended range for U */
+				U[il_ext][0] = -U[il_ext][1];
+				U[ir_ext][0] = -U[ir_ext][1];
 				break;
 			case BC_FREE_SLIP:
 				for(i = il; i <= ir; i++) {
@@ -115,8 +134,8 @@ void boundaryvalues(
 	}
 	
 	/* Obstacles */
-	for(i = il; i <= ir; i++) {
-		for(j = jb; j <= jt; j++) {
+	for(i = il_ext; i <= ir_ext; i++) {
+		for(j = jb_ext; j <= jt_ext; j++) {
 		
 			switch(Flag[i][j]) {
 				case B_N:
@@ -191,7 +210,7 @@ void spec_boundary_val (char *problem, int il, int ir, int jb, int jt, int imax,
 			}
 		} else if(strcmp(problem, "driven_cavity") == 0) {
 			if(jt == jmax) {
-				for(i = il-1; i <= ir+1; i++) {
+				for(i = max(1, il-1); i <= min(imax, ir+1); i++) {
 					U[i][jmax + 1] = 2 - U[i][jmax];
 					V[i][jmax] = 0;
 				}
