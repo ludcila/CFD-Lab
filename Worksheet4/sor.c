@@ -24,7 +24,7 @@ void sor(
 ) {
 
   int i,j;
-  int count_num_fluid_cell = 0;
+  int count_num_fluid_cell = 0, total_fluid_cells;
   double rloc;
   double coeff = omg/(2.0*(1.0/(dx*dx)+1.0/(dy*dy)));
 
@@ -124,11 +124,11 @@ void sor(
 			}
 		}
 	}
-	rloc = rloc / count_num_fluid_cell;
 	MPI_Allreduce(&rloc, res, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Allreduce(&count_num_fluid_cell, &total_fluid_cells, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 	
 	/* Set residual */
-	*res = sqrt(*res);
+	*res = sqrt(*res/total_fluid_cells);
 
 }
 
