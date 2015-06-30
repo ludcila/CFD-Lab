@@ -1,18 +1,22 @@
 #ifndef __VOF__
+
 #define __VOF__
-#endif
 
 /* Flags for free surface cells */
 enum FS_xy {
-	FS_N 	= 32+1,		/* Empty cell at north */
-	FS_S	= 32+2,		/* Empty cell at south */
-	FS_O	= 32+4,		/* Empty cell at east */
-	FS_W	= 32+8		/* Empty cell at west */
+	FS_N 	= 32+16+1,		/* Empty cell at north */
+	FS_S	= 32+16+2,		/* Empty cell at south */
+	FS_O	= 32+16+4,		/* Empty cell at east */
+	FS_W	= 32+16+8		/* Empty cell at west */
 };
 /* Flags to indicate cell type */
 enum C_type {
-	C_F 	= 16		/* Interior fluid cell */
+	C_F 	= 16,		/* Interior fluid cell */
+	C_FS	= 48,		/* Free surface cell */
+	C_E		= 0			/* Empty cell */
 };
+
+#endif
 
 /* Set the initial fluid fraction based on the pgm file */
 void init_fluidFraction(int **pgm, double **fluidFraction, int imax, int jmax);
