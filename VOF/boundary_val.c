@@ -8,7 +8,7 @@ void boundaryvalues(
 ) {
 
 	int i, j;
-	double U_wall = 1.0;
+	double U_wall = 0.0;
 	
 	/* Left wall */
 	for(j = 0; j <= jmax; j++) {
