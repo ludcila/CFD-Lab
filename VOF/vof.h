@@ -25,7 +25,7 @@ void init_fluidFraction(int **pgm, double **fluidFraction, int imax, int jmax);
 void adjust_fluidFraction(double **fluidFraction, int **flagField, double epsilon, int imax, int jmax);
 
 /* Determine orientation of the free surface */
-void calculate_freeSurfaceOrientation(double **fluidFraction, double **dFdx, double **dFdy, int imax, int jmax);
+void calculate_freeSurfaceOrientation(double **fluidFraction, int **flagField, double **dFdx, double **dFdy, double dx, double dy, int imax, int jmax);
 
 /* Timestepping for the fluid fraction field */
 void calculate_fluidFraction(

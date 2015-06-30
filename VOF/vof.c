@@ -60,8 +60,31 @@ void adjust_fluidFraction(double **fluidFraction, int **flagField, double epsilo
 }
 
 /* Determine orientation of the free surface */
-void calculate_freeSurfaceOrientation(double **fluidFraction, double **dFdx, double **dFdy, int imax, int jmax) {
+void calculate_freeSurfaceOrientation(double **fluidFraction, int **flagField, double **dFdx, double **dFdy, double dx, double dy, int imax, int jmax) {
 
+	int i, j;
+	
+	/* Copy fluidFraction to boundary cells, just to make computations easier */
+	for(i = 1; i <= imax; i++) {
+		fluidFraction[i][0] = fluidFraction[i][1];
+		fluidFraction[i][jmax+1] = fluidFraction[i][jmax];
+	}
+	for(j = 1; j <= jmax; j++) {
+		fluidFraction[0][j] = fluidFraction[1][j];
+		fluidFraction[imax+1][j] = fluidFraction[imax][j];
+	}
+	
+	/* (Assuming uniform grid in each axis) */
+	
+	for(i = 1; i <= imax; i++) {
+		for(j = 1; j <= jmax; j++) {
+			if(flagField[i][j] & C_FS) {
+				dFdx[i][j] = 0.5 * ((fluidFraction[i+1][j-1] + fluidFraction[i+1][j] + fluidFraction[i+1][j+1]) - (fluidFraction[i-1][j-1] + fluidFraction[i-1][j] + fluidFraction[i-1][j+1])) / dx;
+				dFdy[i][j] = 0.5 * ((fluidFraction[i-1][j+1] + fluidFraction[i][j+1] + fluidFraction[i+1][j+1]) - (fluidFraction[i-1][j-1] + fluidFraction[i][j-1] + fluidFraction[i+1][j-1])) / dy;
+			}
+		}
+	}
+	
 }
 
 /* Timestepping for the fluid fraction field */
