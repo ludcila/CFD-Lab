@@ -5,47 +5,22 @@
 #include"uvp.h"
 #include"boundary_val.h"
 #include"sor.c"
+#include "vof.h"
 
-/**
- * The main operation reads the configuration file, initializes the scenario and
- * contains the main loop. So here are the individual steps of the algorithm:
- *
- * - read the program configuration file using read_parameters()
- * - set up the matrices (arrays) needed using the matrix() command
- * - create the initial setup init_uvp(), init_flag(), output_uvp()
- * - perform the main loop
- * - trailer: destroy memory allocated and do some statistics
- *
- * The layout of the grid is decribed by the first figure below, the enumeration
- * of the whole grid is given by the second figure. All the unknowns corresond
- * to a two dimensional degree of freedom layout, so they are not stored in
- * arrays, but in a matrix.
- *
- * @image html grid.jpg
- *
- * @image html whole-grid.jpg
- *
- * Within the main loop the following big steps are done (for some of the 
- * operations a definition is defined already within uvp.h):
- *
- * - calculate_dt() Determine the maximal time step size.
- * - boundaryvalues() Set the boundary values for the next time step.
- * - calculate_fg() Determine the values of F and G (diffusion and confection).
- *   This is the right hand side of the pressure equation and used later on for
- *   the time step transition.
- * - calculate_rs()
- * - Iterate the pressure poisson equation until the residual becomes smaller
- *   than eps or the maximal number of iterations is performed. Within the
- *   iteration loop the operation sor() is used.
- * - calculate_uv() Calculate the velocity at the next time step.
- */
 int main(int argn, char** args){
 
 	double **U, **V, **P, **F, **G, **RS;
-	const char *szFileName = "cavity100.dat";
+	const char *szFileName = "dam_break.dat";
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
+	
+	/* Additional data structures for VOF */
+	double **fluidFraction;
+	int **flagField;
+	double **dFdx, **dFdy;
+	int **pic;
+	double epsilon = 1e-6;
 	
 	/* Read the program configuration file using read_parameters() */
 	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value);        
@@ -57,6 +32,14 @@ int main(int argn, char** args){
 	F = matrix(0, imax  , 0, jmax+1);
 	G = matrix(0, imax+1, 0, jmax  );
 	RS= matrix(0, imax+1, 0, jmax+1);
+	flagField = imatrix(0, imax+1, 0, jmax+1);
+	fluidFraction = matrix(0, imax+1, 0, jmax+1);
+	dFdx = matrix(0, imax+1, 0, jmax+1);
+	dFdy = matrix(0, imax+1, 0, jmax+1);
+	
+	/* Read pgm file with domain and initial setting */
+	pic = read_pgm("dam_break.pgm");
+	init_fluidFraction(pic, fluidFraction, imax, jmax);
 	
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
@@ -75,6 +58,12 @@ int main(int argn, char** args){
 		/* Compute the right-hand side rs of the pressure equation */
 		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
 		
+		/* Set valid values for the fluid fraction */
+		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
+		
+		/* Determine the orientation of the free surfaces */
+		calculate_freeSurfaceOrientation(fluidFraction, dFdx, dFdy, imax, jmax);
+		
 		/* Perform SOR iterations */
 		it=0;
 		res = 1e6;
@@ -86,13 +75,22 @@ int main(int argn, char** args){
 		/* Compute u(n+1) and v(n+1) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
 		
+		/* Compute fluidFraction(n+1) */
+		calculate_fluidFraction(fluidFraction, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
+		
+		if((int)n % 10 == 0) {
+			write_vtkFile("output/cavity", n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+		}
+		
+		/* Print out simulation time and whether SOR converged */
+		printf("Time: %.4f", t);
+		if(res > eps) printf("\t*** Did not converge (res=%f, eps=%f)", res, eps);
+		printf("\n");
+		
 		t = t + dt;
 		n++;
 	
 	}
-
-	/* Output of u, v, p for visualization */
-	write_vtkFile("cavity", n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 
 	free_matrix(U , 0, imax  , 0, jmax+1);
 	free_matrix(V , 0, imax+1, 0, jmax  );
