@@ -19,7 +19,7 @@ enum C_type {
 #endif
 
 /* Set the initial fluid fraction based on the pgm file */
-void init_fluidFraction(int **pgm, double **fluidFraction, int imax, int jmax);
+void init_fluidFraction(int **pgm, double **fluidFraction,double **fluidFraction_alt, int imax, int jmax);
 
 /* Bookeeping adjustments as described by Hirt and Nichols */
 void adjust_fluidFraction(double **fluidFraction, int **flagField, double epsilon, int imax, int jmax);
@@ -29,7 +29,8 @@ void calculate_freeSurfaceOrientation(double **fluidFraction, int **flagField, d
 
 /* Timestepping for the fluid fraction field */
 void calculate_fluidFraction(
-	double **fluidFraction, 
+	double **fluidFraction,
+	double **fluidFraction_alt, 
 	double **U, 
 	double **V, 
 	double **dFdx, 

@@ -1,13 +1,15 @@
 #include "helper.h"
 #include "vof.h"
+#include <math.h>
 
 /* Set the initial fluid fraction based on the pgm file */
-void init_fluidFraction(int **pgm, double **fluidFraction, int imax, int jmax) {
+void init_fluidFraction(int **pgm, double **fluidFraction,double **fluidFraction_alt, int imax, int jmax) {
 	int i, j;
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j <= jmax; j++) {
 			if(pgm[i][j] == 1) {
 				fluidFraction[i][j] = 1;
+				fluidFraction_alt[i][j] = 1;
 			}
 		}
 	}
@@ -89,7 +91,8 @@ void calculate_freeSurfaceOrientation(double **fluidFraction, int **flagField, d
 
 /* Timestepping for the fluid fraction field */
 void calculate_fluidFraction(
-	double **fluidFraction, 
+	double **fluidFraction,
+ 	double **fluidFraction_alt,
 	double **U, 
 	double **V, 
 	double **dFdx, 
@@ -100,5 +103,139 @@ void calculate_fluidFraction(
 	double dy, 
 	double dt
 ) {
+
+	int i,j,sign;
+	double F_D_right,F_D_left,F_AD_left,F_AD_right;
+	double V_x_right,V_x_left,CF_x_right,CF_x_left,delta_F_right,delta_F_left;
+	double F_D_bottom,F_D_top,F_AD_top,F_AD_bottom,V_y_bottom,V_y_top,CF_y_bottom,CF_y_top;
+	double delta_F_bottom,delta_F_top;
+
+
+
+
+/*=======================for x sweep======================*/
+    for (i=1;i<=imax;i++){
+        for (j=1;j<=jmax;j++){
+            
+                if (j<jmax){
+                    if (U[i][j]>0){
+                        F_D_right=fluidFraction_alt[i][j];
+                        sign=1;}
+                    else if(U[i][j]<0){
+                        F_D_right=fluidFraction_alt[i][j+1];
+                        sign=-1;
+                    }
+                }
+                if (j>1){
+                    if(U[i][j-1]>0){
+                        F_D_left=fluidFraction_alt[i][j-1];
+                        sign=1;}
+                    else if(U[i][j-1]<0){
+                        F_D_left=fluidFraction_alt[i][j];
+                        sign=-1;
+                    }
+                }
+                
+                if(j==1){
+                    if(U[i][j]>0)
+                        F_D_left=0.0;
+                    else
+                        F_D_left=fluidFraction_alt[i][j];
+                    }
+                else if(j==jmax){
+                    if(U[i][j]<0)
+                        F_D_right=0.0;
+                    else
+                        F_D_right=fluidFraction_alt[i][j];
+                    
+                }
+
+                 F_AD_left=F_D_left;
+                 F_AD_right=F_D_right;
+
+         
+                
+                V_x_right=U[i][j]*dt;
+                V_x_left=U[i-1][j]*dt;
+                CF_x_right=fmax((1.0-F_AD_right)*abs(V_x_right)-(1.0-F_D_right)*dx,0);
+                CF_x_left=fmax((1.0-F_AD_left)*abs(V_x_left)-(1.0-F_D_left)*dx,0);
+                delta_F_right=fmin(F_AD_right*abs(V_x_right)+CF_x_right,F_D_right*dx)*dx;
+              	delta_F_left=fmin(F_AD_left*abs(V_x_left)+CF_x_left,F_AD_left*dx)*dx;
+                fluidFraction[i][j]=fluidFraction[i][j]-sign*delta_F_right+sign*delta_F_left;
+            
+    
+         }
+    }
+  
+
+   
+/*=======================for y sweep======================*/
+    for (j=1;j<=jmax;j++){
+        for (i=1;i<=imax;i++){
+
+               if (i<imax){
+                    if (V[i][j]>0){
+                        F_D_bottom=fluidFraction_alt[i][j];
+                        sign=1;}
+                    else if(V[i][j]<0){
+                        F_D_bottom=fluidFraction_alt[i+1][j];
+                        sign=-1;
+                    }
+                }
+                if (i>1){
+                    if((V[i-1][j]>0)){
+                        F_D_top=fluidFraction_alt[i-1][j];
+                        sign=1;}
+                    else if(V[i-1][j]<0){
+                        F_D_top=fluidFraction_alt[i][j];
+                        sign=-1;
+                    }
+                }
+                
+                if(i==1){
+                    if(V[i][j]>0)
+                        F_D_top=0.0;
+                    else
+                        F_D_top=fluidFraction_alt[i][j];
+                    }
+                else if(i==imax){
+                    if(V[i][j]<0)
+                        F_D_bottom=0.0;
+                    else
+                        F_D_bottom=fluidFraction_alt[i][j];
+                   
+                }
+
+                 F_AD_top=F_D_top;
+                 F_AD_bottom=F_D_bottom;
+
+
+                V_y_bottom=V[i][j-1]*dt;
+                V_y_top=V[i][j]*dt;
+                CF_y_bottom=fmax((1.0-F_AD_bottom)*abs(V_y_bottom)-(1.0-F_D_bottom)*dy,0);
+                CF_y_top=fmax((1.0-F_AD_top)*abs(V_y_top)-(1.0-F_D_top)*dy,0);
+                delta_F_bottom=fmin(F_AD_bottom*abs(V_y_bottom)+CF_y_bottom,F_D_bottom*dy)*dy;
+                delta_F_top=fmin(F_AD_top*abs(V_y_top)+CF_y_top,F_AD_top*dy)*dy;
+                fluidFraction[i][j]=fluidFraction[i][j]-sign*delta_F_bottom+sign*delta_F_top;
+    
+         }
+    }
+
+
+    
+	for(i=1;i<=imax;i++){
+		for(j=1;j<=jmax;j++){
+			fluidFraction_alt[i][j]=fluidFraction[i][j];
+			}
+	}
+
+
+
+
+
+
+
+
+
 
 }
