@@ -9,7 +9,10 @@ void boundaryvalues(
   int imax,
   int jmax,
   double **U,
-  double **V
+  double **V,
+  int **flagField,
+  double dx,
+  double dy
 );
 
 #endif

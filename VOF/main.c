@@ -50,7 +50,7 @@ int main(int argn, char** args){
 		calculate_dt(Re, tau, &dt, dx, dy, imax, jmax, U, V);
 		
 		/* Set boundary values for u and v */
-		boundaryvalues(imax, jmax, U, V);
+		boundaryvalues(imax, jmax, U, V, flagField, dx, dy);
 		
 		/* Compute F(n) and G(n) */
 		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, flagField);
