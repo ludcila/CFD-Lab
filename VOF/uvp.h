@@ -36,7 +36,8 @@ void calculate_fg(
   double **U,
   double **V,
   double **F,
-  double **G
+  double **G,
+  int **flagField
 );
 
 
@@ -55,7 +56,8 @@ void calculate_rs(
   int jmax,
   double **F,
   double **G,
-  double **RS
+  double **RS,
+  int **flagField
 );
 
 
@@ -103,7 +105,8 @@ void calculate_uv(
   double **V,
   double **F,
   double **G,
-  double **P
+  double **P,
+  int **flagField
 );
 
 #endif

@@ -53,27 +53,27 @@ int main(int argn, char** args){
 		boundaryvalues(imax, jmax, U, V);
 		
 		/* Compute F(n) and G(n) */
-		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G);
+		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, flagField);
 		
 		/* Compute the right-hand side rs of the pressure equation */
-		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
+		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS, flagField);
 		
 		/* Set valid values for the fluid fraction */
 		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
 		
 		/* Determine the orientation of the free surfaces */
-		calculate_freeSurfaceOrientation(fluidFraction, dFdx, dFdy, imax, jmax);
+		calculate_freeSurfaceOrientation(fluidFraction, flagField, dFdx, dFdy, dx, dy, imax, jmax);
 		
 		/* Perform SOR iterations */
 		it=0;
 		res = 1e6;
 		while(it < itermax && res > eps){
-			sor(omg, dx, dy, imax, jmax, P, RS, &res);
+			sor(omg, dx, dy, imax, jmax, P, RS, fluidFraction, flagField, dFdx, dFdy, &res);
 			it++;
 		}
 		
 		/* Compute u(n+1) and v(n+1) */
-		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P);
+		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, flagField);
 		
 		/* Compute fluidFraction(n+1) */
 		calculate_fluidFraction(fluidFraction, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
