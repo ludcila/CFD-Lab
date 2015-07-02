@@ -44,7 +44,7 @@ void boundaryvalues(
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j <= jmax; j++) {
 			
-			if(flagField[i][j] & C_FS) {
+			if((flagField[i][j] & C_FS) == C_FS) {
 				
 				
 				/* Treat free surface cells with only one empty neighbor */

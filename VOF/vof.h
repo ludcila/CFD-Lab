@@ -12,7 +12,7 @@ enum FS_xy {
 /* Flags to indicate cell type */
 enum C_type {
 	C_F 	= 16,		/* Interior fluid cell */
-	C_FS	= 32,		/* Free surface cell */
+	C_FS	= 48,		/* Free surface cell */
 	C_E		= 0			/* Empty cell */
 };
 
