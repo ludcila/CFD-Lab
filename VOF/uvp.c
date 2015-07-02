@@ -135,8 +135,6 @@ void calculate_uv(
 		for (j = 1; j <= jmax; j++) {
 			if(flagField[i][j] == C_F) {
 				U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
-			} else {
-				U[i][j] = 0;
 			}
 		}
 	}
@@ -144,8 +142,6 @@ void calculate_uv(
 		for (j = 1; j <= jmax - 1; j++) {
 			if(flagField[i][j] == C_F) {
 				V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
-			} else {
-				V[i][j] = 0;
 			}
 		}
 	}
