@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "helper.h"
+#include "vof.h"
 
 void calculate_dt(
 	double Re,
@@ -48,7 +49,8 @@ void calculate_fg(
 	double **U,
 	double **V,
 	double **F,
-	double **G
+	double **G,
+	int **flagField
 ) {
 
 	int i, j;
@@ -58,27 +60,31 @@ void calculate_fg(
 	}
 	for (i = 1; i <= imax - 1; i++) {
 		for (j = 1; j <= jmax; j++) {
-			F[i][j] = U[i][j] + dt * (
-			              + 1 / Re * ((U[i+1][j] - 2 * U[i][j] + U[i-1][j]) / (dx * dx) + (U[i][j+1] - 2 * U[i][j] + U[i][j-1]) / (dy * dy))
-			              - 1 / dx * (pow((U[i][j] + U[i+1][j]) / 2, 2) - pow((U[i-1][j] + U[i][j]) / 2, 2))
-			              - alpha / dx * (fabs(U[i][j] + U[i+1][j]) * (U[i][j] - U[i+1][j]) / 4 - fabs(U[i-1][j] + U[i][j]) * (U[i-1][j] - U[i][j]) / 4)
-			              - 1 / dy * ((V[i][j] + V[i+1][j]) * (U[i][j] + U[i][j+1]) / 4 - (V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] + U[i][j]) / 4)
-			              - alpha / dy * (fabs(V[i][j] + V[i+1][j]) * (U[i][j] - U[i][j+1]) / 4 - fabs(V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] - U[i][j]) / 4)
-			              + GX
-			          );
+			if(flagField[i][j] & C_F) {
+				F[i][j] = U[i][j] + dt * (
+					          + 1 / Re * ((U[i+1][j] - 2 * U[i][j] + U[i-1][j]) / (dx * dx) + (U[i][j+1] - 2 * U[i][j] + U[i][j-1]) / (dy * dy))
+					          - 1 / dx * (pow((U[i][j] + U[i+1][j]) / 2, 2) - pow((U[i-1][j] + U[i][j]) / 2, 2))
+					          - alpha / dx * (fabs(U[i][j] + U[i+1][j]) * (U[i][j] - U[i+1][j]) / 4 - fabs(U[i-1][j] + U[i][j]) * (U[i-1][j] - U[i][j]) / 4)
+					          - 1 / dy * ((V[i][j] + V[i+1][j]) * (U[i][j] + U[i][j+1]) / 4 - (V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] + U[i][j]) / 4)
+					          - alpha / dy * (fabs(V[i][j] + V[i+1][j]) * (U[i][j] - U[i][j+1]) / 4 - fabs(V[i][j-1] + V[i+1][j-1]) * (U[i][j-1] - U[i][j]) / 4)
+					          + GX
+					      );
+	      	}
 		}
 	}
 	for (i = 1; i <= imax; i++) {
 		G[i][0] = V[i][0];
 		for (j = 1; j <= jmax - 1; j++) {
-			G[i][j] = V[i][j] + dt * (
-			              + 1 / Re * ((V[i][j+1] - 2 * V[i][j] + V[i][j-1]) / (dy * dy) + (V[i+1][j] - 2 * V[i][j] + V[i-1][j]) / (dx * dx))
-			              - 1 / dy * (pow((V[i][j] + V[i][j+1]) / 2, 2) - pow((V[i][j-1] + V[i][j]) / 2, 2))
-			              - alpha / dy * (fabs(V[i][j] + V[i][j+1]) * (V[i][j] - V[i][j+1]) / 4 - fabs(V[i][j-1] + V[i][j]) * (V[i][j-1] - V[i][j]) / 4)
-			              - 1 / dx * ((U[i][j] + U[i][j+1]) * (V[i][j] + V[i+1][j]) / 4 - (U[i-1][j] + U[i-1][j+1]) * (V[i-1][j] + V[i][j]) / 4)
-			              - alpha / dx * (fabs(U[i][j] + U[i][j+1]) * (V[i][j] - V[i+1][j]) / 4 - fabs(U[i-1][j] + U[i-1][j+1]) * (V[i-1][j] - V[i][j]) / 4)
-			              + GY
-			          );
+			if(flagField[i][j] & C_F) {
+				G[i][j] = V[i][j] + dt * (
+					          + 1 / Re * ((V[i][j+1] - 2 * V[i][j] + V[i][j-1]) / (dy * dy) + (V[i+1][j] - 2 * V[i][j] + V[i-1][j]) / (dx * dx))
+					          - 1 / dy * (pow((V[i][j] + V[i][j+1]) / 2, 2) - pow((V[i][j-1] + V[i][j]) / 2, 2))
+					          - alpha / dy * (fabs(V[i][j] + V[i][j+1]) * (V[i][j] - V[i][j+1]) / 4 - fabs(V[i][j-1] + V[i][j]) * (V[i][j-1] - V[i][j]) / 4)
+					          - 1 / dx * ((U[i][j] + U[i][j+1]) * (V[i][j] + V[i+1][j]) / 4 - (U[i-1][j] + U[i-1][j+1]) * (V[i-1][j] + V[i][j]) / 4)
+					          - alpha / dx * (fabs(U[i][j] + U[i][j+1]) * (V[i][j] - V[i+1][j]) / 4 - fabs(U[i-1][j] + U[i-1][j+1]) * (V[i-1][j] - V[i][j]) / 4)
+					          + GY
+					      );
+	      	}
 		}
 		G[i][jmax] = V[i][jmax];
 	}
@@ -94,13 +100,16 @@ void calculate_rs(
 	int jmax,
 	double **F,
 	double **G,
-	double **RS
+	double **RS,
+	int **flagField
 ) {
 
 	int i, j;
 	for (i = 1; i <= imax; i++) {
 		for (j = 1; j <= jmax; j++) {
-			RS[i][j] = 1 / dt * ((F[i][j] - F[i-1][j]) / dx + (G[i][j] - G[i][j-1]) / dy);
+			if(flagField[i][j] & C_F) {
+				RS[i][j] = 1 / dt * ((F[i][j] - F[i-1][j]) / dx + (G[i][j] - G[i][j-1]) / dy);
+			}
 		}
 	}
 
@@ -117,19 +126,27 @@ void calculate_uv(
 	double **V,
 	double **F,
 	double **G,
-	double **P
+	double **P,
+	int **flagField
 ) {
 
 	unsigned int i, j;
 	for (i = 1; i <= imax - 1; i++) {
 		for (j = 1; j <= jmax; j++) {
-			U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
-
+			if(flagField[i][j] == C_F) {
+				U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
+			} else {
+				U[i][j] = 0;
+			}
 		}
 	}
 	for (i = 1; i <= imax; i++) {
 		for (j = 1; j <= jmax - 1; j++) {
-			V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
+			if(flagField[i][j] == C_F) {
+				V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
+			} else {
+				V[i][j] = 0;
+			}
 		}
 	}
 	
