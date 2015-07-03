@@ -6,6 +6,8 @@
 #include"boundary_val.h"
 #include"sor.c"
 #include "vof.h"
+#include <dirent.h>
+#include <sys/stat.h>
 
 int main(int argn, char** args){
 
@@ -17,9 +19,11 @@ int main(int argn, char** args){
 	
 	/* Additional data structures for VOF */
 	double **fluidFraction;
+	double **fluidFraction_alt;
 	int **flagField;
 	double **dFdx, **dFdy;
 	int **pic;
+	char output_dirname[60];
 	double epsilon = 1e-6;
 	
 	/* Read the program configuration file using read_parameters() */
@@ -34,12 +38,18 @@ int main(int argn, char** args){
 	RS= matrix(0, imax+1, 0, jmax+1);
 	flagField = imatrix(0, imax+1, 0, jmax+1);
 	fluidFraction = matrix(0, imax+1, 0, jmax+1);
+	fluidFraction_alt = matrix(0, imax+1, 0, jmax+1);
 	dFdx = matrix(0, imax+1, 0, jmax+1);
 	dFdy = matrix(0, imax+1, 0, jmax+1);
+
+
+	/*create a directory*/
+	strcpy(output_dirname, "dam_break/dam_break");
+	mkdir("dam_break", 0777);
 	
 	/* Read pgm file with domain and initial setting */
 	pic = read_pgm("dam_break.pgm");
-	init_fluidFraction(pic, fluidFraction, imax, jmax);
+	init_fluidFraction(pic, fluidFraction,fluidFraction_alt, imax, jmax);
 	
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
@@ -62,7 +72,9 @@ int main(int argn, char** args){
 		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
 		
 		/* Determine the orientation of the free surfaces */
+
 		calculate_freeSurfaceOrientation(fluidFraction, flagField, dFdx, dFdy, dx, dy, imax, jmax);
+
 		
 		/* Perform SOR iterations */
 		it=0;
@@ -76,10 +88,10 @@ int main(int argn, char** args){
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, flagField);
 		
 		/* Compute fluidFraction(n+1) */
-		calculate_fluidFraction(fluidFraction, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
+		calculate_fluidFraction(fluidFraction,fluidFraction_alt, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
 		
 		if((int)n % 10 == 0) {
-			write_vtkFile("output/cavity", n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
+			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
 		}
 		
 		/* Print out simulation time and whether SOR converged */
@@ -91,6 +103,7 @@ int main(int argn, char** args){
 		n++;
 	
 	}
+	
 
 	free_matrix(U , 0, imax  , 0, jmax+1);
 	free_matrix(V , 0, imax+1, 0, jmax  );
