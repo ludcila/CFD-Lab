@@ -133,14 +133,14 @@ void calculate_uv(
 	unsigned int i, j;
 	for (i = 1; i <= imax - 1; i++) {
 		for (j = 1; j <= jmax; j++) {
-			if(flagField[i][j] & C_F) {
+			if((flagField[i][j] & C_F) && !((flagField[i][j] & FS_O) == FS_O)) {
 				U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
 			}
 		}
 	}
 	for (i = 1; i <= imax; i++) {
 		for (j = 1; j <= jmax - 1; j++) {
-			if(flagField[i][j] & C_F) {
+			if((flagField[i][j] & C_F) && !((flagField[i][j] & FS_N) == FS_N)) {
 				V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
 			}
 		}
