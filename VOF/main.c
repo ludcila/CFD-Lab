@@ -91,7 +91,7 @@ int main(int argn, char** args){
 		calculate_fluidFraction(fluidFraction,fluidFraction_alt, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
 		
 		if((int)n % 10 == 0) {
-			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P, fluidFraction);
+			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P, fluidFraction, flagField);
 		}
 		
 		/* Print out simulation time and whether SOR converged */
