@@ -72,17 +72,17 @@ void sor(
 				if(fabs(dFdy[i][j]) > fabs(dFdx[i][j])) { 					/* More horizontal than vertical */
 					dnorm = dy;
 					dpar = dx;
-					if(flagField[i][j] & FS_N) {		/* If north neighbor is empty, fluid pressure is from south neighbor */
+					if((flagField[i][j] & FS_N) == FS_N) {		/* If north neighbor is empty, fluid pressure is from south neighbor */
 						Pfluid = P[i][j-1];
-					} else if(flagField[i][j] & FS_S) {	/* If south neighbor is empty, fluid pressure is from north neighbor */
+					} else if((flagField[i][j] & FS_S) == FS_S) {	/* If south neighbor is empty, fluid pressure is from north neighbor */
 						Pfluid = P[i][j+1];
 					}
 				} else { 							/* More vertical than horizontal */
 					dnorm = dx;
 					dpar = dy;
-					if(flagField[i][j] & FS_O) {		/* If east neighbor is empty, fluid pressure is from west neighbor */
+					if((flagField[i][j] & FS_O) == FS_O) {		/* If east neighbor is empty, fluid pressure is from west neighbor */
 						Pfluid = P[i-1][j];
-					} else if(flagField[i][j] & FS_W) {	/* If west neighbor is empty, fluid pressure is from east neighbor */
+					} else if((flagField[i][j] & FS_W) == FS_W) {	/* If west neighbor is empty, fluid pressure is from east neighbor */
 						Pfluid = P[i+1][j];
 					}
 				}
@@ -103,6 +103,10 @@ void sor(
 				/* Compute pressure by linear interpolation */
 				P[i][j] = (1 - eta) * Pfluid + eta * Psurface;
 				
+			}
+			
+			else if (flagField[i][j] == C_E) {
+				P[i][j] = 0;
 			}
 		}
 	}

@@ -55,7 +55,7 @@ void boundaryvalues(
 				} else if(flagField[i][j] == FS_O) {
 					U[i][j] = dx * U[i-1][j] - dx * (V[i][j] - V[i][j-1]) / dy;
 				} else if(flagField[i][j] == FS_S) {
-					V[i-1][j] = dy * V[i][j] + dy * (U[i][j] - U[i-1][j]) / dx;
+					V[i][j-1] = dy * V[i][j] + dy * (U[i][j] - U[i-1][j]) / dx;
 				} else if(flagField[i][j] == FS_N) {
 					V[i][j] = dy * V[i][j-1] - dy * (U[i][j] - U[i-1][j]) / dx;
 				} else {
@@ -63,16 +63,16 @@ void boundaryvalues(
 					/* Treat free surfaces with two or more empty neighbors */
 			
 					/* Satisfy du/dx = 0 */
-					if(flagField[i][j] & FS_W) {
+					if((flagField[i][j] & FS_W) == FS_W) {
 						U[i-1][j] = U[i][j];
-					} else if(flagField[i][j] & FS_O) {
+					} else if((flagField[i][j] & FS_O) == FS_O) {
 						U[i][j] = U[i-1][j];
 					}
 				
 					/* Satisfy dv/dy = 0 */
-					if(flagField[i][j] & FS_S) {
+					if((flagField[i][j] & FS_S) == FS_S) {
 						V[i][j-1] = V[i][j];
-					} else if(flagField[i][j] & FS_N) {
+					} else if((flagField[i][j] & FS_N) == FS_N) {
 						V[i][j] = V[i][j-1];
 					}
 					
