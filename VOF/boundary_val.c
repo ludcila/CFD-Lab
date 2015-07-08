@@ -28,13 +28,13 @@ void boundaryvalues(
 				
 				/* Satisfy du/dx + du/dy = 0 */
 				if(flagField[i][j] == FS_W) {
-					U[i-1][j] = dx * U[i][j] + dx * (V[i][j] - V[i][j-1]) / dy;
+					U[i-1][j] = U[i][j] + dx * (V[i][j] - V[i][j-1]) / dy;
 				} else if(flagField[i][j] == FS_O) {
-					U[i][j] = dx * U[i-1][j] - dx * (V[i][j] - V[i][j-1]) / dy;
+					U[i][j] = U[i-1][j] - dx * (V[i][j] - V[i][j-1]) / dy;
 				} else if(flagField[i][j] == FS_S) {
-					V[i][j-1] = dy * V[i][j] + dy * (U[i][j] - U[i-1][j]) / dx;
+					V[i][j-1] = V[i][j] + dy * (U[i][j] - U[i-1][j]) / dx;
 				} else if(flagField[i][j] == FS_N) {
-					V[i][j] = dy * V[i][j-1] - dy * (U[i][j] - U[i-1][j]) / dx;
+					V[i][j] = V[i][j-1] - dy * (U[i][j] - U[i-1][j]) / dx;
 				} else {
 				
 					/* Treat free surfaces with two or more empty neighbors */
