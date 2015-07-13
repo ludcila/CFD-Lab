@@ -91,7 +91,7 @@ void sor(
 				
 				/* Compute pressure by linear interpolation */
 				P[i][j] = (1 - eta) * Pfluid + eta * Psurface;
-				
+				P[i][j] = 0;
 			}
 			
 			else if (flagField[i][j] == C_E) {

@@ -24,7 +24,7 @@ int main(int argn, char** args){
 	double **dFdx, **dFdy;
 	int **pic;
 	char output_dirname[60];
-	double epsilon = 1e-6;
+	double epsilon = 1e-3;
 	
 	/* Read the program configuration file using read_parameters() */
 	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value);        
@@ -54,22 +54,27 @@ int main(int argn, char** args){
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
 
-	while(t <= t_end){
+		/* Set valid values for the fluid fraction */
+		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
+
+	while(t <= t_end){   
 	
 		/*Select δt*/
 		calculate_dt(Re, tau, &dt, dx, dy, imax, jmax, U, V);
 		
 		/* Set boundary values for u and v */
-		boundaryvalues(imax, jmax, U, V, flagField, dx, dy);
-		
+/*		boundaryvalues(imax, jmax, U, V, flagField, dx, dy);
+*/		
 		/* Compute F(n) and G(n) */
 		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, flagField);
 		
 		/* Compute the right-hand side rs of the pressure equation */
 		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS, flagField);
+
+
+
 		
-		/* Set valid values for the fluid fraction */
-		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
+				
 		
 		/* Determine the orientation of the free surfaces */
 
@@ -83,24 +88,36 @@ int main(int argn, char** args){
 			sor(omg, dx, dy, imax, jmax, P, RS, fluidFraction, flagField, dFdx, dFdy, &res);
 			it++;
 		}
+
+
 		
 		/* Compute u(n+1) and v(n+1) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, flagField);
+
+		boundaryvalues(imax, jmax, U, V, flagField, dx, dy);
 		
 		/* Compute fluidFraction(n+1) */
 		calculate_fluidFraction(fluidFraction,fluidFraction_alt, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
-		
+
+
+		/* Set valid values for the fluid fraction */
+		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
+
+
+
 		if((int)n % 10 == 0) {
 			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P, fluidFraction, flagField);
 		}
 		
 		/* Print out simulation time and whether SOR converged */
 		printf("Time: %.4f", t);
-		if(res > eps) printf("\t*** Did not converge (res=%f, eps=%f)", res, eps);
+		if(res > eps) {printf("\t*** Did not converge (res=%f, eps=%f)", res, eps);return -1;}
 		printf("\n");
 		
 		t = t + dt;
 		n++;
+		if(t>0.9)
+			printf("time > 0.9");
 	
 	}
 	

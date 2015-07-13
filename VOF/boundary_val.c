@@ -74,7 +74,7 @@ void boundaryvalues(
 	
 	/* Floor */
 	for(i = 0; i <= imax; i++) {
-		U[i][0] = -U[i][1];
+		U[i][0] = U[i][1];
 		V[i][0] = 0;
 	}
 	
