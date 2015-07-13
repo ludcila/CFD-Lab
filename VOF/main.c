@@ -16,6 +16,7 @@ int main(int argn, char** args){
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
+
 	
 	/* Additional data structures for VOF */
 	double **fluidFraction;
@@ -89,7 +90,6 @@ int main(int argn, char** args){
 			it++;
 		}
 
-
 		
 		/* Compute u(n+1) and v(n+1) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, flagField);
@@ -105,7 +105,7 @@ int main(int argn, char** args){
 
 
 
-		if((int)n % 10 == 0) {
+		if((int)n % 20 == 0) {
 			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P, fluidFraction, flagField);
 		}
 		
