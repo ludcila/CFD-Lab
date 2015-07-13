@@ -123,24 +123,24 @@ void calculate_fluidFraction(
 
 		if(U[i][j]>0){
 			if(fluidFraction_alt[i+1][j]==0){
-				F_AD_x = fluidFraction[i+1][j];
+				F_AD_x = fluidFraction_alt[i+1][j];
 			}else{
-				if(fabs(dFdy[i][j]) > fabs(dFdx[i][j]) && fluidFraction[i+1][j] > 1e-6) {
-					F_AD_x = fluidFraction[i][j];
+				if(fabs(dFdy[i][j]) > fabs(dFdx[i][j]) && fluidFraction_alt[i+1][j] > 1e-6) {
+					F_AD_x = fluidFraction_alt[i][j];
 				} else {
-					F_AD_x = fluidFraction[i+1][j];
+					F_AD_x = fluidFraction_alt[i+1][j];
 				}
 			}
 			F_D_x=fluidFraction_alt[i][j];
 			sign=-1;
 		}else if(U[i][j]<0){
-			if(fluidFraction_alt[i][j]==0){
+			if(fluidFraction_alt[i][j]==0 || fluidFraction_alt[i+2][j]==0){
 				F_AD_x = fluidFraction[i][j];
 			}else{
-				if(fabs(dFdy[i+1][j]) > fabs(dFdx[i+1][j]) && fluidFraction[i][j] > 1e-6) {
-					F_AD_x = fluidFraction[i+1][j];
+				if(fabs(dFdy[i+1][j]) > fabs(dFdx[i+1][j]) && fluidFraction_alt[i][j] > 1e-6) {
+					F_AD_x = fluidFraction_alt[i+1][j];
 				} else {
-					F_AD_x = fluidFraction[i][j];
+					F_AD_x = fluidFraction_alt[i][j];
 				}
 			}
 			F_D_x=fluidFraction_alt[i+1][j];
@@ -153,7 +153,7 @@ void calculate_fluidFraction(
 
                 V_x=U[i][j]*dt;                
                 CF_x=fmax((1.0-F_AD_x)*fabs(V_x)-(1.0-F_D_x)*dx,0.0);
-                delta_F_right=fmin(F_AD_x*fabs(V_x)+CF_x,F_D_x*dx)/(dx);
+                delta_F_right=fmin(F_AD_x*fabs(V_x)+CF_x,F_D_x*dx)/dx;
                 fluidFraction[i][j]=fluidFraction[i][j]+sign*delta_F_right+delta_F_left;
 
     		delta_F_left=(-1)*sign*delta_F_right;
@@ -180,24 +180,25 @@ void calculate_fluidFraction(
 
 		if(V[i][j]>0){
 			if(fluidFraction_alt[i][j+1]==0){
-				F_AD_y = fluidFraction[i][j+1];
+				F_AD_y = fluidFraction_alt[i][j+1];
 			}else{
-				if(fabs(dFdy[i][j]) < fabs(dFdx[i][j]) && fluidFraction[i][j+1] > 1e-6) {
-					F_AD_y = fluidFraction[i][j];
+				if(fabs(dFdy[i][j]) < fabs(dFdx[i][j]) && fluidFraction_alt[i][j+1] > 1e-6) {
+					F_AD_y = fluidFraction_alt[i][j];
 				} else {
-					F_AD_y = fluidFraction[i][j+1];
+					F_AD_y = fluidFraction_alt[i][j+1];
 				}
 			}
 			F_D_y=fluidFraction_alt[i][j];
 			sign=-1;}
 		else if(V[i][j]<0){
-			if(fluidFraction_alt[i][j]==0){
-				F_AD_y = fluidFraction[i][j];
+					
+			if(fluidFraction_alt[i][j]==0 || fluidFraction_alt[i][j+2]==0){
+				F_AD_y = fluidFraction_alt[i][j];
 			}else{	
-				if(fabs(dFdy[i][j-1]) > fabs(dFdx[i][j-1]) && fluidFraction[i][j] > 1e-6) {
-					F_AD_y = fluidFraction[i][j+1];
+				if(fabs(dFdy[i][j-1]) > fabs(dFdx[i][j-1]) && fluidFraction_alt[i][j] > 1e-6) {
+					F_AD_y = fluidFraction_alt[i][j+1];
 				} else {
-					F_AD_y = fluidFraction[i][j];
+					F_AD_y = fluidFraction_alt[i][j];
 				}
 			}
 			F_D_y=fluidFraction_alt[i][j+1];
