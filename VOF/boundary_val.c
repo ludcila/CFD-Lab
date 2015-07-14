@@ -30,7 +30,11 @@ void boundaryvalues(
 				if(flagField[i][j] == FS_W) {
 					U[i-1][j] = U[i][j] + dx * (V[i][j] - V[i][j-1]) / dy;
 				} else if(flagField[i][j] == FS_O) {
+					/*V[i][j]=V[i-1][j]+(V[i-1][j]-V[i-2][j]);
+					V[i][j-1]=V[i-1][j-1]+(V[i-1][j-1]-V[i-2][j-1]);*/			
 					U[i][j] = U[i-1][j] - dx * (V[i][j] - V[i][j-1]) / dy;
+					/*U[i][j] = U[i-1][j];*/
+
 				} else if(flagField[i][j] == FS_S) {
 					V[i][j-1] = V[i][j] + dy * (U[i][j] - U[i-1][j]) / dx;
 				} else if(flagField[i][j] == FS_N) {

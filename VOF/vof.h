@@ -31,6 +31,7 @@ void calculate_freeSurfaceOrientation(double **fluidFraction, int **flagField, d
 void calculate_fluidFraction(
 	double **fluidFraction,
 	double **fluidFraction_alt, 
+ 	int **flagField,
 	double **U, 
 	double **V, 
 	double **dFdx, 
