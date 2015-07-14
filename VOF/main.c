@@ -25,7 +25,7 @@ int main(int argn, char** args){
 	double **dFdx, **dFdy;
 	int **pic;
 	char output_dirname[60];
-	double epsilon = 1e-3;
+	double epsilon = 1e-6;
 	
 	/* Read the program configuration file using read_parameters() */
 	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value);        
@@ -116,8 +116,6 @@ int main(int argn, char** args){
 		
 		t = t + dt;
 		n++;
-		if(t>0.9)
-			printf("time > 0.9");
 	
 	}
 	
