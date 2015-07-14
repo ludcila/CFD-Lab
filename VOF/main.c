@@ -16,6 +16,7 @@ int main(int argn, char** args){
 	double Re, UI, VI, PI, GX, GY, t_end, xlength, ylength, dt, dx, dy, alpha, omg, tau, eps, dt_value;
 	double res = 0, t = 0, n = 0;
 	int imax, jmax, itermax, it;
+
 	
 	/* Additional data structures for VOF */
 	double **fluidFraction;
@@ -89,7 +90,6 @@ int main(int argn, char** args){
 			it++;
 		}
 
-
 		
 		/* Compute u(n+1) and v(n+1) */
 		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, flagField);
@@ -99,7 +99,7 @@ int main(int argn, char** args){
 		/* Compute fluidFraction(n+1) */
 		calculate_fluidFraction(fluidFraction,fluidFraction_alt, flagField, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
 
-
+		boundaryvalues(imax, jmax, U, V, flagField, dx, dy);
 		/* Set valid values for the fluid fraction */
 		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
 

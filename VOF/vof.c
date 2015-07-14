@@ -141,6 +141,7 @@ void calculate_fluidFraction(
 		}
 
 		if(U[i][j]>0){
+
 			if(fluidFraction_alt[i+1][j] == 0 || fluidFraction_alt[i-1][j] == 0){
 				F_AD_x = fluidFraction_alt[i+1][j];
 			}else if((flagField[i][j] & C_FS) == C_FS){
@@ -159,9 +160,9 @@ void calculate_fluidFraction(
 				F_AD_x = fluidFraction_alt[i][j];
 			}else if((flagField[i][j] & C_FS) == C_FS){
 				if(fabs(dFdy[i][j]) > fabs(dFdx[i][j])) {
-					F_AD_x = fluidFraction_alt[i+1][j];
-				} else {
 					F_AD_x = fluidFraction_alt[i][j];
+				} else {
+					F_AD_x = fluidFraction_alt[i+1][j];
 				}
 			} else {
 				F_AD_x = fluidFraction_alt[i+1][j];
@@ -176,14 +177,17 @@ void calculate_fluidFraction(
 
                 V_x=U[i][j]*dt;                
                 CF_x=fmax((1.0-F_AD_x)*fabs(V_x)-(1.0-F_D_x)*dx,0.0);
+
                 delta_F_right=fmin(F_AD_x*fabs(V_x)+CF_x,F_D_x*dx)/dx;
-                fluidFraction[i][j]=fluidFraction_alt[i][j]+sign*delta_F_right+delta_F_left;
+
+		fluidFraction[i][j]=fluidFraction[i][j]+sign*delta_F_right+delta_F_left;
+
 
     		delta_F_left=(-1)*sign*delta_F_right;
          }
 
 
-	fluidFraction[imax][j]=fluidFraction_alt[imax][j]+delta_F_left;
+	fluidFraction[imax][j]=fluidFraction[imax][j]+delta_F_left;
     }
   
 	for(i=1;i<=imax;i++){
@@ -202,8 +206,11 @@ void calculate_fluidFraction(
 
 
 		if(V[i][j]>0){
-			if(fluidFraction_alt[i][j+1] == 0 || fluidFraction_alt[i][j-1] == 0){
-				F_AD_y = fluidFraction_alt[i][j+1];
+			if(j==1 && fluidFraction_alt[i][j+1] == 0){
+					F_AD_y = fluidFraction_alt[i][j+1];
+/*|| fluidFraction_alt[i][j-1] == 0*/
+			}else if(j!=1 && (fluidFraction_alt[i][j+1] == 0 || fluidFraction_alt[i][j-1] == 0)){
+					F_AD_y = fluidFraction_alt[i][j+1];
 			}else if((flagField[i][j] & C_FS) == C_FS){
 				if(fabs(dFdy[i][j]) < fabs(dFdx[i][j])) {
 					F_AD_y = fluidFraction_alt[i][j];
@@ -215,15 +222,23 @@ void calculate_fluidFraction(
 			}
 			F_D_y=fluidFraction_alt[i][j];
 			sign=-1;}
+
 		else if(V[i][j]<0){
-					
+
 			if(fluidFraction_alt[i][j] == 0 || fluidFraction_alt[i][j+2] == 0){
+
 				F_AD_y = fluidFraction_alt[i][j];
+
 			}else if((flagField[i][j] & C_FS) == C_FS){
+
 				if(fabs(dFdy[i][j]) < fabs(dFdx[i][j])) {
+
 					F_AD_y = fluidFraction_alt[i][j+1];
+
 				} else {
+
 					F_AD_y = fluidFraction_alt[i][j];
+
 				}
 			} else {
 				F_AD_y = fluidFraction_alt[i][j+1];
@@ -237,13 +252,15 @@ void calculate_fluidFraction(
                 V_y=V[i][j]*dt;                
                 CF_y=fmax((1.0-F_AD_y)*fabs(V_y)-(1.0-F_D_y)*dy,0.0);
                 delta_F_top=fmin(F_AD_y*fabs(V_y)+CF_y,F_D_y*dy)/dy;
-                fluidFraction[i][j]=fluidFraction_alt[i][j]+sign*delta_F_top+delta_F_bottom;
+
+		fluidFraction[i][j]=fluidFraction[i][j]+sign*delta_F_top+delta_F_bottom;
+
             	
     		delta_F_bottom=(-1)*sign*delta_F_top;
     		
          }
 
-	fluidFraction[i][jmax]=fluidFraction_alt[i][jmax]+delta_F_bottom;
+fluidFraction[i][jmax]=fluidFraction[i][jmax]+delta_F_bottom;
     }
 
 

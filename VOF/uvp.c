@@ -126,13 +126,15 @@ void calculate_uv(
 
 	unsigned int i, j;
 	for (i = 1; i <= imax - 1; i++) {
-		for (j = 1; j <= jmax; j++) {
-			U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
+		for (j = 1; j <= jmax; j++){ 
+			if(flagField[i][j]!=0){
+				U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;}
 		}
 	}
 	for (i = 1; i <= imax; i++) {
-		for (j = 1; j <= jmax - 1; j++) {
-			V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
+		for (j = 1; j <= jmax - 1; j++){
+			if(flagField[i][j]!=0){
+				V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;}
 		}
 	}
 	
