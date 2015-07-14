@@ -24,7 +24,7 @@ int main(int argn, char** args){
 	double **dFdx, **dFdy;
 	int **pic;
 	char output_dirname[60];
-	double epsilon = 1e-6;
+	double epsilon = 1e-10;
 	
 	/* Read the program configuration file using read_parameters() */
 	read_parameters(szFileName, &Re, &UI, &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau, &itermax, &eps, &dt_value);        
@@ -97,12 +97,13 @@ int main(int argn, char** args){
 		boundaryvalues(imax, jmax, U, V, flagField, dx, dy);
 		
 		/* Compute fluidFraction(n+1) */
-		calculate_fluidFraction(fluidFraction,fluidFraction_alt, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
+		calculate_fluidFraction(fluidFraction,fluidFraction_alt, flagField, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
 
 
 		/* Set valid values for the fluid fraction */
 		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
 
+		boundaryvalues(imax, jmax, U, V, flagField, dx, dy);
 
 
 		if((int)n % 10 == 0) {

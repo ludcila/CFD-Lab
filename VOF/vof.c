@@ -106,6 +106,7 @@ void calculate_freeSurfaceOrientation(double **fluidFraction, int **flagField, d
 void calculate_fluidFraction(
 	double **fluidFraction,
  	double **fluidFraction_alt,
+ 	int **flagField,
 	double **U, 
 	double **V, 
 	double **dFdx, 
@@ -140,26 +141,30 @@ void calculate_fluidFraction(
 		}
 
 		if(U[i][j]>0){
-			if(fluidFraction_alt[i+1][j] < 1e-6 || fluidFraction_alt[i-1][j] < 1e-6){
+			if(fluidFraction_alt[i+1][j] == 0 || fluidFraction_alt[i-1][j] == 0){
 				F_AD_x = fluidFraction_alt[i+1][j];
-			}else{
+			}else if((flagField[i][j] & C_FS) == C_FS){
 				if(fabs(dFdy[i][j]) > fabs(dFdx[i][j])) {
 					F_AD_x = fluidFraction_alt[i][j];
 				} else {
 					F_AD_x = fluidFraction_alt[i+1][j];
 				}
+			} else {
+				F_AD_x = fluidFraction_alt[i][j];
 			}
 			F_D_x=fluidFraction_alt[i][j];
 			sign=-1;
 		}else if(U[i][j]<0){
-			if(fluidFraction_alt[i][j] < 1e-6 || fluidFraction_alt[i+2][j] < 1e-6){
+			if(fluidFraction_alt[i][j] == 0 || fluidFraction_alt[i+2][j] == 0){
 				F_AD_x = fluidFraction_alt[i][j];
-			}else{
+			}else if((flagField[i][j] & C_FS) == C_FS){
 				if(fabs(dFdy[i][j]) > fabs(dFdx[i][j])) {
 					F_AD_x = fluidFraction_alt[i+1][j];
 				} else {
 					F_AD_x = fluidFraction_alt[i][j];
 				}
+			} else {
+				F_AD_x = fluidFraction_alt[i+1][j];
 			}
 			F_D_x=fluidFraction_alt[i+1][j];
 			sign=1;}
@@ -197,27 +202,31 @@ void calculate_fluidFraction(
 
 
 		if(V[i][j]>0){
-			if(fluidFraction_alt[i][j+1] < 1e-6 || fluidFraction_alt[i][j-1] < 1e-6){
+			if(fluidFraction_alt[i][j+1] == 0 || fluidFraction_alt[i][j-1] == 0){
 				F_AD_y = fluidFraction_alt[i][j+1];
-			}else{
+			}else if((flagField[i][j] & C_FS) == C_FS){
 				if(fabs(dFdy[i][j]) < fabs(dFdx[i][j])) {
 					F_AD_y = fluidFraction_alt[i][j];
 				} else {
 					F_AD_y = fluidFraction_alt[i][j+1];
 				}
+			} else {
+				F_AD_y = fluidFraction_alt[i][j];
 			}
 			F_D_y=fluidFraction_alt[i][j];
 			sign=-1;}
 		else if(V[i][j]<0){
 					
-			if(fluidFraction_alt[i][j] < 1e-6 || fluidFraction_alt[i][j+2] < 1e-6){
+			if(fluidFraction_alt[i][j] == 0 || fluidFraction_alt[i][j+2] == 0){
 				F_AD_y = fluidFraction_alt[i][j];
-			}else{	
+			}else if((flagField[i][j] & C_FS) == C_FS){
 				if(fabs(dFdy[i][j]) < fabs(dFdx[i][j])) {
 					F_AD_y = fluidFraction_alt[i][j+1];
 				} else {
 					F_AD_y = fluidFraction_alt[i][j];
 				}
+			} else {
+				F_AD_y = fluidFraction_alt[i][j+1];
 			}
 			F_D_y=fluidFraction_alt[i][j+1];
 			sign=1;}
