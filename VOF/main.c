@@ -99,7 +99,7 @@ int main(int argn, char** args){
 		/* Compute fluidFraction(n+1) */
 		calculate_fluidFraction(fluidFraction,fluidFraction_alt, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
 
-
+		boundaryvalues(imax, jmax, U, V, flagField, dx, dy);
 		/* Set valid values for the fluid fraction */
 		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
 
