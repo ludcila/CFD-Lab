@@ -7,44 +7,12 @@
 #include"sor.c"
 #include <sys/stat.h>
 #include <dirent.h>
+#include "vof.h"
 
-/**
- * The main operation reads the configuration file, initializes the scenario and
- * contains the main loop. So here are the individual steps of the algorithm:
- *
- * - read the program configuration file using read_parameters()
- * - set up the matrices (arrays) needed using the matrix() command
- * - create the initial setup init_uvp(), init_flag(), output_uvp()
- * - perform the main loop
- * - trailer: destroy memory allocated and do some statistics
- *
- * The layout of the grid is decribed by the first figure below, the enumeration
- * of the whole grid is given by the second figure. All the unknowns corresond
- * to a two dimensional degree of freedom layout, so they are not stored in
- * arrays, but in a matrix.
- *
- * @image html grid.jpg
- *
- * @image html whole-grid.jpg
- *
- * Within the main loop the following big steps are done (for some of the 
- * operations a definition is defined already within uvp.h):
- *
- * - calculate_dt() Determine the maximal time step size.
- * - boundaryvalues() Set the boundary values for the next time step.
- * - calculate_fg() Determine the values of F and G (diffusion and confection).
- *   This is the right hand side of the pressure equation and used later on for
- *   the time step transition.
- * - calculate_rs()
- * - Iterate the pressure poisson equation until the residual becomes smaller
- *   than eps or the maximal number of iterations is performed. Within the
- *   iteration loop the operation sor() is used.
- * - calculate_uv() Calculate the velocity at the next time step.
- */
 int main(int argn, char** args){
 
 	double **U, **V, **P, **F, **G, **RS;
-	int **Flag;
+	int **flagField;
 	char problem[60];
 	char parameters_filename[60];
 	char output_dirname[60];
@@ -58,6 +26,12 @@ int main(int argn, char** args){
 	DIR *output_dir;
 	struct timespec previousTime, currentTime;
 	double totalTime = 0;
+	
+	/* Additional data structures for VOF */
+	double **fluidFraction;
+	double **fluidFraction_alt;
+	double **dFdx, **dFdy;
+	double epsilon = 1e-10;
 
 	/* Read name of the problem from the command line arguments */
 	if(argn > 1) {
@@ -94,7 +68,11 @@ int main(int argn, char** args){
 	F = matrix(0, imax  , 0, jmax+1);
 	G = matrix(0, imax+1, 0, jmax  );
 	RS= matrix(0, imax+1, 0, jmax+1);
-	Flag = imatrix(0, imax+1, 0, jmax+1);
+	flagField = imatrix(0, imax+1, 0, jmax+1);
+	fluidFraction = matrix(0, imax+1, 0, jmax+1);
+	fluidFraction_alt = matrix(0, imax+1, 0, jmax+1);
+	dFdx = matrix(0, imax+1, 0, jmax+1);
+	dFdy = matrix(0, imax+1, 0, jmax+1);
 	
 	/* Assign initial values to u, v, p */
 	init_uvp(UI, VI, PI, imax, jmax, U, V, P);
@@ -106,45 +84,65 @@ int main(int argn, char** args){
 	}
 
 	/* Initialization of flag field */
-	init_flag(problem, imax, jmax, Flag, dp);	
+	init_flag(problem, imax, jmax, flagField, dp);	
+
+	/* Initialization of fluid fraction */
+	init_fluidFraction(flagField, fluidFraction, fluidFraction_alt, imax, jmax);
+	
+	/* Set valid values for the fluid fraction */
+	adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
 
 	clock_gettime(CLOCK_MONOTONIC, &currentTime);
 	
 	while(t <= t_end){
 	
+		/* Generate snapshot for current timestep */
+		if((int) n % timestepsPerPlotting == 0) {
+			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P, fluidFraction, flagField);
+		}
+		
 		/* Select δt */
 		calculate_dt(Re, tau, &dt, dx, dy, imax, jmax, U, V);
-		
-		/* Set boundary values for u and v */
-		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, Flag);
-	
-		/* Set special boundary values */
-		spec_boundary_val(problem, imax, jmax, U, V, P, Re, xlength, ylength, dp);
 
 		/* Compute F(n) and G(n) */
-		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, Flag);
+		calculate_fg(Re, GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G, flagField);
 		
 		/* Compute the right-hand side rs of the pressure equation */
 		calculate_rs(dt, dx, dy, imax, jmax, F, G, RS);
+		
+		/* Determine the orientation of the free surfaces */
+		calculate_freeSurfaceOrientation(fluidFraction, flagField, dFdx, dFdy, dx, dy, imax, jmax);
 		
 		/* Perform SOR iterations */
 		it = 0;
 		res = 1e6;
 		while(it < itermax && res > eps){
-			sor(omg, dx, dy, dp, imax, jmax, P, RS, &res, Flag);
+			sor(omg, dx, dy, dp, imax, jmax, P, RS, fluidFraction, flagField, dFdx, dFdy, &res);
 			it++;
 		}
 		
 		/* Compute u(n+1) and v(n+1) */
-		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, Flag);
+		calculate_uv(dt, dx, dy, imax, jmax, U, V, F, G, P, flagField);
+		
+		/* Set boundary values for u and v */
+		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, flagField, dx, dy);
+		
+		/* TODO: Special boundary values? Do we use them with free surfaces? */
+		
+		/* Compute fluidFraction(n+1) */
+		calculate_fluidFraction(fluidFraction,fluidFraction_alt, flagField, U, V, dFdx, dFdy, imax, jmax, dx, dy, dt);
+		
+		/* Set boundary values for u and v */
+		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, flagField, dx, dy);
+
+		/* Set valid values for the fluid fraction */
+		adjust_fluidFraction(fluidFraction, flagField, epsilon, imax, jmax);
+		
+		/* Set boundary values for u and v */
+		boundaryvalues(imax, jmax, U, V, wl, wr, wt, wb, flagField, dx, dy);
 		
 		t = t + dt;
 		n++;
-		
-		/* Generate snapshot for current timestep */
-		if((int) n % timestepsPerPlotting == 0) {
-			write_vtkFile(output_dirname, n, xlength, ylength, imax, jmax, dx, dy, U, V, P);
-		}
 		
 		/* Print out simulation time */
 		printf("Time: %.4f", t);

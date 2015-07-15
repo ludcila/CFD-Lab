@@ -37,7 +37,7 @@ void calculate_fg(
   double **V,
   double **F,
   double **G,
-  int **Flag
+  int **flagField
 );
 
 
@@ -105,7 +105,7 @@ void calculate_uv(
   double **F,
   double **G,
   double **P,
-  int **Flag
+  int **flagField
 );
 
 #endif

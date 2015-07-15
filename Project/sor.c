@@ -11,8 +11,11 @@ void sor(
   int    jmax,
   double **P,
   double **RS,
-  double *res,
-  int **Flag
+  double **fluidFraction,
+  int **flagField,
+  double **dFdx,
+  double **dFdy,
+  double *res
 ) {
 
   int i,j;
@@ -23,7 +26,7 @@ void sor(
 	/* SOR iteration */
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j<=jmax; j++) {
-			if(Flag[i][j] == C_F) {
+			if(flagField[i][j] == C_F) {
 				P[i][j] = (1.0-omg)*P[i][j]
 						+ coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
 			}
@@ -34,7 +37,7 @@ void sor(
 	rloc = 0;
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j <= jmax; j++) {
-			if(Flag[i][j] == C_F) {
+			if(flagField[i][j] == C_F) {
 				rloc += ( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j])*
 						( (P[i+1][j]-2.0*P[i][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]-2.0*P[i][j]+P[i][j-1])/(dy*dy) - RS[i][j]);
 				count_num_fluid_cell++;
@@ -47,6 +50,14 @@ void sor(
 	/* Set residual */
 	*res = rloc;
 
+	
+	for(i = 1; i <= imax; i++) {
+		for(j = 1; j <= jmax; j++) {
+			if((flagField[i][j] & C_FS) == C_FS || flagField[i][j] == C_E) {
+				P[i][j] = 0;
+			}
+		}
+	}
 
 	/* Set values for horizontal boundaries (Neumann BC) */
 	for(i = 1; i <= imax; i++) {
@@ -71,7 +82,7 @@ void sor(
 	/* Set pressures of obstacle cells */
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j<=jmax; j++) {
-			switch(Flag[i][j]) {
+			switch(flagField[i][j]) {
 				case B_N:
 					P[i][j] = P[i][j+1];
 					break;

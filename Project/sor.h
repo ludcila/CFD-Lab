@@ -17,8 +17,11 @@ void sor(
   int    jmax,
   double **P,
   double **RS,
-  double *res,
-  int **Flag
+  double **fluidFraction,
+  int **flagField,
+  double **dFdx,
+  double **dFdy,
+  double *res
 );
 
 

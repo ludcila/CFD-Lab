@@ -2,6 +2,7 @@
 #include "init.h"
 #include <string.h>
 #include "boundary_val.h"
+#include "vof.h"
 
 int read_parameters( const char *szFileName,       /* name of the file */
                     double *Re,                /* reynolds number   */
@@ -91,7 +92,7 @@ void init_flag(
 	char* problem, 
 	int imax, 
 	int jmax, 
-	int **Flag,
+	int **flagField,
 	double dp
 ){
 	char image_filename[60];
@@ -105,7 +106,20 @@ void init_flag(
 	/* Picture values: 1 for fluid, 0 for obstacle */
 	for(i = 1; i <= imax; i++){
 		for(j = 1; j <= jmax; j++){
-			Flag[i][j] = max(pic[i+1][j] * B_O + pic[i-1][j] * B_W + pic[i][j-1] * B_S + pic[i][j+1] * B_N, pic[i][j] * C_F);
+
+			/* Fluid cell */
+			if(pic[i][j] == 1) {
+				flagField[i][j] = C_F;
+			}
+			
+			/* Obstacle cell (mark direction where it MAY have a fluid neighbor) */
+			if(pic[i][j] == 2) {
+				if(pic[i+1][j] != 2) flagField[i][j] = flagField[i][j] | B_O;
+				if(pic[i-1][j] != 2) flagField[i][j] = flagField[i][j] | B_W;
+				if(pic[i][j+1] != 2) flagField[i][j] = flagField[i][j] | B_N;
+				if(pic[i][j-1] != 2) flagField[i][j] = flagField[i][j] | B_S;
+			}
+			
 		}
 	}
 	
@@ -113,7 +127,7 @@ void init_flag(
 		that we don't need extra flags for them (might be implemented later) */
 	/* if(dp != 0){
 		for(j = 1; j <= jmax; j++) {
-			Flag[0][j] = Flag[0][j] | 64;
+			flagField[0][j] = flagField[0][j] | 64;
 		}
 	} */
 

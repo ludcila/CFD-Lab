@@ -27,4 +27,51 @@ domain = ones(jmax, imax);
 % imwrite(domain, [folder, '/flow_over_step.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
 
 % % Flow over step
-imwrite(domain, [folder, '/plane_shear_flow.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
+% imwrite(domain, [folder, '/plane_shear_flow.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
+
+% Driven cavity
+imax = 100;
+jmax = 40;
+[X Y] = meshgrid(linspace(0, 100), linspace(0, 40, 40));
+domain = zeros(jmax, imax);
+
+% center dam
+% domain(2:end, 2*imax/5+1:3*imax/5) = 1;
+
+% drop
+% % domain(5:15, 45:55) = 1;
+% domain = domain + sqrt((X-50).^2 + (Y-10).^2) < 5;
+% domain(30:end, :) = 1;
+
+% bubble
+% domain(10:end, :) = 1;
+% % domain(25:35, 45:55) = 0;
+% domain = domain - (sqrt((X-50).^2 + (Y-20).^2) < 1);
+
+% Dam break
+imax = 100;
+jmax = 40;
+% domain(2:end, 1:imax/5) = 1;
+domain(2:end, 2*imax/5+1:3*imax/5) = 1;
+imwrite(domain, ['dam_break_center.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
+
+% Dam break on step
+imax = 50;
+jmax = 50;
+domain = zeros(jmax, imax);
+domain(31:50, 1:20) = 2;
+domain(10:30, 1:20) = 1;
+% imwrite(domain, ['dam_break_step.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
+
+% Dam break small obstacle
+imax = 50;
+jmax = 50;
+domain = zeros(jmax, imax);
+domain(47:50, 30:33) = 2;
+domain(11:end, 1:15) = 1;
+% imwrite(domain, ['dam_break_obstacle.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
+
+
+% domain(20:end, :) = 1;
+
+% domain(5,5) = 1;

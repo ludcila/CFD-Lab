@@ -61,11 +61,11 @@ void calculate_fg(
 	}
 	for (i = 1; i <= imax - 1; i++) {
 		for (j = 1; j <= jmax; j++) {
-			if(Flag[i][j] & B_W) {			/* B_W, west cell is fluid */
+			if((Flag[i][j] & B_W) == B_W) {			/* B_W, west cell is fluid */
 				F[i-1][j] = U[i-1][j];
-			} else if(Flag[i][j] & B_O) {	/* B_O, east cell is fluid */
+			} else if((Flag[i][j] & B_O) == B_O) {	/* B_O, east cell is fluid */
 				F[i][j] = U[i][j];
-			} else if(Flag[i][j] == C_F) {
+			} else {
 			F[i][j] = U[i][j] + dt * (
 			              + 1 / Re * ((U[i+1][j] - 2 * U[i][j] + U[i-1][j]) / (dx * dx) + (U[i][j+1] - 2 * U[i][j] + U[i][j-1]) / (dy * dy))
 			              - 1 / dx * (pow((U[i][j] + U[i+1][j]) / 2, 2) - pow((U[i-1][j] + U[i][j]) / 2, 2))
@@ -79,11 +79,11 @@ void calculate_fg(
 	for (i = 1; i <= imax; i++) {
 		G[i][0] = V[i][0];
 		for (j = 1; j <= jmax - 1; j++) {
-			if(Flag[i][j] & B_N) {			/* B_N, north cell is fluid */
+			if((Flag[i][j] & B_N) == B_N) {			/* B_N, north cell is fluid */
 				G[i][j] = V[i][j];
-			} else if(Flag[i][j] & B_S) {	/* B_S, south cell is fluid */
+			} else if((Flag[i][j] & B_S) == B_S) {	/* B_S, south cell is fluid */
 				G[i][j-1] = V[i][j-1];
-			} else if(Flag[i][j] == C_F) {
+			} else {
 				G[i][j] = V[i][j] + dt * (
 					      + 1 / Re * ((V[i][j+1] - 2 * V[i][j] + V[i][j-1]) / (dy * dy) + (V[i+1][j] - 2 * V[i][j] + V[i-1][j]) / (dx * dx))
 					      - 1 / dy * (pow((V[i][j] + V[i][j+1]) / 2, 2) - pow((V[i][j-1] + V[i][j]) / 2, 2))
@@ -130,25 +130,17 @@ void calculate_uv(
 	double **F,
 	double **G,
 	double **P,
-	int **Flag
+	int **flagField
 ) {
 	unsigned int i, j;
 	for (i = 1; i <= imax - 1; i++) {
 		for (j = 1; j <= jmax; j++) {
-			if(Flag[i][j] == C_F) {
-				U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
-			} else {
-				U[i][j] = 0;
-			}
+			U[i][j] = F[i][j] - dt * (P[i+1][j] - P[i][j]) / dx;
 		}
 	}
 	for (i = 1; i <= imax; i++) {
 		for (j = 1; j <= jmax - 1; j++) {
-			if(Flag[i][j] == C_F) {
-				V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
-			} else {
-				V[i][j] = 0;
-			}
+			V[i][j] = G[i][j] - dt * (P[i][j+1] - P[i][j]) / dy;
 		}
 	}
 	
