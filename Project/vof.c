@@ -90,7 +90,6 @@ void calculate_freeSurfaceOrientation(double **fluidFraction, int **flagField, d
 	}
 	
 	/* (Assuming uniform grid in each axis) */
-	
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j <= jmax; j++) {
 			if(flagField[i][j] & C_FS) {
@@ -128,153 +127,139 @@ void calculate_fluidFraction(
 	for(i=1;i<=imax;i++){
 		for(j=1;j<=jmax;j++){
 			fluidFraction_alt[i][j]=fluidFraction[i][j];
-			}
+		}
 	}
 
-
-/*=======================for x sweep======================*/
+	/* ======================= X sweep ====================== */
+	
     for (j=1;j<=jmax;j++){
         for (i=1;i<=imax-1;i++){
-            	
-		if(i==1){
-			delta_F_left=0;
-		}
-
-		if(U[i][j]>0){
-
-			if((i < imax && fluidFraction_alt[i+1][j] == 0) || (i > 1 && fluidFraction_alt[i-1][j] == 0)){
-				F_AD_x = fluidFraction_alt[i+1][j];
-			}else if((flagField[i][j] & C_FS) == C_FS){
-				if(fabs(dFdy[i][j]) > fabs(dFdx[i][j])) {
-					F_AD_x = fluidFraction_alt[i][j];
-				} else {
-					F_AD_x = fluidFraction_alt[i+1][j];
-				}
-			} else {
-				F_AD_x = fluidFraction_alt[i][j];
+		        	
+			if(i==1){
+				delta_F_left=0;
 			}
-			F_D_x=fluidFraction_alt[i][j];
-			sign=-1;
-		}else if(U[i][j]<0){
-			if(fluidFraction_alt[i][j] == 0 || (i < imax-1 && fluidFraction_alt[i+2][j] == 0)){
-				F_AD_x = fluidFraction_alt[i][j];
-			}else if((flagField[i][j] & C_FS) == C_FS){
-				if(fabs(dFdy[i][j]) > fabs(dFdx[i][j])) {
+		
+			/* Right going */
+			if(U[i][j]>0){
+				if((i < imax && fluidFraction_alt[i+1][j] == 0) || (i > 1 && fluidFraction_alt[i-1][j] == 0)) {
 					F_AD_x = fluidFraction_alt[i+1][j];
+				} else if((flagField[i][j] & C_FS) == C_FS){
+					if(fabs(dFdy[i][j]) > fabs(dFdx[i][j])) {
+						F_AD_x = fluidFraction_alt[i][j];
+					} else {
+						F_AD_x = fluidFraction_alt[i+1][j];
+					}
 				} else {
 					F_AD_x = fluidFraction_alt[i][j];
 				}
-			} else {
-				F_AD_x = fluidFraction_alt[i+1][j];
+				F_D_x=fluidFraction_alt[i][j];
+				sign=-1;
 			}
-			F_D_x=fluidFraction_alt[i+1][j];
-			sign=1;}
-		else
-			F_D_x=0;
+		
+			/* Left going */
+			else if(U[i][j]<0){
+				if(fluidFraction_alt[i][j] == 0 || (i < imax-1 && fluidFraction_alt[i+2][j] == 0)) {
+					F_AD_x = fluidFraction_alt[i][j];
+				} else if((flagField[i][j] & C_FS) == C_FS){
+					if(fabs(dFdy[i][j]) > fabs(dFdx[i][j])) {
+						F_AD_x = fluidFraction_alt[i+1][j];
+					} else {
+						F_AD_x = fluidFraction_alt[i][j];
+					}
+				} else {
+					F_AD_x = fluidFraction_alt[i+1][j];
+				}
+				F_D_x=fluidFraction_alt[i+1][j];
+				sign=1;
+			}
+		
+			/* Zero velocity */
+			else {
+				F_D_x=0;
+			}
 
+			/* Update fluid fraction based on computed fluxes */
+		    V_x=U[i][j]*dt;                
+		    CF_x=fmax((1.0-F_AD_x)*fabs(V_x)-(1.0-F_D_x)*dx,0.0);
+		    delta_F_right=fmin(F_AD_x*fabs(V_x)+CF_x,F_D_x*dx)/dx;
+			fluidFraction[i][j]=fluidFraction[i][j]+sign*delta_F_right+delta_F_left;
+			delta_F_left=(-1)*sign*delta_F_right;
+		
+		 }
+		
+		/* Treat right-most cell */
+		fluidFraction[imax][j]=fluidFraction[imax][j]+delta_F_left;
 	
-			         
-
-                V_x=U[i][j]*dt;                
-                CF_x=fmax((1.0-F_AD_x)*fabs(V_x)-(1.0-F_D_x)*dx,0.0);
-
-                delta_F_right=fmin(F_AD_x*fabs(V_x)+CF_x,F_D_x*dx)/dx;
-
-		fluidFraction[i][j]=fluidFraction[i][j]+sign*delta_F_right+delta_F_left;
-
-
-    		delta_F_left=(-1)*sign*delta_F_right;
-         }
-
-
-	fluidFraction[imax][j]=fluidFraction[imax][j]+delta_F_left;
-    }
+	}
   
+	/* ======================= Swap intermediate solution ====================== */
 	for(i=1;i<=imax;i++){
 		for(j=1;j<=jmax;j++){
 			fluidFraction_alt[i][j]=fluidFraction[i][j];
-			}
+		}
 	}
  
-/*=======================for y sweep======================*/
+	/* ======================= Y sweep ====================== */
     for (i=1;i<=imax;i++){
         for (j=1;j<=jmax-1;j++){
 
-               if(j==1){
-			delta_F_bottom=0;
+			if(j==1){
+				delta_F_bottom=0;
+			}
+
+			/* Up going */
+			if(V[i][j]>0){
+				if((j < jmax && fluidFraction_alt[i][j+1] == 0) || (j > 1 && fluidFraction_alt[i][j-1] == 0)) {
+					F_AD_y = fluidFraction_alt[i][j+1];
+				}else if((flagField[i][j] & C_FS) == C_FS){
+					if(fabs(dFdy[i][j]) < fabs(dFdx[i][j])) {
+						F_AD_y = fluidFraction_alt[i][j];
+					} else {
+						F_AD_y = fluidFraction_alt[i][j+1];
+					}
+				} else {
+					F_AD_y = fluidFraction_alt[i][j];
+				}
+				F_D_y=fluidFraction_alt[i][j];
+				sign=-1;
+			
+			}
+
+			/* Down going */
+			else if(V[i][j]<0){
+				if(fluidFraction_alt[i][j] == 0 || (j < jmax-1 && fluidFraction_alt[i][j+2] == 0)) {
+					F_AD_y = fluidFraction_alt[i][j];
+				}else if((flagField[i][j] & C_FS) == C_FS){
+					if(fabs(dFdy[i][j]) < fabs(dFdx[i][j])) {
+						F_AD_y = fluidFraction_alt[i][j+1];
+					} else {
+						F_AD_y = fluidFraction_alt[i][j];
+					}
+				} else {
+					F_AD_y = fluidFraction_alt[i][j+1];
+				}
+				F_D_y=fluidFraction_alt[i][j+1];
+				sign=1;
+			}
+		
+			/* Zero velocity */
+			else {
+				F_D_y=0;
+			}
+		
+			/* Update fluid fraction based on computed fluxes */
+		    V_y=V[i][j]*dt;                
+		    CF_y=fmax((1.0-F_AD_y)*fabs(V_y)-(1.0-F_D_y)*dy,0.0);
+		    delta_F_top=fmin(F_AD_y*fabs(V_y)+CF_y,F_D_y*dy)/dy;
+			fluidFraction[i][j]=fluidFraction[i][j]+sign*delta_F_top+delta_F_bottom;
+			delta_F_bottom=(-1)*sign*delta_F_top;
+				
 		}
 
-
-		if(V[i][j]>0){
-			if((j < jmax && fluidFraction_alt[i][j+1] == 0) || (j > 1 && fluidFraction_alt[i][j-1] == 0)){
-					F_AD_y = fluidFraction_alt[i][j+1];
-			}else if((flagField[i][j] & C_FS) == C_FS){
-				if(fabs(dFdy[i][j]) < fabs(dFdx[i][j])) {
-					F_AD_y = fluidFraction_alt[i][j];
-				} else {
-					F_AD_y = fluidFraction_alt[i][j+1];
-				}
-			} else {
-				F_AD_y = fluidFraction_alt[i][j];
-			}
-			F_D_y=fluidFraction_alt[i][j];
-			sign=-1;}
-
-		else if(V[i][j]<0){
-
-			if(fluidFraction_alt[i][j] == 0 || (j < jmax-1 && fluidFraction_alt[i][j+2] == 0)){
-
-				F_AD_y = fluidFraction_alt[i][j];
-
-			}else if((flagField[i][j] & C_FS) == C_FS){
-
-				if(fabs(dFdy[i][j]) < fabs(dFdx[i][j])) {
-
-					F_AD_y = fluidFraction_alt[i][j+1];
-
-				} else {
-
-					F_AD_y = fluidFraction_alt[i][j];
-
-				}
-			} else {
-				F_AD_y = fluidFraction_alt[i][j+1];
-			}
-			F_D_y=fluidFraction_alt[i][j+1];
-			sign=1;}
-		else
-			F_D_y=0;
-       
-/*                F_AD_y=F_D_y;*/
-                V_y=V[i][j]*dt;                
-                CF_y=fmax((1.0-F_AD_y)*fabs(V_y)-(1.0-F_D_y)*dy,0.0);
-                delta_F_top=fmin(F_AD_y*fabs(V_y)+CF_y,F_D_y*dy)/dy;
-
-		fluidFraction[i][j]=fluidFraction[i][j]+sign*delta_F_top+delta_F_bottom;
-
-            	
-    		delta_F_bottom=(-1)*sign*delta_F_top;
-    		
-         }
-
-fluidFraction[i][jmax]=fluidFraction[i][jmax]+delta_F_bottom;
-    }
-
-
-    
-	for(i=1;i<=imax;i++){
-		for(j=1;j<=jmax;j++){
-			fluidFraction_alt[i][j]=fluidFraction[i][j];
-			}
+		/* Treat top-most cell */
+		fluidFraction[i][jmax]=fluidFraction[i][jmax]+delta_F_bottom;
+	
 	}
-
-
-
-
-
-
-
-
 
 
 }

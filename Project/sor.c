@@ -50,7 +50,9 @@ void sor(
 	/* Set residual */
 	*res = rloc;
 
-	
+	/* Set pressure boundary condition at free surfaces
+		Note: Pressure interpolation did not work well, so for now we just set P=0 at the free surfaces
+	*/
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j <= jmax; j++) {
 			if((flagField[i][j] & C_FS) == C_FS || flagField[i][j] == C_E) {
