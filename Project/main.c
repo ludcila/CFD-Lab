@@ -145,7 +145,7 @@ int main(int argn, char** args){
 		n++;
 		
 		/* Print out simulation time */
-		printf("Time: %.4f", t);
+		printf("(%d) Time: %.4f", (int)n, t);
 		
 		/* Print out runtime */
 		previousTime = currentTime;

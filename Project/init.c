@@ -114,6 +114,7 @@ void init_flag(
 			
 			/* Obstacle cell (mark direction where it MAY have a fluid neighbor) */
 			if(pic[i][j] == 2) {
+				flagField[i][j] = C_B;
 				if(pic[i+1][j] != 2) flagField[i][j] = flagField[i][j] | B_O;
 				if(pic[i-1][j] != 2) flagField[i][j] = flagField[i][j] | B_W;
 				if(pic[i][j+1] != 2) flagField[i][j] = flagField[i][j] | B_N;

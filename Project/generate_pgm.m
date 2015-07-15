@@ -1,77 +1,79 @@
 clear all; clc; close all;
 
-[folder, ~, ~] = fileparts(which('generate_pgm'))
+% =========================================================================
 
-C_B = 0;
-C_F = 1;
+% Options:
 
-% Box
+CENTER_DAM = 1;
+LEFT_DAM = 2;
+DAM_STEP = 3;
+DAM_OBSTACLE = 4;
+DROP = 5;
+BUBBLE = 5;
 
-imax = 100;
-jmax = 20;
+% =========================================================================
 
-domain = ones(jmax, imax);
+% Specify scenario to generate:
 
+scenario = DAM_OBSTACLE;
 
-% % Square obstacle
-% domain(9:10, 12) = C_B;
-% domain(9:11, 11) = C_B;
-% domain(10:12, 10) = C_B;
-% domain(11:12, 9) = C_B;
-% imshow(domain);
-% imwrite(domain, [folder, '/karman_vortex_street.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
-
-% % Flow over step
-% domain(jmax/2+1:end, 1:jmax/2) = C_B;
-% imshow(domain);
-% imwrite(domain, [folder, '/flow_over_step.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
-
-% % Flow over step
-% imwrite(domain, [folder, '/plane_shear_flow.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
-
-% Driven cavity
-imax = 100;
-jmax = 40;
-[X Y] = meshgrid(linspace(0, 100), linspace(0, 40, 40));
-domain = zeros(jmax, imax);
-
-% center dam
-% domain(2:end, 2*imax/5+1:3*imax/5) = 1;
-
-% drop
-% % domain(5:15, 45:55) = 1;
-% domain = domain + sqrt((X-50).^2 + (Y-10).^2) < 5;
-% domain(30:end, :) = 1;
-
-% bubble
-% domain(10:end, :) = 1;
-% % domain(25:35, 45:55) = 0;
-% domain = domain - (sqrt((X-50).^2 + (Y-20).^2) < 1);
-
-% Dam break
-imax = 100;
-jmax = 40;
-% domain(2:end, 1:imax/5) = 1;
-domain(2:end, 2*imax/5+1:3*imax/5) = 1;
-imwrite(domain, ['dam_break_center.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
-
-% Dam break on step
-imax = 50;
-jmax = 50;
-domain = zeros(jmax, imax);
-domain(31:50, 1:20) = 2;
-domain(10:30, 1:20) = 1;
-% imwrite(domain, ['dam_break_step.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
-
-% Dam break small obstacle
-imax = 50;
-jmax = 50;
-domain = zeros(jmax, imax);
-domain(47:50, 30:33) = 2;
-domain(11:end, 1:15) = 1;
-% imwrite(domain, ['dam_break_obstacle.pgm'], 'encoding', 'ASCII', 'maxvalue', 1);
+% =========================================================================
 
 
-% domain(20:end, :) = 1;
 
-% domain(5,5) = 1;
+
+if scenario == CENTER_DAM
+    
+    imax = 125;
+    jmax = 50;
+    domain = zeros(jmax, imax);
+    domain(2:end, 2*imax/5+1:3*imax/5) = 1;
+    name = 'dam_break_center.pgm';
+    
+elseif scenario == LEFT_DAM
+    
+    imax = 125;
+    jmax = 50;
+    domain = zeros(jmax, imax);
+    domain(2:end, 1:imax/5) = 1;
+    name = 'dam_break_left.pgm';
+    
+elseif scenario == DAM_STEP
+    
+    imax = 125;
+    jmax = 50;
+    domain = zeros(jmax, imax);
+    domain(jmax/2+1:jmax, 1:imax*2/5) = 2;
+    domain(13:jmax/2, 1:imax*2/5) = 1;
+    name = 'dam_break_step.pgm';
+    
+elseif scenario == DAM_OBSTACLE
+    
+    imax = 80;
+    jmax = 80;
+    domain = zeros(jmax, imax);
+    domain(75:80, 39:41) = 2;
+    domain(41:end, 1:20) = 1;
+    name = 'dam_break_obstacle.pgm';
+    
+elseif scenario == DROP
+    
+    imax = 125;
+    jmax = 50;
+    domain = zeros(jmax, imax);
+    [X Y] = meshgrid(linspace(1, imax, imax), linspace(1, jmax, jmax));
+    domain = domain + sqrt((X-imax/2).^2 + (Y-12.5).^2) < 3;
+    domain(38:end, :) = 1;
+    name = 'drop.pgm';
+    
+elseif scenario == BUBBLE
+    domain(10:end, :) = 1;
+    % domain(25:35, 45:55) = 0;
+    domain = domain - (sqrt((X-50).^2 + (Y-20).^2) < 1);
+    name = 'bubble.pgm';
+end
+
+imshow(domain)
+[folder, ~, ~] = fileparts(which('generate_pgm'));
+imwrite(domain, [folder,'/',name], 'encoding', 'ASCII', 'maxvalue', 1);
+

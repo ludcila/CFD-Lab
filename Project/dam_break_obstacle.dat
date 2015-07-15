@@ -2,8 +2,8 @@
 # Domain
 # ---------------------------------
 
-imax		50
-jmax		50
+imax		80
+jmax		80
 xlength		5
 ylength		5
 
@@ -30,7 +30,7 @@ itermax		500
 # ---------------------------------
 
 GX			0.0
-GY			-1
+GY			-9.8
 Re			100
 dp			0
 
@@ -46,14 +46,14 @@ PI			0.0
 # Boundary types
 # ---------------------------------
 
-wl			1
-wr			1
-wt			1
-wb			1
+wl			2
+wr			2
+wt			2
+wb			2
 
 # ---------------------------------
 # Output options
 # ---------------------------------
 
-timestepsPerPlotting	2
+timestepsPerPlotting	10
 

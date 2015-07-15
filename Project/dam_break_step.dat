@@ -2,10 +2,10 @@
 # Domain
 # ---------------------------------
 
-imax		50
+imax		125
 jmax		50
 xlength		5
-ylength		5
+ylength		2
 
 # ---------------------------------
 # Timestepping
@@ -13,7 +13,7 @@ ylength		5
 
 dt			0.05
 t_end		20
-tau			.1
+tau			.5
 dt_value	2.0
 
 # ---------------------------------
@@ -30,8 +30,8 @@ itermax		500
 # ---------------------------------
 
 GX			0.0
-GY			-1.0
-Re			1000
+GY			-1
+Re			100
 dp			0
 
 # ---------------------------------
@@ -49,11 +49,11 @@ PI			0.0
 wl			1
 wr			1
 wt			1
-wb			1
+wb			2
 
 # ---------------------------------
 # Output options
 # ---------------------------------
 
-timestepsPerPlotting	2
+timestepsPerPlotting	10
 

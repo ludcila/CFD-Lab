@@ -498,13 +498,13 @@ int **read_pgm(const char *filename)
     while(*line=='#');
 
     /* read the width and height */
-    sscanf(line,"%d %d\n",&xsize,&ysize);
+    sscanf(line,"%d %d %d\n",&xsize,&ysize,&levels);
 
     printf("Image size: %d x %d\n", xsize,ysize);
 
-    /* read # of gray levels */
+    /* read # of gray levels
     fgets(line,sizeof line,input);
-    sscanf(line,"%d\n",&levels);
+    sscanf(line,"%d\n",&levels); */
 
     /* allocate memory for image */
     pic = imatrix(0,xsize+1,0,ysize+1);
