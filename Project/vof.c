@@ -27,46 +27,45 @@ void adjust_fluidFraction(double **fluidFraction, int **flagField, double epsilo
 	for(i = 1; i <= imax; i++) {
 		for(j = 1; j <= jmax; j++) {
 			
-			O_empty = 0;
-			W_empty = 0; 
-			N_empty = 0;
-			S_empty = 0;
+			/* We will consider adjusting and reflagging all cells, except obstacle cells (C_B) */
+			if((flagField[i][j] & C_B) == 0) {
 			
-			/* Treat empty cells */
-			if(fluidFraction[i][j] < epsilon) {
-				fluidFraction[i][j] = 0;
-				flagField[i][j] = C_E;
-			}
+				O_empty = 0;
+				W_empty = 0; 
+				N_empty = 0;
+				S_empty = 0;
 			
-			/* Treat cells that contain fluid (either full or a fraction) */
-			else {
+				/* Treat empty cells */
+				if(fluidFraction[i][j] < epsilon) {
+					fluidFraction[i][j] = 0;
+					flagField[i][j] = C_E;
+				}
 			
-				/* Initially set as full fluid cell (no empty neighbors) */
-				flagField[i][j] = C_F;
+				/* Treat cells that contain fluid (either full or a fraction) */
+				else {
+			
+					/* Initially set as full fluid cell (no empty neighbors) */
+					flagField[i][j] = C_F;
 				
-				/* Determine empty neighbors; the min/max prevent it from checking neighbors on the domain boundary */
-				if(i+1 <= imax) {
-					O_empty = fluidFraction[i+1][j] < epsilon;
-				}
-				if(i-1 >= 1) {
-					W_empty = fluidFraction[i-1][j] < epsilon;
-				}
-				if(j+1 <= jmax) {
-					N_empty = fluidFraction[i][j+1] < epsilon;
-				}
-				if(j-1 >= 1) {
-					S_empty = fluidFraction[i][j-1] < epsilon;
-				}
+					/* Determine empty neighbors with three conditions:
+						(neighbor is not domain boundary) AND (is not obstacle) AND (has less than eps fluid) */
+					O_empty = (i+1 <= imax)	&& !(flagField[i+1][j] & C_B) 	&& (fluidFraction[i+1][j] < epsilon);
+					W_empty = (i-1 >= 1)	&& !(flagField[i-1][j] & C_B)	&& (fluidFraction[i-1][j] < epsilon);
+					N_empty = (j+1 <= jmax)	&& !(flagField[i][j+1] & C_B)	&& (fluidFraction[i][j+1] < epsilon);
+					S_empty = (j-1 >= 1)	&& !(flagField[i][j-1] & C_B)	&& (fluidFraction[i][j-1] < epsilon);
 				
-				/* Toggle bit for each empty neighbor empty neighbors
-					if there are no empty neighbors, the flag will remain unchanged (i.e., C_F)
-					if there are empty neighbors, the flag will be a combination of FS_x flags
-				*/
-				flagField[i][j] = flagField[i][j] | (O_empty * FS_O) | (W_empty * FS_W) | (N_empty * FS_N) | (S_empty * FS_S);
+					/* Toggle bit for each empty neighbor empty neighbors
+						if there are no empty neighbors, the flag will remain unchanged (i.e., C_F)
+						if there are empty neighbors, the flag will be a combination of FS_x flags
+					*/
+					flagField[i][j] = flagField[i][j] | (O_empty * FS_O) | (W_empty * FS_W) | (N_empty * FS_N) | (S_empty * FS_S);
 				
-				/* If it is a full fluid cell, we reduce the fluid fraction by 1.1*epsilon for each empty neighbor */
-				if(fluidFraction[i][j] > 1-epsilon)
-					fluidFraction[i][j] = 1 - 1.1 * epsilon * (O_empty + W_empty + N_empty + S_empty);
+					/* If it is a full fluid cell, we reduce the fluid fraction by 1.1*epsilon for each empty neighbor */
+					if(fluidFraction[i][j] > 1-epsilon) {
+						fluidFraction[i][j] = 1 - 1.1 * epsilon * (O_empty + W_empty + N_empty + S_empty);
+					}
+					
+				}
 				
 			}
 			

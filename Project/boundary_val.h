@@ -28,7 +28,8 @@ enum FS_xy {
 enum C_type {
 	C_F 	= 16,		/* Interior fluid cell */
 	C_FS	= 48,		/* Free surface cell */
-	C_E		= 0			/* Empty cell */
+	C_B		= 64,		/* Obstacle boundary (any direction) */
+	C_E		= 0			/* Empty cell (no fluid or obstacle interior) */
 };
 
 /**
