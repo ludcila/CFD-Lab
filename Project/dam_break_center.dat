@@ -46,8 +46,8 @@ PI			0.0
 # Boundary types
 # ---------------------------------
 
-wl			1
-wr			1
+wl			2
+wr			2
 wt			1
 wb			2
 
@@ -55,5 +55,5 @@ wb			2
 # Output options
 # ---------------------------------
 
-timestepsPerPlotting	10
+timestepsPerPlotting	5
 
